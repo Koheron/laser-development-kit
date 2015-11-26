@@ -1,6 +1,6 @@
 # python-api
 
-[![Join the chat at https://gitter.im/Koheron/python-api](https://img.shields.io/badge/GITTER-join%20chat-green.svg)](https://gitter.im/Koheron/python-api?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Circle CI](https://circleci.com/gh/Koheron/python-api/tree/master.svg?style=shield)](https://circleci.com/gh/Koheron/python-api/tree/master)
+[![Join the chat at https://gitter.im/Koheron/python-api](https://img.shields.io/badge/GITTER-join%20chat-green.svg)](https://gitter.im/Koheron/python-api?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Circle CI](https://circleci.com/gh/Koheron/python-api.svg?style=shield)](https://circleci.com/gh/Koheron/python-api)
 
 #### `Python API for the Koheron Laser Development Kit`
 
