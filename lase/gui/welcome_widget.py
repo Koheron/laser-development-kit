@@ -99,6 +99,8 @@ class WelcomeWidget(QtGui.QWidget):
             driver = Oscillo(self.connect_widget.client, current_mode='pwm')
         else:
             driver = OscilloSimu()
+        index = self.parent.stacked_widget.addWidget(OscilloWidget(driver, self.parent))
+        self.parent.stacked_widget.setCurrentIndex(index)
         
     def spectrum_on(self):
         if self.connect_widget.is_connected:
