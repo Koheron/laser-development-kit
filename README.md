@@ -1,6 +1,6 @@
-# Lase
+# python-api
 
-[![Join the chat at https://gitter.im/Koheron/lase](https://img.shields.io/badge/GITTER-join%20chat-green.svg)](https://gitter.im/Koheron/lase?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Circle CI](https://circleci.com/gh/Koheron/lase/tree/master.svg?style=shield)](https://circleci.com/gh/Koheron/lase/tree/master)
+[![Join the chat at https://gitter.im/Koheron/python-api](https://img.shields.io/badge/GITTER-join%20chat-green.svg)](https://gitter.im/Koheron/python-api?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Circle CI](https://circleci.com/gh/Koheron/python-api/tree/master.svg?style=shield)](https://circleci.com/gh/Koheron/python-api/tree/master)
 
 #### `Python API for the Koheron Laser Development Kit`
 
@@ -20,9 +20,9 @@ python interface.py
 
 ![Demo](https://cloud.githubusercontent.com/assets/1735094/9765362/317e8212-5714-11e5-8480-ab3e311260c9.gif)
 
-## Lase API : basic simulation example
+## Basic simulation example
 
-Lase API can run in simulation mode i.e. without any connection to a real board :
+Python API can run in simulation mode i.e. without any connection to a real board :
 
 ```python
 from lase.drivers import OscilloSimu
@@ -66,9 +66,9 @@ driver.close()
 
 ### Installation
 
-Get [latest release](https://github.com/Koheron/Lase/releases) of SD card image `lase.img`.
+Get [latest release](https://github.com/Koheron/python-api/releases) of SD card image `lase.img`.
 
 ## Copyright
 
-Copyright 2015 Koheron SAS. The code is released under [the MIT licence](https://github.com/Koheron/Lase/blob/master/LICENSE).
+Copyright 2015 Koheron SAS. The code is released under [the MIT licence](https://github.com/Koheron/python-api/blob/master/LICENSE).
 
