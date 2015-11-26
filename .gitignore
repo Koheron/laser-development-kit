@@ -38,5 +38,5 @@ var/
 pip-log.txt
 pip-delete-this-directory.txt
 
-bitstreams
+*.bit
 tmp
