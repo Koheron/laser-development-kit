@@ -9,6 +9,7 @@ from oscillo_widget import OscilloWidget
 from spectrum_widget import SpectrumWidget
 import time
 import os
+import urllib
 
 
 class WelcomeWidget(QtGui.QWidget):
@@ -89,15 +90,15 @@ class WelcomeWidget(QtGui.QWidget):
     def oscillo_on(self):
         if self.connect_widget.is_connected:
             time.sleep(0.01)
-            self.connect_widget.ssh.load_pl(
-                os.path.join(self.parent.bitstreams_path, 'oscillo.bit'))
+            bitstream_path = os.path.join(self.parent.bitstreams_path, 'oscillo.bit')
+            if not os.path.isfile(bitstream_path):
+                bitstream_url = 'https://github.com/Koheron/zynq-sdk/releases/download/v0.1-beta.3/oscillo.bit'
+                urllib.urlretrieve(bitstream_url, bitstream_path)
+            self.connect_widget.ssh.load_pl(bitstream_path)
             time.sleep(0.01)        
             driver = Oscillo(self.connect_widget.client, current_mode='pwm')
         else:
             driver = OscilloSimu()
-        index = self.parent.stacked_widget.addWidget(
-            OscilloWidget(driver, self.parent))
-        self.parent.stacked_widget.setCurrentIndex(index)
         
     def spectrum_on(self):
         if self.connect_widget.is_connected:
@@ -111,5 +112,3 @@ class WelcomeWidget(QtGui.QWidget):
         index = self.parent.stacked_widget.addWidget(
             SpectrumWidget(driver, self.parent))
         self.parent.stacked_widget.setCurrentIndex(index)
-        
-
