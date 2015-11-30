@@ -6,8 +6,7 @@ import numpy as np
 from ..signal import Sampling
 
 class Lase(object):
-    """
-    This class is used as a base class for `Oscillo` and `Spectrum`
+    """ This class is used as a base class for `Oscillo` and `Spectrum`
     
     args:
         n (int): number of points in the waveform (ex: n = 8192).

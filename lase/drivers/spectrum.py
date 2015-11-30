@@ -7,8 +7,7 @@ from lase import Lase
 
 
 class Spectrum(Lase):
-    """
-    @brief Driver for the spectrum bitstream
+    """ Driver for the spectrum bitstream
     """
     
     def __init__(self, client, map_size = 4096, verbose = False, current_mode = 'pwm'): 

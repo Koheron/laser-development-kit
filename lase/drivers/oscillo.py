@@ -26,8 +26,8 @@ class Oscillo(Lase):
         # \end         
 
         # Add memory maps
-        self._adc_1    = self.dvm.add_memory_map(_adc_1_addr   , self.n/1024*map_size)
-        self._adc_2    = self.dvm.add_memory_map(_adc_2_addr   , self.n/1024*map_size)
+        self._adc_1 = self.dvm.add_memory_map(_adc_1_addr, self.n/1024*map_size)
+        self._adc_2 = self.dvm.add_memory_map(_adc_2_addr, self.n/1024*map_size)
        
         self.avg_on = False
 
