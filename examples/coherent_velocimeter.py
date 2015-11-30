@@ -7,8 +7,9 @@ from lase.core import KClient
 from lase.drivers import Spectrum
 
 import numpy as np
-from scipy import signal # for find_peaks_cwt
+from scipy import signal
 import matplotlib.pyplot as plt
+import peakutils
 
 class CoherentVelocimeter:
     
@@ -22,15 +23,43 @@ class CoherentVelocimeter:
         f, PSD = signal.periodogram(detected_signal, fs)
         
         if plot:
-            plt.semilogy(f, PSD)
+            plt.semilogy(f/1E6, PSD)
             plt.ylim([1e-13, 1e-2])
-            plt.xlabel('frequency [Hz]')
+            plt.xlabel('Frequency [MHz]')
             plt.ylabel('PSD')
             plt.show()
+
+        return f, PSD
     
-    def _peak_detection(self):
-        pass
+    def _psd_filter(self, PSD, plot=False):
+        window = signal.general_gaussian(51, p=0.5, sig=10)
+        psd_filtered = signal.fftconvolve(window, PSD)
+        psd_filtered = (np.average(PSD) / np.average(psd_filtered)) * psd_filtered
+        psd_filtered = np.roll(psd_filtered, -25)
+        
+        if plot:
+            plt.semilogy(PSD)
+            plt.semilogy(psd_filtered)
+            plt.ylim([1e-13, 1e-2])
+            plt.show()
+        
+        return psd_filtered
+    
+    def _peak_detection(self, f, PSD, plot=False):
+        psd_filtered = self._psd_filter(PSD)        
+        peakind = peakutils.indexes(psd_filtered, thres=0.5, min_dist=30)
+        
+        if plot:
+            plt.semilogy(f, PSD)
+            plt.scatter(f[peakind], PSD[peakind], color='red')
+            plt.xlim([0, np.max(f)])
+            plt.ylim([1e-13, 1e-2])
+            plt.xlabel('Frequency [MHz]')
+            plt.ylabel('PSD')
+            plt.show()
         
 if __name__ == "__main__":
     lidar = CoherentVelocimeter()
-    lidar.get_simul_data(2.5, plot=True)
+    f, PSD = lidar.get_simul_data(5.2, SNR=5, plot=False)
+#    lidar._psd_filter(PSD, plot=True)
+    lidar._peak_detection(f, PSD, plot=True)
