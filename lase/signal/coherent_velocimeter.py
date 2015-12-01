@@ -43,7 +43,7 @@ class CoherentVelocimeter:
         """
         peakind = peakutils.indexes(self._psd_filter(), thres=0.5, min_dist=30)
         return peakind
-            
+   
     def get_velocity(self, f, PSD):
         """ Return the velocity in m/s
         """

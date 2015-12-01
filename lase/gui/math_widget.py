@@ -28,10 +28,10 @@ class MathWidget(QtGui.QWidget):
         self.fourier_checkbox.setCheckState(QtCore.Qt.Unchecked)
         
         # Select avg
-        self.n_avg_label = QtGui.QLabel()  
-        self.n_avg_label.setText('N avg')        
+        self.n_avg_label = QtGui.QLabel()
+        self.n_avg_label.setText('N avg')
         self.avg_spin = QtGui.QSpinBox()
-        self.avg_spin.setMaximum(50)        
+        self.avg_spin.setMaximum(50)
         self.avg_spin.setMinimum(1)
         self.avg_spin.setValue(1)
         
@@ -42,7 +42,6 @@ class MathWidget(QtGui.QWidget):
         self.avg_on_button.setCheckable(True)
         
         # Set layout
-        
         self.layout.addWidget(self.avg_on_button)
         self.checkbox_layout.addStretch(1)
         self.checkbox_layout.addWidget(self.fourier_checkbox)

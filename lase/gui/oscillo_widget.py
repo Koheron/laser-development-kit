@@ -137,7 +137,7 @@ class OscilloWidget(LaseWidget):
     
     def set_axis(self):
         self.plotWid.getPlotItem().getAxis('bottom').setLabel('Time (us)')
-        self.plotWid.getPlotItem().getAxis('left').setLabel('Optical power (u.a.)')
+        self.plotWid.getPlotItem().getAxis('left').setLabel('Optical power (arb. units)')
         self.plotWid.getViewBox().setMouseMode(self.plotWid.getViewBox().PanMode)
         
     def auto_scale(self):

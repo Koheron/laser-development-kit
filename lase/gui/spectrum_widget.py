@@ -31,13 +31,8 @@ class SpectrumWidget(LaseWidget):
         
         # Lidar widget
         self.velocity = 0
-        self.lidar_widget = LidarWidget(self.driver)
+        self.lidar_widget = LidarWidget(self.plotWid)
         self.splitterV_1.addWidget(self.lidar_widget)
-#        self.splitterV_1.addWidget(self.cursor_widget)
-
-#        self.velocity_label = QtGui.QLabel()
-#        self.velocity_label.setText('Velocity (m/s) : '+"{:.2f}".format(0))
-#        self.splitterV_1.addWidget(self.velocity_label)
         
         self.splitterV_1.addStretch(1)
         self.right_panel_widget.setLayout(self.splitterV_1)        
@@ -49,14 +44,19 @@ class SpectrumWidget(LaseWidget):
         super(SpectrumWidget, self).update()
         self.driver.get_spectrum()
         self.spectrum = self.driver.spectrum - self.calibration_widget.noise_floor      
-        self.plotWid.dataItem.setData(1e-6 * np.fft.fftshift(self.driver.sampling.f_fft), 
-                                      1e-15* np.fft.fftshift(self.spectrum), 
-                                      pen=(0,4), clear=True, _callSync='off')
-                                      
+                           
         # Get velocity
         self.velocity = self.lidar.get_velocity(self.driver.sampling.f_fft, self.spectrum)
         self.lidar_widget.update(self.velocity)
-#        self.velocity_label.setText('Velocity (m/s) : '+"{:.2f}".format(self.velocity))
+        
+        if self.lidar_widget.velocity_plot_button.text() == 'Plot spectrum':
+            self.plotWid.dataItem.setData(np.arange(100), 
+                                          self.lidar_widget.velocities, clear=True)
+        else:
+            self.plotWid.dataItem.setData(1e-6 * np.fft.fftshift(self.driver.sampling.f_fft), 
+                                          1e-15* np.fft.fftshift(self.spectrum), 
+                                          pen=(0,4), clear=True, _callSync='off')
+            
         
     def refresh_dac(self):
         pass
@@ -73,14 +73,4 @@ class KPlotWidget(pg.PlotWidget):
         
         self.dataItem = pg.PlotDataItem(pen=(0,4), clear=True, _callSync='off')
         self.addItem(self.dataItem)
-       
-        
-        
-
-
-
-        
-
-
-
 
