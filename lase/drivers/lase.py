@@ -81,8 +81,7 @@ class Lase(object):
         self.set_laser_current(0)
 
     def stop_laser(self):
-        """
-        Stop laser emission
+        """ Stop laser emission
         """
         # Laser enable pin on DIO7_P
         self._gpio.set_bit(7, channel=2)
@@ -94,15 +93,13 @@ class Lase(object):
         return self._xadc.read(self.laser_power_channel)
 
     def start_laser(self):
-        """
-        Start laser emission
+        """ Start laser emission
         """
         # Laser enable pin on DIO7_P
         self._gpio.clear_bit(7, channel = 2)
 
     def set_laser_current(self, current):
-        """
-        Set the current bias of the laser diode
+        """ Set the current bias of the laser diode
 
         Args:
             - current: The bias in mA

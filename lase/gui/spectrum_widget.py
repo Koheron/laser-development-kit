@@ -35,6 +35,7 @@ class SpectrumWidget(LaseWidget):
     def update(self):   
         super(SpectrumWidget, self).update()
         self.driver.get_spectrum()
+        # TV This should be in the spectrum class
         self.spectrum = self.driver.spectrum - self.calibration_widget.noise_floor      
         self.plotWid.dataItem.setData(1e-6 * np.fft.fftshift(self.driver.sampling.f_fft), 
                                       1e-15* np.fft.fftshift(self.spectrum), 

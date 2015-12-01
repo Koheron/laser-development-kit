@@ -8,10 +8,8 @@ from dac_widget import DacWidget
 import os
 
 class LaseWidget(QtGui.QWidget):
-    """
-    This widget serves as the base widget for `OscilloWidget` and 
-    `SpectrumWidget`.
-    
+    """ This widget serves as the base widget for `OscilloWidget` and 
+        `SpectrumWidget`.
     """
     
     def __init__(self, driver, parent):
@@ -26,7 +24,6 @@ class LaseWidget(QtGui.QWidget):
         self.right_arrow = QtGui.QIcon(os.path.join(self.img_path, 'right_arrow.png'))
         
         self.driver = driver
-        
         
         # Initialize driver
         self.driver.set_dac()
@@ -89,7 +86,9 @@ class LaseWidget(QtGui.QWidget):
         self.driver.set_dac()
         self.refresh_dac()
         
-    def refresh_dac():              # Abstract method, defined by convention only
+    def refresh_dac():              
+        """ Abstract method, defined by convention only
+        """
         raise NotImplementedError("Subclass must implement abstract method")
         
     def right_panel_connect(self):

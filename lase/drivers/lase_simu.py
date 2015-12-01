@@ -6,8 +6,7 @@ from ..models import LaseModel
 from ..signal import Sampling
 
 class LaseSimu(object):
-    """
-    This class is used as a base class for `OscilloSimu` and `SpectrumSimu`
+    """ This class is used as a base class for `OscilloSimu` and `SpectrumSimu`
     
     args:
         n (int): number of points in the waveform (ex: n = 8192)
@@ -73,10 +72,10 @@ class LaseSimu(object):
         print 'LED set to ', ip
         
     def get_live_current(self):
-            self._live_laser_current = self.model.laser_current( \
-                self._laser_enable, \
-                self._laser_current, \
-            self.dac[1,:])
+            self._live_laser_current = self.model.laser_current( 
+                                            self._laser_enable,
+                                            self._laser_current,
+                                            self.dac[1,:])
             
     def get_live_laser_frequency(self):
         self._live_laser_frequency = self.model.laser_frequency(self._live_laser_current)

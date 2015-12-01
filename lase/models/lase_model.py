@@ -20,14 +20,14 @@ class LaseModel(object):
         # Frequency Modulation Transfer Function
         self._frequency_mtf = np.ones(self.sampling.n, dtype=np.dtype('complex64'))  
         
-        # Photodiodetection parameters
+        # Photodetection parameters
         self._photodiode_efficiency = 0.95 # A/W
         self._transimpedance_resistance = 1e4 # Ohm
         self._optical_attenuation = 0.01 # Attenuation between the laser and the photodiode
         
         # ADC parameters
         self._adc_conversion_factor = 8192 / 1 # 1/V
-        self._adc_noise = 10 # Standard deviation of ADC noise
+        self._adc_noise = 10 # Standard deviation of ADC noise (Unit ??)
         
         # Mach-Zehnder interferometer parameters   
         self.zehnder = True
@@ -48,7 +48,7 @@ class LaseModel(object):
         self.beta += 0.025
         phi = 2 * np.pi * np.cumsum(laser_frequency) * self.sampling.dt
         phi_tau = self.sampling.shift_subpix(phi, self.tau, correct_slope=True)
-        output_power = laser_power * (1+ self.contrast*np.real(np.exp(1j*self.beta)*np.exp(1j*(phi - phi_tau)))) 
+        output_power = laser_power * (1 + self.contrast*np.real(np.exp(1j*self.beta)*np.exp(1j*(phi - phi_tau)))) 
         return output_power        
         
     def laser_power(self, laser_current):

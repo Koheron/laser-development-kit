@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import peakutils
 
 class CoherentVelocimeter:
-    """ Coherent velocitor based on the Spectrum bitstream
+    """ Coherent velocimeter based on the Spectrum bitstream
     """
     
     def __init__(self, lambda_opt=1.55E-6):
