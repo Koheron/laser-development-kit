@@ -17,10 +17,12 @@ class SpectrumSimu(LaseSimu):
         self.demod[0,:] = 0.49 * (1-np.cos(2*np.pi*np.arange(self.sampling.n)/self.sampling.n))
         self.demod[1,:] = 0
         
+        self.velocity_signal = 1
+        
         self.reset()
         
     def set_velocity(self, velocity, SNR):
-        """ Generates the velocity beat signal
+        """ Generates the velocity beat signal for velocimeter simulation
         
             Args:
                 - velocity: Object velocity (m/s)
@@ -32,7 +34,7 @@ class SpectrumSimu(LaseSimu):
     
     def get_spectrum(self):
         self.update()
-        self.set_velocity(velocity=4.2, SNR=5)
+        self.set_velocity(velocity=4.2, SNR=0.25)
         
         adc = self.model.adc_from_voltage(
                 self.model.photodetection_voltage(self.model._optical_attenuation 

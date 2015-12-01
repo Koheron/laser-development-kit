@@ -5,7 +5,6 @@ import numpy as np
 
 class Sampling(object):
     """This class provides some methods to ease processing of signals sampled over time.
-
     """
     
     def __init__(self, n, fs):
@@ -27,7 +26,6 @@ class Sampling(object):
         Note:
             `correct_slope` is used to remove the Gibbs phenomenon when the 
             signal is not periodic
-        
         """
         wedge = np.exp(2*1j*np.pi*tau*self.f_fft)
         if correct_slope:
