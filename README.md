@@ -2,7 +2,7 @@
 
 [![Join the chat at https://gitter.im/Koheron/python-api](https://img.shields.io/badge/GITTER-join%20chat-green.svg)](https://gitter.im/Koheron/python-api?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Circle CI](https://circleci.com/gh/Koheron/python-api.svg?style=shield)](https://circleci.com/gh/Koheron/python-api)
 
-#### `Python API for the Koheron Laser Development Kit`
+#### `Python API for Koheron Laser Development Kit`
 
 ## Requirements
 
@@ -22,7 +22,7 @@ python interface.py
 
 ## Basic simulation example
 
-Python API can run in simulation mode i.e. without any connection to a real board :
+Python API can run in simulation mode i.e. without a board:
 
 ```python
 from lase.drivers import OscilloSimu
@@ -40,7 +40,7 @@ print 'Laser power = ', driver.get_laser_power(), 'a.u.'
 driver.start_laser()
 print 'Laser power = ', driver.get_laser_power(), 'a.u.'
 
-# Modulate the laser current
+# Modulate laser current
 n = driver.sampling.n # Number of points in the waveform
 fs = driver.sampling.fs # Sampling frequency (Hz)
 mod_amp = 0.4 # Modulation amplitude in V
@@ -62,7 +62,7 @@ driver.close()
 
 ```
 
-## Control the Koheron Laser board
+## Control the laser
 
 ### Installation
 
