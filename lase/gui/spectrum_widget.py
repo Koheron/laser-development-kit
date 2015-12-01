@@ -31,12 +31,13 @@ class SpectrumWidget(LaseWidget):
         
         # Lidar widget
         self.velocity = 0
-#        self.splitterV_1.addStretch(1)
-#        self.lidar_widget = LidarWidget(self.driver)
-#        self.splitterV_1.addWidget(self.lidar_widget)
-        self.velocity_label = QtGui.QLabel()
-        self.velocity_label.setText('Velocity (m/s) : '+"{:.2f}".format(0))
-        self.splitterV_1.addWidget(self.velocity_label)
+        self.lidar_widget = LidarWidget(self.driver)
+        self.splitterV_1.addWidget(self.lidar_widget)
+#        self.splitterV_1.addWidget(self.cursor_widget)
+
+#        self.velocity_label = QtGui.QLabel()
+#        self.velocity_label.setText('Velocity (m/s) : '+"{:.2f}".format(0))
+#        self.splitterV_1.addWidget(self.velocity_label)
         
         self.splitterV_1.addStretch(1)
         self.right_panel_widget.setLayout(self.splitterV_1)        
@@ -54,8 +55,8 @@ class SpectrumWidget(LaseWidget):
                                       
         # Get velocity
         self.velocity = self.lidar.get_velocity(self.driver.sampling.f_fft, self.spectrum)
-#        self.lidar_widget.update(self.velocity)
-        self.velocity_label.setText('Velocity (m/s) : '+"{:.2f}".format(self.velocity))      
+        self.lidar_widget.update(self.velocity)
+#        self.velocity_label.setText('Velocity (m/s) : '+"{:.2f}".format(self.velocity))
         
     def refresh_dac(self):
         pass

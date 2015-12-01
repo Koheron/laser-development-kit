@@ -33,11 +33,11 @@ class MonitorWidget(QtGui.QWidget):
         self.layout.addWidget(self.close_button,2)
         self.layout.addStretch(1)
         self.frame_layout.addWidget(self.frame_rate_label)
-        self.layout.addLayout(self.frame_layout,1)       
-        self.layout.addStretch(1)    
-        self.layout.addWidget(self.laser_current_label,1)  
+        self.layout.addLayout(self.frame_layout,1)
         self.layout.addStretch(1)
-        self.layout.addWidget(self.laser_power_label,1) 
+        self.layout.addWidget(self.laser_current_label,1)
+        self.layout.addStretch(1)
+        self.layout.addWidget(self.laser_power_label,1)
         
         # Connections        
         self.close_button.clicked.connect(self.close_session)
