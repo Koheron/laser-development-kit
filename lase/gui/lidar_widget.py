@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from pyqtgraph.Qt import QtGui
+from pyqtgraph.Qt import QtCore, QtGui
+import pyqtgraph as pg
 import numpy as np
+import time
+import datetime as datetime
 
 class LidarWidget(QtGui.QWidget):
-    def __init__(self, plot_widget):
+    def __init__(self, left_panel_layout):
         super(LidarWidget, self).__init__()
-        self.plotWid = plot_widget
+        self.left_panel_layout = left_panel_layout
+        self.plotWid = KPlotWidget(name="data")
 
         self.layout = QtGui.QVBoxLayout()    
         self.lidar_layout = QtGui.QVBoxLayout()
@@ -30,8 +34,9 @@ class LidarWidget(QtGui.QWidget):
         self.velocity_plot_button.clicked.connect(self.plot_velocity)
         self.is_velocity_plot = False
         
-        self.velocities = np.zeros(1000)
-        self.times = np.zeros(1000)
+        self.velocities_plot_length = 1000
+        self.velocities = np.zeros(self.velocities_plot_length)
+        self.times = np.zeros(self.velocities_plot_length)
         
     def update(self, velocity = 0):
         self.velocity_label.setText('Velocity (m/s) : '+"{:.2f}".format(velocity))
@@ -39,10 +44,17 @@ class LidarWidget(QtGui.QWidget):
         self.velocities = np.roll(self.velocities, -1)
         self.velocities[-1] = velocity
         
+        self.times = np.roll(self.times, -1)
+        self.times[-1] = time.time()
+        
     def plot_velocity(self):
         if self.is_velocity_plot:
             self.is_velocity_plot = False
             self.velocity_plot_button.setText('Velocity')
+            
+            self.plotWid.setParent(None)
+            self.plotWid = KPlotWidget(name="data")
+            self.left_panel_layout.insertWidget(1, self.plotWid, 1)
             
             self.plotWid.getPlotItem().getAxis('bottom').setLabel('Frequency (MHz)')
             self.plotWid.getPlotItem().getAxis('left').setLabel('PSD')
@@ -50,6 +62,34 @@ class LidarWidget(QtGui.QWidget):
             self.is_velocity_plot = True
             self.velocity_plot_button.setText('Spectrum')
             
+            self.plotWid.setParent(None)
+            time_axis_item = TimeAxisItem(orientation='bottom')
+            self.plotWid = KPlotWidget(axisItems={'bottom': time_axis_item})
+            self.left_panel_layout.insertWidget(1, self.plotWid, 1)
             self.plotWid.getPlotItem().getAxis('bottom').setLabel('Time')
             self.plotWid.getPlotItem().getAxis('left').setLabel('Velocity (m/s)')
+            
+        self.plotWid.getPlotItem().enableAutoRange()
+        self.set_axis()
+        
+    def set_axis(self):
+        self.plotWid.getPlotItem().setMouseEnabled(x=False, y=True)
+        self.plotWid.getViewBox().setMouseMode(self.plotWid.getViewBox().PanMode)
+        self.plotWid.getPlotItem().enableAutoRange()
+            
+class KPlotWidget(pg.PlotWidget):
+    def __init__(self, *args, **kwargs):
+        super(KPlotWidget, self).__init__(*args, **kwargs)
+        
+        self.dataItem = pg.PlotDataItem(pen=(0,4), clear=True, _callSync='off')
+        self.addItem(self.dataItem)
+            
+# https://gist.github.com/friendzis/4e98ebe2cf29c0c2c232
+class TimeAxisItem(pg.AxisItem):
+    def __init__(self, *args, **kwargs):
+        super(TimeAxisItem, self).__init__(*args, **kwargs)
+
+    def tickStrings(self, values, scale, spacing):
+        return [datetime.datetime.fromtimestamp(value).strftime('%H:%M:%S') for value in values]
+        
             
