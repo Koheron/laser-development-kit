@@ -114,13 +114,26 @@ class ConnectWidget(QtGui.QWidget):
             self.connection_info.setText('Connecting to '+self.host+' ...')
             if self.client.is_connected:
                 self.connection_info.setText('Connected to '+self.host)
-                self.is_connected = True
+                self.password = str(self.password_widget.text())
+                
+                try:
+                    self.ssh = ZynqSSH(self.host, self.password)
+                except:
+                    if not self.password:
+                        self.connection_info.setText('Please enter password')
+                    else:
+                        self.connection_info.setText('Cannot open SSH connection\nCheck password')
+                        
+                    self.is_connected = False
+                    self.connect_button.setStyleSheet('QPushButton {color: green;}')
+                    self.connect_button.setText('Connect')
+                    self.parent.disconnected()
+                    return
+                     
+                self.is_connected = True   
                 self.connect_button.setStyleSheet('QPushButton {color: red;}')
                 self.connect_button.setText('Disconnect')
                 self.parent.connected()
-                self.password = str(self.password_widget.text())
-                self.ssh = ZynqSSH(self.host, self.password)
-
             else:
                 self.connection_info.setText('Failed to connect to '+self.host)
                 

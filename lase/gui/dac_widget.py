@@ -50,8 +50,11 @@ class DacWidget(QtGui.QWidget):
         # Waveform list
         self.waveform_list = WaveformList()  
         # Sliders
-        self.freq_slider = KoheronSlider(name = 'Modulation frequency (MHz)           ', max_slider = 1e-6*self.fs/2, step = 1e-6*self.fs/self.n, alpha = 1)
-        self.mod_amp_slider = KoheronSlider(name = 'Modulation amplitude (arb. units.) ', max_slider = 1)
+        self.freq_slider = KoheronSlider(name = 'Modulation frequency (MHz)           ', 
+                                         max_slider = 1e-6*self.fs/2, 
+                                         step = 1e-6*self.fs/self.n, alpha = 1)
+        self.mod_amp_slider = KoheronSlider(name = 'Modulation amplitude (arb. units.) ', 
+                                            max_slider = 1)
         # Add Widgets to Layout
         self.layout.addWidget(self.button)
         self.slider_layout.addWidget(self.mod_amp_slider)
