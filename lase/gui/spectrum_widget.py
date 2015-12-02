@@ -50,7 +50,7 @@ class SpectrumWidget(LaseWidget):
         self.lidar_widget.update(self.velocity)
         
         if self.lidar_widget.velocity_plot_button.text() == 'Plot spectrum':
-            self.plotWid.dataItem.setData(np.arange(100), 
+            self.plotWid.dataItem.setData(np.arange(1000), 
                                           self.lidar_widget.velocities, clear=True)
         else:
             self.plotWid.dataItem.setData(1e-6 * np.fft.fftshift(self.driver.sampling.f_fft), 
@@ -62,8 +62,8 @@ class SpectrumWidget(LaseWidget):
         pass
     
     def set_axis(self):
-        self.plotWid.getPlotItem().getAxis('bottom').setLabel('Frequency (MHz)')
-        self.plotWid.getPlotItem().getAxis('left').setLabel('PSD')
+#        self.plotWid.getPlotItem().getAxis('bottom').setLabel('Frequency (MHz)')
+#        self.plotWid.getPlotItem().getAxis('left').setLabel('PSD')
         self.plotWid.getPlotItem().setMouseEnabled(x=False, y = True)
         self.plotWid.getViewBox().setMouseMode(self.plotWid.getViewBox().PanMode)
 
