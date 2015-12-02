@@ -29,8 +29,8 @@ class LidarWidget(QtGui.QWidget):
         
         self.velocity_plot_button.clicked.connect(self.plot_velocity)
         
-        self.velocities = np.zeros(100)
-        self.times = np.zeros(100)
+        self.velocities = np.zeros(1000)
+        self.times = np.zeros(1000)
         
     def update(self, velocity = 0):
         self.velocity_label.setText('Velocity (m/s) : '+"{:.2f}".format(velocity))

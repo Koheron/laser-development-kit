@@ -21,8 +21,7 @@ class DevMem:
         self.client.send_command(self.ref['id'], self.ref['open'])
 
     def add_memory_map(self, device_addr, map_size):
-        """
-        Add memory map
+        """ Add a memory map
 
         Args:
             device_addr: Physical address of the device
@@ -36,8 +35,7 @@ class DevMem:
 
 
     def rm_memory_map(self, mmap_idx):
-        """
-        Remove a memory map
+        """ Remove a memory map
 
         Args:
             mmap_idx: Index of Memory Map
@@ -45,8 +43,7 @@ class DevMem:
         self.client.send_command(self.ref['id'], self.ref['rm_memory_map'], mmap_idx)
 
     def read(self, mmap_idx, offset):
-        """
-        Read a register
+        """ Read a register
 
         Args:
             mmap_idx: Index of Memory Map
@@ -59,8 +56,7 @@ class DevMem:
         return self.client.recv_int(4)
 
     def write(self, mmap_idx, offset, reg_val):
-        """
-        Write a register
+        """ Write a register
 
         Args:
             mmap_idx: Index of Memory Map
@@ -70,8 +66,7 @@ class DevMem:
         self.client.send_command(self.ref['id'], self.ref['write'], mmap_idx, offset, reg_val)
 
     def write_buffer(self, mmap_idx, offset, data):
-        """
-        Write a buffer of registers
+        """ Write a buffer of registers
 
         Args:
             mmap_idx: Index of Memory Map
@@ -83,8 +78,7 @@ class DevMem:
         self.client.send_handshaking(data)
 
     def read_buffer(self, mmap_idx, offset, buff_size, data_type = 'uint32'):
-        """
-        Read a buffer of registers
+        """ Read a buffer of registers
 
         Args:
             mmap_idx: Index of Memory Map
@@ -96,8 +90,7 @@ class DevMem:
         return self.client.recv_buffer(buff_size, data_type)
 
     def set_bit(self, mmap_idx, offset, index):
-        """
-        Set a bit (bit = 1)
+        """ Set a bit (bit = 1)
 
         Args:
             mmap_idx: Index of Memory Map
@@ -107,8 +100,7 @@ class DevMem:
         self.client.send_command(self.ref['id'], self.ref['set_bit'], mmap_idx, offset, index)
 
     def clear_bit(self, mmap_idx, offset, index):
-        """
-        Clear a bit (bit = 0)
+        """ Clear a bit (bit = 0)
 
         Args:
             mmap_idx: Index of Memory Map
@@ -118,8 +110,7 @@ class DevMem:
         self.client.send_command(self.ref['id'], self.ref['clear_bit'], mmap_idx, offset, index)
 
     def toggle_bit(self, mmap_idx, offset, index):
-        """
-        Toggle the value of a bit
+        """ Toggle the value of a bit
 
         Args:
             mmap_idx: Index of Memory Map

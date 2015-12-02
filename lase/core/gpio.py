@@ -1,6 +1,5 @@
 class Gpio():
-    """
-    @brief GPIO driver
+    """ GPIO driver
     http://www.xilinx.com/support/documentation/ip_documentation/axi_gpio/v2_0/pg144-axi-gpio.pdf
     http://stackoverflow.com/questions/47981/how-do-you-set-clear-and-toggle-a-single-bit-in-c-c
     """
@@ -14,44 +13,39 @@ class Gpio():
         if channel == 2:
             offset = 8
         else:
-            offset = 0        
-        old_value = self.dvm.read(self.dev_num, offset)
-        new_value = old_value | (1 << index)
-        self.dvm.write(self.dev_num, offset, new_value)
+            offset = 0
+            
+        self.dvm.set_bit(self.dev_num, offset, index)
         
     def clear_bit(self, index, channel = 1):
         if channel == 2:
             offset = 8
         else:
-            offset = 0        
-        old_value = self.dvm.read(self.dev_num, offset)
-        new_value = old_value & ~(1 << index)
-        self.dvm.write(self.dev_num, offset, new_value)
+            offset = 0
+            
+        self.dvm.clear_bit(self.dev_num, offset, index)
         
     def toggle_bit(self, index, channel = 1):
         if channel == 2:
             offset = 8
         else:
-            offset = 0        
-        old_value = self.dvm.read(self.dev_num, offset)
-        new_value = old_value ^ (1 << index)
-        self.dvm.write(self.dev_num, offset, new_value)
+            offset = 0
+            
+        self.dvm.toggle_bit(self.dev_num, offset, index)
     
     def set_as_input(self, index, channel = 1):
         if channel == 2:
             offset = 12
         else:
-            offset = 4 
-        old_value = self.dvm.read(self.dev_num, offset)
-        new_value = old_value ^ (1 << index)
-        self.dvm.write(self.dev_num, offset, new_value)
+            offset = 4
+            
+        self.dvm.set_bit(self.dev_num, offset, index)
         
     def set_as_output(self, index, channel = 1):
         if channel == 2:
             offset = 12
         else:
             offset = 4 
-        old_value = self.dvm.read(self.dev_num, offset)
-        new_value = old_value & ~(1 << index)
-        self.dvm.write(self.dev_num, offset, new_value)
+        
+        self.dvm.clear_bit(self.dev_num, offset, index)
 
