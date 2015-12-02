@@ -3,8 +3,7 @@
 # (c) Koheron 2014-2015 
 
 class Xadc():
-    """
-    @brief XADC driver
+    """ XADC driver
     http://www.xilinx.com/support/documentation/ip_documentation/xadc_wiz/v3_0/pg091-xadc-wiz.pdf
     http://www.xilinx.com/support/documentation/user_guides/ug480_7Series_XADC.pdf
     """
