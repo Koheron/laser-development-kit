@@ -49,14 +49,13 @@ class SpectrumWidget(LaseWidget):
         self.velocity = self.lidar.get_velocity(self.driver.sampling.f_fft, self.spectrum)
         self.lidar_widget.update(self.velocity)
         
-        if self.lidar_widget.velocity_plot_button.text() == 'Plot spectrum':
+        if self.lidar_widget.is_velocity_plot:
             self.plotWid.dataItem.setData(np.arange(1000), 
                                           self.lidar_widget.velocities, clear=True)
         else:
             self.plotWid.dataItem.setData(1e-6 * np.fft.fftshift(self.driver.sampling.f_fft), 
                                           1e-15* np.fft.fftshift(self.spectrum), 
                                           pen=(0,4), clear=True, _callSync='off')
-            
         
     def refresh_dac(self):
         pass
