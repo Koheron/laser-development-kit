@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from pyqtgraph.Qt import QtCore, QtGui
-import pyqtgraph as pg
-import numpy as np
-import time
+from pyqtgraph.Qt import QtGui
 
 from kplot_widget import KPlotWidget
 from kplot_widget import TimeRollingPlot
-from kplot_widget import TimeAxisItem
 from ..signal import CoherentVelocimeter
 
 class LidarWidget(QtGui.QWidget):
