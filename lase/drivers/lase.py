@@ -81,10 +81,8 @@ class Lase(object):
         self.set_laser_current(0)
 
     def stop_laser(self):
-        """ Stop laser emission
-        """
-        # Laser enable pin on DIO7_P
-        self._gpio.set_bit(7, channel=2)
+        """ Stop laser emission """
+        self._gpio.set_bit(7, channel=2) # Laser enable pin on DIO7_P
 
     def get_laser_current(self):
         return self._xadc.read(self.laser_current_channel)
