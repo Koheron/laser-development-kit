@@ -1,6 +1,8 @@
 from pyqtgraph.Qt import QtCore, QtGui
 import pyqtgraph as pg
+import numpy as np
 import datetime as datetime
+import time
 
 class KPlotWidget(pg.PlotWidget):
     def __init__(self, *args, **kwargs):
@@ -15,9 +17,25 @@ class KPlotWidget(pg.PlotWidget):
         self.getPlotItem().enableAutoRange()
             
 class TimeRollingPlot(KPlotWidget):
-    def __init__(self, *args, **kwargs):
-        super(TimeRollingPlot, self).__init__(*args, 
-                      axisItems={'bottom': TimeAxisItem(orientation='bottom')}, **kwargs)
+    """ Time rolling plot
+    """
+    def __init__(self, n_pts=1000, *args, **kwargs):
+        super(TimeRollingPlot, self).__init__(
+                      *args, 
+                      axisItems={'bottom': TimeAxisItem(orientation='bottom')}, 
+                      **kwargs)
+                      
+        self.values = np.zeros(n_pts)
+        self.times = np.zeros(n_pts) + time.time()
+        
+    def update(self, value):
+        self.values = np.roll(self.values, -1)
+        self.values[-1] = value
+        
+        self.times = np.roll(self.times, -1)
+        self.times[-1] = time.time()
+        
+        self.dataItem.setData(self.times, self.values, clear=True)
 
 # https://gist.github.com/friendzis/4e98ebe2cf29c0c2c232
 class TimeAxisItem(pg.AxisItem):

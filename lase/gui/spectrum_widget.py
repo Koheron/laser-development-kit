@@ -34,11 +34,7 @@ class SpectrumWidget(LaseWidget):
         self.spectrum = self.driver.spectrum - self.calibration_widget.noise_floor
         self.lidar_widget.update(self.spectrum)
         
-        if self.lidar_widget.is_velocity_plot:
-            self.lidar_widget.plot_widget.dataItem.setData(
-                        self.lidar_widget.times,
-                        self.lidar_widget.velocities, clear=True)
-        else:
+        if not self.lidar_widget.is_velocity_plot:
             self.lidar_widget.plot_widget.dataItem.setData(
                         1e-6 * np.fft.fftshift(self.driver.sampling.f_fft), 
                         1e-15 * np.fft.fftshift(self.spectrum), 

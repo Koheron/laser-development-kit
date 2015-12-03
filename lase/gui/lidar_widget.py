@@ -42,9 +42,9 @@ class LidarWidget(QtGui.QWidget):
         self.velocity_plot_button.clicked.connect(self.plot_velocity)
         self.is_velocity_plot = False
         
-        self.velocities_plot_length = 1000
-        self.velocities = np.zeros(self.velocities_plot_length)
-        self.times = np.zeros(self.velocities_plot_length) + time.time()
+        self.rolling_time_plot = TimeRollingPlot()
+        self.rolling_time_plot.getPlotItem().getAxis('bottom').setLabel('Time')
+        self.rolling_time_plot.getPlotItem().getAxis('left').setLabel('Velocity (m/s)')
         
         self.lidar = CoherentVelocimeter()
         self.velocity = 0
@@ -52,39 +52,28 @@ class LidarWidget(QtGui.QWidget):
     def update(self, spectrum):
         self.velocity = self.lidar.get_velocity(self.driver.sampling.f_fft, spectrum)
         self.velocity_label.setText('Velocity (m/s) : '+"{:.2f}".format(self.velocity))
-        
-        self.velocities = np.roll(self.velocities, -1)
-        self.velocities[-1] = self.velocity
-        
-        self.times = np.roll(self.times, -1)
-        self.times[-1] = time.time()
+        self.rolling_time_plot.update(self.velocity)
         
     def plot_velocity(self):
-        if self.is_velocity_plot:
+        if self.is_velocity_plot: # switch to spectrum plot
             self.is_velocity_plot = False
             self.velocity_plot_button.setText('Velocity')
             
-            self.plot_widget.setParent(None)
-            self.plot_widget = KPlotWidget(name="data")
-            self.left_panel_layout.insertWidget(1, self.plot_widget, 1)
-            
+            self._replace_plot_widget(KPlotWidget(name="data"))
             self.plot_widget.getPlotItem().getAxis('bottom').setLabel('Frequency (MHz)')
             self.plot_widget.getPlotItem().getAxis('left').setLabel('PSD')
-        else: # spectrum_plot
+        else: # switch to velocity plot
             self.is_velocity_plot = True
             self.velocity_plot_button.setText('Spectrum')
-            
-            self.plot_widget.setParent(None)
-#            time_axis_item = TimeAxisItem(orientation='bottom')
-#            self.plot_widget = KPlotWidget(axisItems={'bottom': time_axis_item})
-            self.plot_widget = TimeRollingPlot()
-            self.left_panel_layout.insertWidget(1, self.plot_widget, 1)
-            self.plot_widget.getPlotItem().getAxis('bottom').setLabel('Time')
-            self.plot_widget.getPlotItem().getAxis('left').setLabel('Velocity (m/s)')
+            self._replace_plot_widget(self.rolling_time_plot)
             
         self.plot_widget.getPlotItem().enableAutoRange()
         self.plot_widget.set_axis()
         
+    def _replace_plot_widget(self, new_plot_widget):
+        self.plot_widget.setParent(None)
+        self.plot_widget = new_plot_widget
+        self.left_panel_layout.insertWidget(1, self.plot_widget, 1)
 
         
             
