@@ -105,8 +105,11 @@ class WelcomeWidget(QtGui.QWidget):
     def spectrum_on(self):
         if self.connect_widget.is_connected:
             time.sleep(0.01)
-            self.connect_widget.ssh.load_pl(
-                os.path.join(self.parent.bitstreams_path, 'spectrum.bit'))
+            bitstream_path = os.path.join(self.parent.bitstreams_path, 'spectrum.bit')
+            if not os.path.isfile(bitstream_path):
+                bitstream_url = 'https://github.com/Koheron/zynq-sdk/releases/download/v0.1-beta.3/spectrum.bit'
+                urllib.urlretrieve(bitstream_url, bitstream_path)
+            self.connect_widget.ssh.load_pl(bitstream_path)
             time.sleep(0.01)        
             driver = Spectrum(self.connect_widget.client, current_mode='pwm')
         else:
