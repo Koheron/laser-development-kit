@@ -6,13 +6,19 @@ import numpy as np
 import time
 
 from kplot_widget import KPlotWidget
+from kplot_widget import TimeRollingPlot
 from kplot_widget import TimeAxisItem
+from ..signal import CoherentVelocimeter
+
 
 class LidarWidget(QtGui.QWidget):
-    def __init__(self, left_panel_layout):
+    def __init__(self, left_panel_layout, driver):
         super(LidarWidget, self).__init__()
         self.left_panel_layout = left_panel_layout
-        self.plotWid = KPlotWidget(name="data")
+        self.driver = driver
+        
+        self.plot_widget = KPlotWidget(name="data")
+        self.plot_widget.set_axis()
 
         self.layout = QtGui.QVBoxLayout()    
         self.lidar_layout = QtGui.QVBoxLayout()
@@ -38,13 +44,17 @@ class LidarWidget(QtGui.QWidget):
         
         self.velocities_plot_length = 1000
         self.velocities = np.zeros(self.velocities_plot_length)
-        self.times = np.zeros(self.velocities_plot_length)
+        self.times = np.zeros(self.velocities_plot_length) + time.time()
         
-    def update(self, velocity = 0):
-        self.velocity_label.setText('Velocity (m/s) : '+"{:.2f}".format(velocity))
+        self.lidar = CoherentVelocimeter()
+        self.velocity = 0
+                
+    def update(self, spectrum):
+        self.velocity = self.lidar.get_velocity(self.driver.sampling.f_fft, spectrum)
+        self.velocity_label.setText('Velocity (m/s) : '+"{:.2f}".format(self.velocity))
         
         self.velocities = np.roll(self.velocities, -1)
-        self.velocities[-1] = velocity
+        self.velocities[-1] = self.velocity
         
         self.times = np.roll(self.times, -1)
         self.times[-1] = time.time()
@@ -54,29 +64,27 @@ class LidarWidget(QtGui.QWidget):
             self.is_velocity_plot = False
             self.velocity_plot_button.setText('Velocity')
             
-            self.plotWid.setParent(None)
-            self.plotWid = KPlotWidget(name="data")
-            self.left_panel_layout.insertWidget(1, self.plotWid, 1)
+            self.plot_widget.setParent(None)
+            self.plot_widget = KPlotWidget(name="data")
+            self.left_panel_layout.insertWidget(1, self.plot_widget, 1)
             
-            self.plotWid.getPlotItem().getAxis('bottom').setLabel('Frequency (MHz)')
-            self.plotWid.getPlotItem().getAxis('left').setLabel('PSD')
+            self.plot_widget.getPlotItem().getAxis('bottom').setLabel('Frequency (MHz)')
+            self.plot_widget.getPlotItem().getAxis('left').setLabel('PSD')
         else: # spectrum_plot
             self.is_velocity_plot = True
             self.velocity_plot_button.setText('Spectrum')
             
-            self.plotWid.setParent(None)
-            time_axis_item = TimeAxisItem(orientation='bottom')
-            self.plotWid = KPlotWidget(axisItems={'bottom': time_axis_item})
-            self.left_panel_layout.insertWidget(1, self.plotWid, 1)
-            self.plotWid.getPlotItem().getAxis('bottom').setLabel('Time')
-            self.plotWid.getPlotItem().getAxis('left').setLabel('Velocity (m/s)')
+            self.plot_widget.setParent(None)
+#            time_axis_item = TimeAxisItem(orientation='bottom')
+#            self.plot_widget = KPlotWidget(axisItems={'bottom': time_axis_item})
+            self.plot_widget = TimeRollingPlot()
+            self.left_panel_layout.insertWidget(1, self.plot_widget, 1)
+            self.plot_widget.getPlotItem().getAxis('bottom').setLabel('Time')
+            self.plot_widget.getPlotItem().getAxis('left').setLabel('Velocity (m/s)')
             
-        self.plotWid.getPlotItem().enableAutoRange()
-        self.set_axis()
+        self.plot_widget.getPlotItem().enableAutoRange()
+        self.plot_widget.set_axis()
         
-    def set_axis(self):
-        self.plotWid.getPlotItem().setMouseEnabled(x=False, y=True)
-        self.plotWid.getViewBox().setMouseMode(self.plotWid.getViewBox().PanMode)
-        self.plotWid.getPlotItem().enableAutoRange()
+
         
             
