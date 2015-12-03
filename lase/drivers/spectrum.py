@@ -15,14 +15,14 @@ class Spectrum(Lase):
         super(Spectrum, self).__init__(n, client, map_size = 4096, current_mode = 'pwm')   
                 
         # addresses
-        _spectrum_addr = int('0x40000000',0)
-        _demod_addr = int('0x42000000',0)
+        _spectrum_addr = int('0x42000000',0)
+        _demod_addr = int('0x44000000',0)
         # \end
         
         # offsets
-        self._subtract_mean_re_off = 16
-        self._subtract_mean_im_off = 20      
-        self._scale_sch_off = 24  
+        self._subtract_mean_re_off = 24
+        self._subtract_mean_im_off = 28
+        self._scale_sch_off = 32
 
         # Add memory maps
         self._spectrum = self.dvm.add_memory_map(_spectrum_addr, self.sampling.n/1024*map_size)
@@ -38,16 +38,16 @@ class Spectrum(Lase):
         self.set_offset(0)
 
         self.set_demod()
-        self.dvm.write(self._const_ip,self._scale_sch_off, 0)
+        self.dvm.write(self._config,self._scale_sch_off, 0)
         
         self.reset()
     
     def set_scale_sch(self, scale_sch):
-        self.dvm.write(self._const_ip,self._scale_sch_off, scale_sch)           
+        self.dvm.write(self._config,self._scale_sch_off, scale_sch)
            
     def set_offset(self, offset):
-        self.dvm.write(self._const_ip,self._subtract_mean_re_off, offset)
-        self.dvm.write(self._const_ip,self._subtract_mean_im_off, offset)    
+        self.dvm.write(self._config,self._subtract_mean_re_off, offset)
+        self.dvm.write(self._config,self._subtract_mean_im_off, offset)
 
     def set_demod(self, warning=False):
         if warning:
@@ -58,10 +58,10 @@ class Spectrum(Lase):
         self.dvm.write_buffer(self._demod, 0, demod_data_1 + 65536 * demod_data_2)
         
     def get_spectrum(self):
-        self.dvm.write(self._const_ip,self._trig_acq_off,1) 
+        self.dvm.set_bit(self._config, self._addr_off,1)
         time.sleep(0.001)
         self.spectrum = self.dvm.read_buffer(self._spectrum, 0, self.sampling.n, data_type='float32')
-        n_avg = self.dvm.read(self._const_ip,self._n_avg_off)
+        n_avg = self.dvm.read(self._status,self._n_avg1_off)
         self.spectrum = self.spectrum / np.float(n_avg)
-        self.dvm.write(self._const_ip,self._trig_acq_off,0)
+        self.dvm.clear_bit(self._config, self._addr_off,1)
         
