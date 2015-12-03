@@ -18,7 +18,7 @@ class SpectrumWidget(LaseWidget):
         self.driver.start_laser()
         
         self.spectrum_plot_widget = KPlotWidget(name="data") 
-        self.spectrum_plot_widget.getPlotItem().getAxis('bottom').setLabel('Frequency (MHz)')
+        self.spectrum_plot_widget.getPlotItem().getAxis('bottom').setLabel('Frequency', units='MHz')
         self.spectrum_plot_widget.getPlotItem().getAxis('left').setLabel('PSD')
             
         self.plot_widget = self.spectrum_plot_widget

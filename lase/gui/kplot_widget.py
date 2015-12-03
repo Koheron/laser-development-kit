@@ -17,8 +17,7 @@ class KPlotWidget(pg.PlotWidget):
         self.getPlotItem().enableAutoRange()
             
 class TimeRollingPlot(KPlotWidget):
-    """ Time rolling plot
-    """
+    """ Time rolling plot """
     def __init__(self, n_pts=1000, *args, **kwargs):
         super(TimeRollingPlot, self).__init__(
                       *args, 
@@ -39,8 +38,7 @@ class TimeRollingPlot(KPlotWidget):
 
 # https://gist.github.com/friendzis/4e98ebe2cf29c0c2c232
 class TimeAxisItem(pg.AxisItem):
-    """ Axis display time in H:M:S
-    """
+    """ Axis display time in H:M:S """
     def __init__(self, *args, **kwargs):
         super(TimeAxisItem, self).__init__(*args, **kwargs)
 

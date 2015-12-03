@@ -36,7 +36,7 @@ class LidarWidget(QtGui.QWidget):
         
         self.rolling_time_plot = TimeRollingPlot()
         self.rolling_time_plot.getPlotItem().getAxis('bottom').setLabel('Time')
-        self.rolling_time_plot.getPlotItem().getAxis('left').setLabel('Velocity (m/s)')
+        self.rolling_time_plot.getPlotItem().getAxis('left').setLabel('Velocity', units='m/s')
         
         self.lidar = CoherentVelocimeter()
         self.velocity = 0
