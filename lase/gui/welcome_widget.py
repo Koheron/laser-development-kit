@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 
-from pyqtgraph.Qt import QtGui, QtCore 
-from connect_widget import ConnectWidget
+from pyqtgraph.Qt import QtGui, QtCore
 from PyQt4.QtWebKit import QWebView
+import time
+import os
+import urllib
+import yaml
+
 from ..drivers import Oscillo, Spectrum
 from ..drivers import OscilloSimu, SpectrumSimu
 from oscillo_widget import OscilloWidget
 from spectrum_widget import SpectrumWidget
-import time
-import os
-import urllib
-
+from connect_widget import ConnectWidget
 
 class WelcomeWidget(QtGui.QWidget):
-    """
-    This widget allows to connect to one of the available drivers.
+    """ This widget allows to connect to one of the available drivers.
     
     Note:
         When the connection is established, the drivers are `Oscillo` and 
@@ -22,9 +22,11 @@ class WelcomeWidget(QtGui.QWidget):
         and `SpectrumSimu`). A web page is also displayed on the left side.
     
     """
-    
     def __init__(self, parent, ip_path):
         super(WelcomeWidget, self).__init__()
+        
+        with open('config.yaml') as config_file:
+            self.config = yaml.load(config_file)
         
         self.parent = parent
         self.ip_path = ip_path
@@ -68,7 +70,7 @@ class WelcomeWidget(QtGui.QWidget):
         # Connections
         self.oscillo_button.clicked.connect(self.oscillo_on)
         self.spectrum_button.clicked.connect(self.spectrum_on)
-       
+
     def update(self):
         pass
     
@@ -92,7 +94,7 @@ class WelcomeWidget(QtGui.QWidget):
             time.sleep(0.01)
             bitstream_path = os.path.join(self.parent.bitstreams_path, 'oscillo.bit')
             if not os.path.isfile(bitstream_path):
-                bitstream_url = 'https://github.com/Koheron/zynq-sdk/releases/download/v0.1-beta.3/oscillo.bit'
+                bitstream_url = self.config["bitstreams"]["oscillo_url"]
                 urllib.urlretrieve(bitstream_url, bitstream_path)
             self.connect_widget.ssh.load_pl(bitstream_path)
             time.sleep(0.01)        
@@ -105,8 +107,11 @@ class WelcomeWidget(QtGui.QWidget):
     def spectrum_on(self):
         if self.connect_widget.is_connected:
             time.sleep(0.01)
-            self.connect_widget.ssh.load_pl(
-                os.path.join(self.parent.bitstreams_path, 'spectrum.bit'))
+            bitstream_path = os.path.join(self.parent.bitstreams_path, 'spectrum.bit')
+            if not os.path.isfile(bitstream_path):
+                bitstream_url = self.config["bitstreams"]["spectrum_url"]
+                urllib.urlretrieve(bitstream_url, bitstream_path)
+            self.connect_widget.ssh.load_pl(bitstream_path)
             time.sleep(0.01)        
             driver = Spectrum(self.connect_widget.client, current_mode='pwm')
         else:
