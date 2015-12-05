@@ -8,10 +8,16 @@ from lase_widget import LaseWidget
 from cursor_widget import CursorWidget
 from noise_floor_widget import NoiseFloorWidget
 from lidar_widget import LidarWidget
+from koheron_slider import KoheronSlider
+
+from PyQt4.QtCore import SIGNAL, pyqtSignal
 
 from ..signal import CoherentVelocimeter
 
 class SpectrumWidget(LaseWidget):
+
+    offset_updated_signal = pyqtSignal(int)
+
     def __init__(self, spectrum, parent):
         super(SpectrumWidget, self).__init__(spectrum, parent)
         
@@ -34,6 +40,18 @@ class SpectrumWidget(LaseWidget):
         self.lidar_widget = LidarWidget(self.plotWid)
         self.splitterV_1.addWidget(self.lidar_widget)
         
+        # Config widget
+        self.offset_real_slider = KoheronSlider(step=1, min_slider = -16384, max_slider = 16383)
+        self.offset_imag_slider = KoheronSlider(step=1, min_slider = -16384, max_slider = 16383)
+        self.scale_slider = KoheronSlider(step=1, min_slider = 0, max_slider = 4095)
+        self.splitterV_1.addWidget(self.offset_real_slider)
+        self.splitterV_1.addWidget(self.offset_imag_slider)
+        self.splitterV_1.addWidget(self.scale_slider)
+
+        self.connect(self.offset_real_slider,SIGNAL("value(float)"), self.change_offset_real)
+        self.connect(self.offset_imag_slider,SIGNAL("value(float)"), self.change_offset_imag)
+        self.connect(self.scale_slider,SIGNAL("value(float)"), self.change_scale)
+
         self.splitterV_1.addStretch(1)
         self.right_panel_widget.setLayout(self.splitterV_1)        
         self.left_panel_layout.insertWidget(1, self.plotWid, 1)
@@ -66,6 +84,18 @@ class SpectrumWidget(LaseWidget):
 #        self.plotWid.getPlotItem().getAxis('left').setLabel('PSD')
         self.plotWid.getPlotItem().setMouseEnabled(x=False, y = True)
         self.plotWid.getViewBox().setMouseMode(self.plotWid.getViewBox().PanMode)
+
+    def change_offset_real(self, value):
+        self.driver.set_offset_real(value)
+        print value
+
+    def change_offset_imag(self, value):
+        self.driver.set_offset_imag(value)
+        print value
+
+    def change_scale(self, value):
+        self.driver.set_scale_sch(value)
+        print value
 
 class KPlotWidget(pg.PlotWidget):
     def __init__(self, *args, **kwargs):

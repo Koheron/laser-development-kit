@@ -31,14 +31,14 @@ class Spectrum(Lase):
         self.spectrum = np.zeros(self.sampling.n, dtype=np.float32)
         self.demod = np.zeros((2,self.sampling.n))
         
-        #demod = np.exp(2*np.pi*1j*self.fs/8*self.t)       
-        self.demod[0,:] = 0.49 * (1-np.cos(2*np.pi*np.arange(self.sampling.n)/self.sampling.n))   #0.5*np.real(demod) 
+        self.demod[0,:] = 0.49 * (1- np.cos(2*np.pi*np.arange(self.sampling.n)/self.sampling.n))   #0.5*np.real(demod) 
         self.demod[1,:] = 0#0.5*np.imag(demod)
-        
-        self.set_offset(0)
+
+        self.set_offset_real(-199)
+        self.set_offset_real(-21)
 
         self.set_demod()
-        self.dvm.write(self._config,self._scale_sch_off, 0)
+        self.dvm.write(self._config, self._scale_sch_off, 427)
         
         self.reset()
     
@@ -47,6 +47,12 @@ class Spectrum(Lase):
            
     def set_offset(self, offset):
         self.dvm.write(self._config,self._subtract_mean_re_off, offset)
+        self.dvm.write(self._config,self._subtract_mean_im_off, offset)
+
+    def set_offset_real(self, offset):
+        self.dvm.write(self._config,self._subtract_mean_re_off, offset)
+
+    def set_offset_imag(self, offset):
         self.dvm.write(self._config,self._subtract_mean_im_off, offset)
 
     def set_demod(self, warning=False):
