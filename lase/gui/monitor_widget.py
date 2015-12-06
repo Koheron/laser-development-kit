@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from pyqtgraph.Qt import QtGui
+import numpy as np
 
 class MonitorWidget(QtGui.QWidget):
 
-    def __init__(self, driver):
+    def __init__(self, driver, laser_widget):
         super(MonitorWidget, self).__init__()
-        self.driver = driver        
+        self.driver = driver
+        self.laser_widget = laser_widget        
         
         # Layout
         self.layout = QtGui.QHBoxLayout()
@@ -48,5 +50,12 @@ class MonitorWidget(QtGui.QWidget):
         self.frame_rate_label.setText('Frame rate (Hz) : '+"{:.2f}".format(frame_rate))
         
     def close_session(self):
+        # Ramp down smoothly laser power
+        current_ramp = np.linspace(self.laser_widget.laser_current, 0, 20)
+        
+        for current in current_ramp:
+            self.driver.set_laser_current(current)
+        
+        self.laser_widget.stop_laser()
         self.driver.opened = False
 

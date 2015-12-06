@@ -31,16 +31,14 @@ class LaseWidget(QtGui.QWidget):
   
         # Layout
         self.init_layout()
-        
-        # Monitor widget
-        self.monitor_widget = MonitorWidget(self. driver)
-
-        # Plot widget   
 
         # Laser Widget
         self.laser_widget = LaserWidget(self.driver)       
         self.laser_box = QtGui.QGroupBox("Laser control")
         self.laser_box.setLayout(self.laser_widget.layout)
+        
+        # Monitor widget
+        self.monitor_widget = MonitorWidget(self.driver, self.laser_widget)
 
         # DAC Widgets
         self.dac_tabs = QtGui.QTabWidget()
