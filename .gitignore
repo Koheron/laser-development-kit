@@ -2,6 +2,7 @@
 
 *.md~
 *.yml~
+*.yaml~
 *.tex~
 *.qrc~ 
 .gitignore~

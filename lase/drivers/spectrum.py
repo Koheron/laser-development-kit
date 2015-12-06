@@ -5,11 +5,8 @@ import time
 import numpy as np
 from lase import Lase
 
-
 class Spectrum(Lase):
-    """ Driver for the spectrum bitstream
-    """
-    
+    """ Driver for the spectrum bitstream """ 
     def __init__(self, client, map_size = 4096, verbose = False, current_mode = 'pwm'): 
         n = 4096
         super(Spectrum, self).__init__(n, client, map_size = 4096, current_mode = 'pwm')   
@@ -17,7 +14,6 @@ class Spectrum(Lase):
         # addresses
         _spectrum_addr = int('0x42000000',0)
         _demod_addr = int('0x44000000',0)
-        # \end
         
         # offsets
         self._subtract_mean_off = 24
@@ -64,8 +60,7 @@ class Spectrum(Lase):
         self.dvm.set_bit(self._config, self._addr_off,1)
         time.sleep(0.001)
         self.spectrum = self.dvm.read_buffer(self._spectrum, 0, self.sampling.n, data_type='float32')
-        n_avg = self.dvm.read(self._status,self._n_avg1_off)
-        print n_avg
+        n_avg = self.dvm.read(self._status, self._n_avg1_off)
         self.spectrum = self.spectrum / np.float(n_avg)
         self.spectrum[1] = 1
         self.dvm.clear_bit(self._config, self._addr_off,1)
