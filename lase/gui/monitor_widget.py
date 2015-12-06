@@ -2,6 +2,7 @@
 
 from pyqtgraph.Qt import QtGui
 import numpy as np
+import time
 
 class MonitorWidget(QtGui.QWidget):
 
@@ -55,6 +56,7 @@ class MonitorWidget(QtGui.QWidget):
         
         for current in current_ramp:
             self.driver.set_laser_current(current)
+            time.sleep(0.05)
         
         self.laser_widget.stop_laser()
         self.driver.opened = False
