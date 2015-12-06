@@ -1,6 +1,6 @@
-# python-api
+# laser-development-kit
 
-[![Join the chat at https://gitter.im/Koheron/python-api](https://img.shields.io/badge/GITTER-join%20chat-green.svg)](https://gitter.im/Koheron/python-api?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Circle CI](https://circleci.com/gh/Koheron/python-api.svg?style=shield)](https://circleci.com/gh/Koheron/python-api)
+[![Join the chat at https://gitter.im/Koheron/laser-development-kit](https://img.shields.io/badge/GITTER-join%20chat-green.svg)](https://gitter.im/Koheron/laser-development-kit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Circle CI](https://circleci.com/gh/Koheron/laser-development-kit.svg?style=shield)](https://circleci.com/gh/Koheron/laser-development-kit)
 
 #### `Python API for Koheron Laser Development Kit`
 
@@ -66,9 +66,9 @@ driver.close()
 
 ### Installation
 
-Get [latest release](https://github.com/Koheron/python-api/releases) of SD card image `lase.img`.
+Get [latest release](https://github.com/Koheron/zynq-sdk/releases) of SD card image.
 
 ## Copyright
 
-Copyright 2015 Koheron SAS. The code is released under [the MIT licence](https://github.com/Koheron/python-api/blob/master/LICENSE).
+Copyright 2015 Koheron SAS. The code is released under [the MIT licence](https://github.com/Koheron/laser-development-kit/blob/master/LICENSE).
 
