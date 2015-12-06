@@ -9,8 +9,14 @@ from lase_widget import LaseWidget
 from cursor_widget import CursorWidget
 from noise_floor_widget import NoiseFloorWidget
 from lidar_widget import LidarWidget
+from koheron_slider import KoheronSlider
+
+from PyQt4.QtCore import SIGNAL, pyqtSignal
 
 class SpectrumWidget(LaseWidget):
+
+    offset_updated_signal = pyqtSignal(int)
+
     def __init__(self, spectrum, parent):
         super(SpectrumWidget, self).__init__(spectrum, parent)
         
@@ -32,6 +38,7 @@ class SpectrumWidget(LaseWidget):
         self.splitterV_1.addWidget(self.cursor_widget)
         self.splitterV_1.addWidget(self.calibration_widget)
         self.splitterV_1.addWidget(self.lidar_widget)
+
         self.splitterV_1.addStretch(1)
         self.right_panel_widget.setLayout(self.splitterV_1)
         self.left_panel_layout.insertWidget(1, self.plot_widget, 1)
@@ -39,6 +46,7 @@ class SpectrumWidget(LaseWidget):
     def update(self):
         super(SpectrumWidget, self).update()
         self.driver.get_spectrum()
+
         self.spectrum = self.driver.spectrum - self.calibration_widget.noise_floor
         self.lidar_widget.update(self.spectrum)
         
@@ -52,3 +60,4 @@ class SpectrumWidget(LaseWidget):
         self.plot_widget.setParent(None)
         self.plot_widget = new_plot_widget
         self.left_panel_layout.insertWidget(1, self.plot_widget, 1)
+

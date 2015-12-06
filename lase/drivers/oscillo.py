@@ -56,11 +56,11 @@ class Oscillo(Lase):
     def set_averaging(self, avg_on, reset=True):
         self.avg_on = avg_on
         if self.avg_on:
-            self.dvm.clear_bit(self._config, self._avg1_off,13)
-            self.dvm.clear_bit(self._config, self._avg2_off,13)
+            self.dvm.clear_bit(self._config, self._avg1_off,0)
+            self.dvm.clear_bit(self._config, self._avg2_off,0)
         else:
-            self.dvm.set_bit(self._config, self._avg1_off,13)
-            self.dvm.set_bit(self._config, self._avg2_off,13)
+            self.dvm.set_bit(self._config, self._avg1_off,0)
+            self.dvm.set_bit(self._config, self._avg2_off,0)
 
     def get_adc(self):
         self.dvm.set_bit(self._config, self._addr_off,1) 
