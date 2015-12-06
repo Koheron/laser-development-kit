@@ -56,7 +56,7 @@ class SpectrumWidget(LaseWidget):
                         1e-15 * np.fft.fftshift(self.spectrum), 
                         pen=(0,4), clear=True, _callSync='off')
         
-    def replace_plot_widget(self, new_plot_widget):
+    def set_plot_widget(self, new_plot_widget):
         self.plot_widget.setParent(None)
         self.plot_widget = new_plot_widget
         self.left_panel_layout.insertWidget(1, self.plot_widget, 1)

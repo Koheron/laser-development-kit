@@ -16,7 +16,7 @@ class KPlotWidget(pg.PlotWidget):
         self.getViewBox().setMouseMode(self.getViewBox().PanMode)
         self.getPlotItem().enableAutoRange()
             
-class TimeRollingPlot(KPlotWidget):
+class TimeRollingPlot(pg.PlotWidget):
     """ Time rolling plot """
     def __init__(self, n_pts=1000, *args, **kwargs):
         super(TimeRollingPlot, self).__init__(
@@ -24,8 +24,15 @@ class TimeRollingPlot(KPlotWidget):
                       axisItems={'bottom': TimeAxisItem(orientation='bottom')}, 
                       **kwargs)
                       
+        self.dataItem = pg.PlotDataItem(pen=(0,4), clear=True, _callSync='off')
+        self.addItem(self.dataItem)
+                      
         self.values = np.zeros(n_pts)
         self.times = np.zeros(n_pts) + time.time()
+        
+    def set_axis(self):
+        self.getPlotItem().setMouseEnabled(x=False, y=False)
+        self.getPlotItem().enableAutoRange()
         
     def update(self, value):
         self.values = np.roll(self.values, -1)
@@ -35,6 +42,7 @@ class TimeRollingPlot(KPlotWidget):
         self.times[-1] = time.time()
         
         self.dataItem.setData(self.times, self.values, clear=True)
+        self.getViewBox().setXRange(self.times[0], self.times[-1])
 
 # https://gist.github.com/friendzis/4e98ebe2cf29c0c2c232
 class TimeAxisItem(pg.AxisItem):

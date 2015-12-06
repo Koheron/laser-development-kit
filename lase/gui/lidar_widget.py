@@ -37,6 +37,7 @@ class LidarWidget(QtGui.QWidget):
         self.rolling_time_plot = TimeRollingPlot()
         self.rolling_time_plot.getPlotItem().getAxis('bottom').setLabel('Time')
         self.rolling_time_plot.getPlotItem().getAxis('left').setLabel('Velocity', units='m/s')
+        self.rolling_time_plot.set_axis()
         
         self.lidar = CoherentVelocimeter()
         self.velocity = 0
@@ -51,11 +52,12 @@ class LidarWidget(QtGui.QWidget):
             self.is_velocity_plot = False
             self.velocity_plot_button.setText('Velocity')
             
-            self.spectrum_widget.replace_plot_widget(self.spectrum_widget.spectrum_plot_widget)
+            self.spectrum_widget.set_plot_widget(self.spectrum_widget.spectrum_plot_widget)
+            self.rolling_time_plot.set_axis()
         else: # switch to velocity plot
             self.is_velocity_plot = True
             self.velocity_plot_button.setText('Spectrum')
-            self.spectrum_widget.replace_plot_widget(self.rolling_time_plot)
+            self.spectrum_widget.set_plot_widget(self.rolling_time_plot)
             
         self.spectrum_widget.plot_widget.getPlotItem().enableAutoRange()
         self.spectrum_widget.plot_widget.set_axis()
