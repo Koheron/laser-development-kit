@@ -77,7 +77,9 @@ class KClient:
            
         if type(port) != int:
             raise TypeError("Port number must be an integer")
-            
+
+        self.host = host
+        self.port = port
         self.verbose = verbose
         self.is_connected = False
 

@@ -97,8 +97,9 @@ class WelcomeWidget(QtGui.QWidget):
                 bitstream_url = self.config["bitstreams"]["oscillo_url"]
                 urllib.urlretrieve(bitstream_url, bitstream_path)
             self.connect_widget.ssh.load_pl(bitstream_path)
-            time.sleep(0.01)        
+            time.sleep(0.01)
             driver = Oscillo(self.connect_widget.client, current_mode='pwm')
+            driver.set_led(driver.client.host.split('.')[-1])
         else:
             driver = OscilloSimu()
         index = self.parent.stacked_widget.addWidget(OscilloWidget(driver, self.parent))
@@ -112,8 +113,9 @@ class WelcomeWidget(QtGui.QWidget):
                 bitstream_url = self.config["bitstreams"]["spectrum_url"]
                 urllib.urlretrieve(bitstream_url, bitstream_path)
             self.connect_widget.ssh.load_pl(bitstream_path)
-            time.sleep(0.01)        
+            time.sleep(0.01)
             driver = Spectrum(self.connect_widget.client, current_mode='pwm')
+            driver.set_led(driver.client.host.split('.')[-1])
         else:
             driver = SpectrumSimu()
         index = self.parent.stacked_widget.addWidget(
