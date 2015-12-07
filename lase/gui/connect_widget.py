@@ -42,6 +42,7 @@ class ConnectWidget(QtGui.QWidget):
         self.lay_password.addWidget(QtGui.QLabel('Password:')) 
         self.password_widget = QtGui.QLineEdit()
         self.password_widget.setEchoMode(QtGui.QLineEdit.Password)
+        self.password_widget.setText('changeme')
         self.lay_password.addWidget(self.password_widget)
 
         self.connect_button = QtGui.QPushButton()
