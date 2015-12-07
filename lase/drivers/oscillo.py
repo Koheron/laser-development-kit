@@ -16,14 +16,12 @@ class Oscillo(Lase):
         super(Oscillo, self).__init__(n, client, map_size = 4096, 
                                       current_mode = 'pwm')
 
-        # \address
+        # Addresses of memory maps
         _adc_1_addr = int('0x42000000',0)
         _adc_2_addr = int('0x44000000',0)
-        # \end
         
-        # \offset
+        # Config offsets
         self._avg_off = 24   
-        # \end         
 
         # Add memory maps
         self._adc_1 = self.dvm.add_memory_map(_adc_1_addr, self.n/1024*map_size)
@@ -35,11 +33,11 @@ class Oscillo(Lase):
         self.spectrum = np.zeros((2,self.n/2))
         self.avg_spectrum = np.zeros((2,self.n/2))
         self.ideal_amplitude_waveform = np.zeros(self.n)
+        self.amplitude_transfer_function = np.ones(self.sampling.n, dtype=np.dtype('complex64'))
 
+        # Correction
         sigma_freq = 5e6 # Hz
         self.gaussian_filter = 1.0 * np.exp(-1.0*self.sampling.f_fft**2/(2*sigma_freq**2))
-
-        self.amplitude_transfer_function = np.ones(self.sampling.n, dtype=np.dtype('complex64'))
         
         # Calibration
         self.adc_offset = np.zeros(2)
@@ -105,7 +103,6 @@ class Oscillo(Lase):
             time.sleep(0.01)
             self.get_adc()
             self.amplitude_transfer_function += np.fft.fft(self.adc[channel_adc,:])/np.fft.fft(white_noise)
-            
         self.amplitude_transfer_function = self.amplitude_transfer_function/transfer_avg
         self.amplitude_transfer_function[0] = 1
         self.dac[channel_dac,:] = np.zeros(self.sampling.n)

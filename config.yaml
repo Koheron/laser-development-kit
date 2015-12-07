@@ -1,4 +1,4 @@
-# Interface configuration file
+# Configuration file
 
 bitstreams:
   oscillo_url: https://github.com/Koheron/zynq-sdk/releases/download/v0.1-beta.5/oscillo.bit
