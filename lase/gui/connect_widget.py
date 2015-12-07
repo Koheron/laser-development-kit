@@ -112,18 +112,10 @@ class ConnectWidget(QtGui.QWidget):
             
     def connect(self):
         if not self.is_connected:
-            self.client = KClient(self.host, verbose=True)
+            self.client = KClient(self.host, verbose=False)
 
             while (not self.client.is_connected):
                 time.sleep(0.015)
-#                time_cnt += 1
-#                
-#                if time_cnt > 1000:
-#                     break
-                
-#            if time_cnt > 1000:
-#                self.connection_info.setText('Connection failed')
-#                return
             
             self.connection_info.setText('Connecting to '+self.host+' ...')
             if self.client.is_connected:
