@@ -3,7 +3,6 @@
 from pyqtgraph.Qt import QtGui, QtCore
 import json, os
 import time
-
 from lase.core import ZynqSSH, KClient
 
 class ConnectWidget(QtGui.QWidget):
@@ -13,16 +12,11 @@ class ConnectWidget(QtGui.QWidget):
         self.parent = parent
         self.ip_path = ip_path
         self.host = ''
-        self.password = 'changeme'
-        
+        self.password = 'changeme'        
         self.is_connected = False
-        
-        self.lay = QtGui.QVBoxLayout()
-        
+       
+        # IP address
         self.lay_ip = QtGui.QHBoxLayout()
-        self.lay_password = QtGui.QHBoxLayout()
-        self.lay_connection = QtGui.QHBoxLayout()
-        
         self.line = []        
         for i in range(4):
             self.line.append(QtGui.QLineEdit()) 
@@ -39,31 +33,31 @@ class ConnectWidget(QtGui.QWidget):
             self.lay_ip.addWidget(self.point[i])
         self.lay_ip.addWidget(self.line[3])
         
+        # SSH password
+        self.lay_password = QtGui.QHBoxLayout()
         self.lay_password.addWidget(QtGui.QLabel('Password:')) 
         self.password_widget = QtGui.QLineEdit()
         self.password_widget.setEchoMode(QtGui.QLineEdit.Password)
         self.password_widget.setText('changeme')
         self.lay_password.addWidget(self.password_widget)
 
+        # Connect button and connection information
+        self.lay_connection = QtGui.QHBoxLayout()
         self.connect_button = QtGui.QPushButton()
         self.connect_button.setStyleSheet('QPushButton {color: green;}')
         self.connect_button.setText('Connect')
         self.connect_button.setFixedWidth(80)
-        
+        self.connection_info = QtGui.QLabel('')
         self.lay_connection.addWidget(self.connect_button)
-        
+        self.lay_connection.addWidget(self.connection_info)
+
+        # Add layouts to main layout
+        self.lay = QtGui.QVBoxLayout()
         self.lay.addLayout(self.lay_ip)
         self.lay.addLayout(self.lay_password)
-        
-        
-        self.connection_info = QtGui.QLabel('')
-        self.lay_connection.addWidget(self.connection_info)
-        
         self.lay.addLayout(self.lay_connection)
-        
-        
         self.setLayout(self.lay)
-        
+
         if not os.path.exists(self.ip_path):
             os.makedirs(self.ip_path)
             
