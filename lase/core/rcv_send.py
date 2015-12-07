@@ -35,7 +35,7 @@ def recv_n_bytes(sock, n_bytes):
         
     return ''.join(data)
 
-def recv_timeout(socket, escape_seq, timeout=1):   
+def recv_timeout(socket, escape_seq, timeout=5):   
     """
     Receive data until either an escape sequence
     is found or a timeout is exceeded

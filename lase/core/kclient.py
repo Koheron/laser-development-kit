@@ -240,13 +240,13 @@ class Commands:
     associated operations) available in KServer.
     """ 
     def __init__(self, client):
+        """ Receive and parse the commands description message sent by KServer
         """
-        Receive and parse the commands description message sent by KServer
-        """
-        sent = client.sock.send(make_command(1,1))
+        sent = client.sock.send(make_command(1,1))        
         
         if sent == 0:
             raise RuntimeError("Socket connection broken")
+            
             
         msg = recv_timeout(client.sock, 'EOC')
         lines = msg.split('\n')
