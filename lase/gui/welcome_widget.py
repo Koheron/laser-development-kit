@@ -88,15 +88,18 @@ class WelcomeWidget(QtGui.QWidget):
     def disconnected(self):
         self.oscillo_button.setText('Oscillo (Simu)')
         self.spectrum_button.setText('Spectrum (Simu)')
-        
+
+    def load_bitstream(self, bitstream_name):
+        bitstream_path = os.path.join(self.parent.bitstreams_path, bitstream_name+'.bit')
+        if not os.path.isfile(bitstream_path):
+            bitstream_url = self.config["bitstreams"][bitstream_name+"_url"]
+            urllib.urlretrieve(bitstream_url, bitstream_path)
+        self.connect_widget.ssh.load_pl(bitstream_path)
+
     def oscillo_on(self):
         if self.connect_widget.is_connected:
             time.sleep(0.01)
-            bitstream_path = os.path.join(self.parent.bitstreams_path, 'oscillo.bit')
-            if not os.path.isfile(bitstream_path):
-                bitstream_url = self.config["bitstreams"]["oscillo_url"]
-                urllib.urlretrieve(bitstream_url, bitstream_path)
-            self.connect_widget.ssh.load_pl(bitstream_path)
+            self.load_bitstream("oscillo")
             time.sleep(0.01)
             driver = Oscillo(self.connect_widget.client, current_mode='pwm')
             driver.set_led(driver.client.host.split('.')[-1])
@@ -104,15 +107,11 @@ class WelcomeWidget(QtGui.QWidget):
             driver = OscilloSimu()
         index = self.parent.stacked_widget.addWidget(OscilloWidget(driver, self.parent))
         self.parent.stacked_widget.setCurrentIndex(index)
-        
+
     def spectrum_on(self):
         if self.connect_widget.is_connected:
             time.sleep(0.01)
-            bitstream_path = os.path.join(self.parent.bitstreams_path, 'spectrum.bit')
-            if not os.path.isfile(bitstream_path):
-                bitstream_url = self.config["bitstreams"]["spectrum_url"]
-                urllib.urlretrieve(bitstream_url, bitstream_path)
-            self.connect_widget.ssh.load_pl(bitstream_path)
+            self.load_bitstream("spectrum")
             time.sleep(0.01)
             driver = Spectrum(self.connect_widget.client, current_mode='pwm')
             driver.set_led(driver.client.host.split('.')[-1])

@@ -25,10 +25,10 @@ class Lase(object):
         # Addresses of memory maps
         self._config_addr = int('0x60000000',0)
         self._status_addr = int('0x50000000',0)
-        self._dac_addr = int('0x40000000',0)
+        self._dac_addr    = int('0x40000000',0)
 
         # Config offsets
-        self._leds_off = 0
+        self._leds_off  = 0
         self._pwm0_off  = 4
         self._pwm1_off  = 8
         self._pwm2_off  = 12
@@ -54,7 +54,6 @@ class Lase(object):
         self.opened = True
 
         self.dac = np.zeros((2,self.sampling.n))
-        self.get_bitstream_id()
 
         self.laser_power_channel = 1
         self.laser_current_channel = 8

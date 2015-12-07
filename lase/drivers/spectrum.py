@@ -11,11 +11,11 @@ class Spectrum(Lase):
         n = 4096
         super(Spectrum, self).__init__(n, client, map_size = 4096, current_mode = 'pwm')   
                 
-        # addresses
+        # Addresses of memory maps
         _spectrum_addr = int('0x42000000',0)
         _demod_addr = int('0x44000000',0)
         
-        # offsets
+        # Config offsets
         self._subtract_mean_off = 24
         self._cfg_fft_off = 28
         self._demod_off = 32
