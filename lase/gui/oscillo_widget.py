@@ -19,69 +19,65 @@ class OscilloWidget(LaseWidget):
         
         self.driver = oscillo
         self.avg_on = False
-
         self.counter = 0
-        
         self.data_path = parent.data_path
-        
+
         # Layouts          
-        self.splitterV_1 = QtGui.QVBoxLayout() 
-        self.auto_scale_layout = QtGui.QHBoxLayout()
+        self.control_layout = QtGui.QVBoxLayout()        
         
-        self.tabs = QtGui.QTabWidget() 
-        self.control = QtGui.QWidget()
-        self.tabs.addTab(self.control,"Control")
-        
-        self.calibration_widget = CalibrationWidget(self.driver, 
-                                                    data_path=self.data_path)
-        self.tabs.addTab(self.calibration_widget,"Calibration")
-        
-        self.plotWid = KPlotWidget(self.driver, name="data")   
-        
-        # Widgets : Buttons, Sliders, PlotWidgets
-                
-        self.save_box = QtGui.QGroupBox("Save")
-        
-        self.auto_scale_button = QtGui.QPushButton('Auto scale')        
-        self.auto_scale_button.setStyleSheet('QPushButton {color: green;}')
-        self.auto_scale_button.setFixedWidth(312)
-      
-        # Add Widgets to layout
+        # Plot widget        
+        self.plotWid = KPlotWidget(self.driver, name="data")
         self.set_axis()
-        self.left_panel_layout.insertWidget(1, self.plotWid, 1)        
+        self.left_panel_layout.insertWidget(1, self.plotWid, 1)
+
+        # Tab widget 
+        self.tabs = QtGui.QTabWidget()
+        # Control
+        self.control = QtGui.QWidget()
+        self.tabs.addTab(self.control,"Control")        
+        # Calibration
+        self.calibration_widget = CalibrationWidget(self.driver, data_path=self.data_path)
+        self.tabs.addTab(self.calibration_widget,"Calibration")
+    
+        # Display
         self.select_channel_widget = SelectChannelWidget(self.plotWid)
         self.display_box = QtGui.QGroupBox("Display")
-        self.display_box.setLayout(self.select_channel_widget.layout)
-       
-        self.math_widget = MathWidget(self.driver, self.plotWid)
-        self.math_box = QtGui.QGroupBox("Math")
-        self.math_box.setLayout(self.math_widget.layout)
-        
-        self.stats_widget = StatsWidget(self.driver)
-        
-        
+        self.display_box.setLayout(self.select_channel_widget.layout)        
+        # Stats
+        self.stats_widget = StatsWidget(self.driver)        
+        # Cursors
         self.cursors_box = QtGui.QGroupBox('Cursors')
         self.cursor_widget = CursorWidget(self.plotWid)
         self.cursors_box.setLayout(self.cursor_widget.layout)
-        
-        # Save widget        
-        self.save_widget = SaveWidget(self)
-        self.save_box.setLayout(self.save_widget.layout)       
-        
+        # Autoscale
+        self.auto_scale_layout = QtGui.QHBoxLayout()
+        self.auto_scale_button = QtGui.QPushButton('Auto scale')        
+        self.auto_scale_button.setStyleSheet('QPushButton {color: green;}')
+        self.auto_scale_button.setFixedWidth(312)
         self.auto_scale_layout.addWidget(self.auto_scale_button, QtCore.Qt.AlignCenter)
-        self.splitterV_1.addWidget(self.display_box)
-        self.splitterV_1.addLayout(self.stats_widget.layout)
-        self.splitterV_1.addWidget(self.cursors_box)
-        self.splitterV_1.addLayout(self.auto_scale_layout)
-        self.splitterV_1.addWidget(self.math_box)
-        self.splitterV_1.addWidget(self.save_box)        
-        self.splitterV_1.addStretch(1)        
-        self.control.setLayout(self.splitterV_1)
+        # Math
+        self.math_widget = MathWidget(self.driver, self.plotWid)
+        self.math_box = QtGui.QGroupBox("Math")
+        self.math_box.setLayout(self.math_widget.layout)   
+        # Save
+        self.save_box = QtGui.QGroupBox("Save")
+        self.save_widget = SaveWidget(self)
+        self.save_box.setLayout(self.save_widget.layout)
+
+        # Add widgets to control layout
+        self.control_layout.addWidget(self.display_box)
+        self.control_layout.addLayout(self.stats_widget.layout)
+        self.control_layout.addWidget(self.cursors_box)
+        self.control_layout.addLayout(self.auto_scale_layout)
+        self.control_layout.addWidget(self.math_box)
+        self.control_layout.addWidget(self.save_box)
+        self.control_layout.addStretch(1)
+        self.control.setLayout(self.control_layout)
         
         self.right_panel.addWidget(self.tabs)
-
         self.right_panel_widget.setLayout(self.right_panel)
-        
+
+        # Connexions
         self.auto_scale_button.clicked.connect(self.auto_scale)
    
     def update(self):
@@ -90,13 +86,11 @@ class OscilloWidget(LaseWidget):
         self.stats_widget.update()
         
         if (self.counter == 20):
-            if self.math_widget.correction == True:            
+            if self.math_widget.correction == True:
                 self.driver.optimize_amplitude(channel = 1)
                 self.driver.set_dac(warning=True) 
-                self.refresh_dac() 
-                               
+                self.refresh_dac()
             self.counter = 0
-            
         self.counter += 1
 
         # This should be in the KPlotWidget class
@@ -157,18 +151,13 @@ class KPlotWidget(pg.PlotWidget):
         # Plot Widget   
         self.dataItem = []
         self.dataItem.append(pg.PlotDataItem(1e6*self.driver.sampling.t,
-                                             self.driver.adc[0,:], 
-                                             pen=(0,4)))
+                                             self.driver.adc[0,:], pen=(0,4)))
         self.dataItem.append(pg.PlotDataItem(1e6*self.driver.sampling.t,
-                                             self.driver.adc[1,:], 
-
-                                             pen=(1,4)))
+                                             self.driver.adc[1,:], pen=(1,4)))
         self.dataItem.append(pg.PlotDataItem(1e6*self.driver.sampling.t,
-                                             self.driver.dac[0,:], 
-                                             pen=(0,4)))
+                                             self.driver.dac[0,:], pen=(0,4)))
         self.dataItem.append(pg.PlotDataItem(1e6*self.driver.sampling.t,
-                                             self.driver.dac[1,:], 
-                                             pen=(1,4)))     
+                                             self.driver.dac[1,:], pen=(1,4)))
         
         for item in self.dataItem:
             self.addItem(item)
