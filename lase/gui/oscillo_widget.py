@@ -26,7 +26,7 @@ class OscilloWidget(LaseWidget):
         self.control_layout = QtGui.QVBoxLayout()        
         
         # Plot widget        
-        self.plotWid = KPlotWidget(self.driver, name="data")
+        self.plotWid = PlotWidget(self.driver, name="data")
         self.set_axis()
         self.left_panel_layout.insertWidget(1, self.plotWid, 1)
 
@@ -93,7 +93,7 @@ class OscilloWidget(LaseWidget):
             self.counter = 0
         self.counter += 1
 
-        # This should be in the KPlotWidget class
+        # This should be in the PlotWidget class
         if self.math_widget.fourier: 
             self.driver.get_avg_spectrum(self.math_widget.n_avg_spectrum)                      
             self.plotWid.dataItem[0].setData(
@@ -138,9 +138,9 @@ class OscilloWidget(LaseWidget):
         self.plotWid.enableAutoRange()
     
     
-class KPlotWidget(pg.PlotWidget):
+class PlotWidget(pg.PlotWidget):
     def __init__(self, driver, *args, **kwargs):
-        super(KPlotWidget, self).__init__(*args, **kwargs)
+        super(PlotWidget, self).__init__(*args, **kwargs)
         
         self.driver = driver
         

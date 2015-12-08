@@ -4,9 +4,9 @@ import numpy as np
 import datetime as datetime
 import time
 
-class KPlotWidget(pg.PlotWidget):
+class PlotWidget(pg.PlotWidget):
     def __init__(self, *args, **kwargs):
-        super(KPlotWidget, self).__init__(*args, **kwargs)
+        super(PlotWidget, self).__init__(*args, **kwargs)
         
         self.dataItem = pg.PlotDataItem(pen=(0,4), clear=True, _callSync='off')
         self.addItem(self.dataItem)

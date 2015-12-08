@@ -4,7 +4,7 @@ from .calibration_widget import CalibrationWidget
 from .cursor_widget import CursorWidget
 from .dac_widget import DacWidget
 from .lase_widget import LaseWidget
-from .koheron_slider import KoheronSlider
+from .slider_widget import SliderWidget
 from .oscillo_widget import OscilloWidget
 from .laser_widget import LaserWidget
 from .math_widget import MathWidget
@@ -19,7 +19,7 @@ __all__ = [ 'CalibrationWidget',
             'CursorWidget',
             'DacWidget',
             'LaseWidget',
-            'KoheronSlider',
+            'SliderWidget',
             'OscilloWidget',
             'LaserWidget',
             'MathWidget',

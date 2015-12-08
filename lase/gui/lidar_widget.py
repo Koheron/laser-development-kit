@@ -2,8 +2,8 @@
 
 from pyqtgraph.Qt import QtGui
 
-from kplot_widget import KPlotWidget
-from kplot_widget import TimeRollingPlot
+from plot_widget import PlotWidget
+from plot_widget import TimeRollingPlot
 from ..signal import CoherentVelocimeter
 
 class LidarWidget(QtGui.QWidget):
