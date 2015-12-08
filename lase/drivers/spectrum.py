@@ -23,7 +23,7 @@ class Spectrum(Lase):
 
         # Add memory maps
         self._spectrum = self.dvm.add_memory_map(_spectrum_addr, self.sampling.n/1024*map_size)
-#        self._demod = self.dvm.add_memory_map(_demod_addr, self.sampling.n/1024*map_size)
+        self._demod = self.dvm.add_memory_map(_demod_addr, self.sampling.n/1024*map_size)
 
         self.spectrum = np.zeros(self.sampling.n, dtype=np.float32)
         self.demod = np.zeros((2,self.sampling.n))
@@ -34,7 +34,7 @@ class Spectrum(Lase):
         self.set_offset(-199, -21)
         #self.set_offset(0, 0)
 
-#        self.set_demod()
+        self.set_demod()
 #        self.dvm.write(self._config, self._scale_sch_off, 427)
         
         self.reset()
@@ -45,16 +45,16 @@ class Spectrum(Lase):
     def set_offset(self, offset_real, offset_imag):
         self.dvm.write(self._config,self._subtract_mean_off, offset_real + 2**14 * offset_imag)
 
-    def set_demod(self):
-        self.dvm.write(self._config,self._demod_off, 8192 + 65356 * 8192)
+#    def set_demod(self):
+#        self.dvm.write(self._config,self._demod_off, 8192 + 65356 * 8192)
 
-#    def set_demod(self, warning=False):
-#        if warning:
-#            if np.max(np.abs(self.demod)) >= 1:
-#                print 'WARNING : dac out of bounds'
-#        demod_data_1 = np.mod(np.floor(8192*self.demod[0,:]) + 8192,16384)+8192
-#        demod_data_2 = np.mod(np.floor(8192*self.demod[1,:]) + 8192,16384)+8192
-#        self.dvm.write_buffer(self._demod, 0, demod_data_1 + 65536 * demod_data_2)
+    def set_demod(self, warning=False):
+        if warning:
+            if np.max(np.abs(self.demod)) >= 1:
+                print 'WARNING : dac out of bounds'
+        demod_data_1 = np.mod(np.floor(8192*self.demod[0,:]) + 8192,16384)+8192
+        demod_data_2 = np.mod(np.floor(8192*self.demod[1,:]) + 8192,16384)+8192
+        self.dvm.write_buffer(self._demod, 0, demod_data_1 + 65536 * demod_data_2)
         
     def get_spectrum(self):
         self.dvm.set_bit(self._config, self._addr_off,1)
