@@ -1,8 +1,3 @@
-# kclient.py
-# Initializes connection to KServer
-# Thomas Vanderbruggen <thomas@koheron.com>
-# (c) Koheron 2015
-
 import socket
 import struct
 from rcv_send import recv_timeout, recv_n_bytes, recv_buffer, send_handshaking

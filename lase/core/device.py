@@ -1,9 +1,3 @@
-# device.py
-# Base class for devices
-# Thomas Vanderbruggen <thomas@koheron.com>
-# (c) Koheron 2015
-
-
 from kclient import KClient, reference_dict
 
 # --------------------------------------------

@@ -1,7 +1,3 @@
-# xadc.py
-# Client API for the XADC device
-# (c) Koheron 2014-2015 
-
 class Xadc():
     """ XADC driver
     http://www.xilinx.com/support/documentation/ip_documentation/xadc_wiz/v3_0/pg091-xadc-wiz.pdf

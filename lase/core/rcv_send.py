@@ -1,8 +1,3 @@
-# rcv_send.py
-# Data reception and emission functions for KClient
-# Thomas Vanderbruggen <thomas@koheron.com>
-# (c) Koheron 2015
-
 import time
 import struct
 

@@ -1,8 +1,3 @@
-# zynq_ssh.py
-# SSH control of the Zynq#
-# Thomas Vanderbruggen <thomas@koheron.com>
-# (c) Koheron 2015
-
 """
 SSH control of the Zynq
 """
