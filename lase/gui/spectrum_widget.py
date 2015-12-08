@@ -4,7 +4,7 @@ import numpy as np
 from pyqtgraph.Qt import QtGui
 import pyqtgraph as pg
 
-from kplot_widget import KPlotWidget
+from plot_widget import PlotWidget
 from lase_widget import LaseWidget
 from cursor_widget import CursorWidget
 from noise_floor_widget import NoiseFloorWidget
@@ -26,7 +26,7 @@ class SpectrumWidget(LaseWidget):
         self.control_layout = QtGui.QVBoxLayout()
 
         # Plot widget
-        self.spectrum_plot_widget = KPlotWidget(name="data") 
+        self.spectrum_plot_widget = PlotWidget(name="data") 
         self.spectrum_plot_widget.getPlotItem().getAxis('bottom').setLabel('Frequency', units='MHz')
         self.spectrum_plot_widget.getPlotItem().getAxis('left').setLabel('PSD')
             
