@@ -1,12 +1,3 @@
-# __init__.py
-#
-# Init file for the Koheron API package
-#
-# Thomas Vanderbruggen <thomas.vanderbruggen@koheron.com>
-# Jean Minet <jean.minet@koheron.com>
-#
-# (c) Koheron 2015
-
 """koheron
 """
 
