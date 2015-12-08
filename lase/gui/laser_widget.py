@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from pyqtgraph.Qt import QtGui
-from koheron_slider import KoheronSlider
+from slider_widget import SliderWidget
 from PyQt4.QtCore import SIGNAL, pyqtSignal
 
 class LaserWidget(QtGui.QWidget):
@@ -25,7 +25,7 @@ class LaserWidget(QtGui.QWidget):
         self.on_button.setCheckable(True)
         self.on_button.setFixedWidth(80)        
         # Laser current slider
-        self.slider = KoheronSlider(name = 'Laser current (mA) : ', max_slider = self.driver.max_current)
+        self.slider = SliderWidget(name = 'Laser current (mA) : ', max_slider = self.driver.max_current)
         
         self.layout.addWidget(self.on_button,0)        
         self.layout.addWidget(self.slider)

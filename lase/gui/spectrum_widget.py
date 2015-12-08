@@ -9,7 +9,7 @@ from lase_widget import LaseWidget
 from cursor_widget import CursorWidget
 from noise_floor_widget import NoiseFloorWidget
 from lidar_widget import LidarWidget
-from koheron_slider import KoheronSlider
+from slider_widget import SliderWidget
 
 from PyQt4.QtCore import SIGNAL, pyqtSignal
 
