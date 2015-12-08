@@ -8,7 +8,7 @@ from dac_widget import DacWidget
 import os
 
 class LaseWidget(QtGui.QWidget):
-    """ This widget serves as the base widget for `OscilloWidget` and 
+    """ This widget serves as the base widget for `OscilloWidget` and
         `SpectrumWidget`.
     """
     
@@ -33,7 +33,7 @@ class LaseWidget(QtGui.QWidget):
         self.init_layout()
 
         # Laser Widget
-        self.laser_widget = LaserWidget(self.driver)       
+        self.laser_widget = LaserWidget(self.driver)
         self.laser_box = QtGui.QGroupBox("Laser control")
         self.laser_box.setLayout(self.laser_widget.layout)
         
@@ -59,10 +59,10 @@ class LaseWidget(QtGui.QWidget):
         self.right_panel_button.setIcon(self.right_arrow)
         self.right_panel_button.setIconSize(QtCore.QSize(30,30))
         
-        self.right_panel = QtGui.QVBoxLayout()         
+        self.right_panel = QtGui.QVBoxLayout()
         self.right_panel_widget = QtGui.QWidget()
         
-        self.lay.addLayout(self.left_panel_layout,1)        
+        self.lay.addLayout(self.left_panel_layout,1)
         self.lay.addWidget(self.right_panel_button)
         self.lay.addWidget(self.right_panel_widget)
                
@@ -73,7 +73,7 @@ class LaseWidget(QtGui.QWidget):
         self.lay = QtGui.QHBoxLayout()
         self.setLayout(self.lay)
         # Sub Layout
-        self.left_panel_layout = QtGui.QVBoxLayout()       
+        self.left_panel_layout = QtGui.QVBoxLayout()
 
     def update(self):
         self.driver.update() # Used in simulation
@@ -84,7 +84,7 @@ class LaseWidget(QtGui.QWidget):
         self.driver.set_dac()
         self.refresh_dac()
         
-    def refresh_dac():              
+    def refresh_dac(self):
         """ Abstract method, defined by convention only
         """
         raise NotImplementedError("Subclass must implement abstract method")
