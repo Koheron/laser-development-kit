@@ -85,9 +85,11 @@ class LaseWidget(QtGui.QWidget):
         self.refresh_dac()
         
     def refresh_dac(self):
-        """ Abstract method, defined by convention only
+        """ Refresh the DAC plots
+        
+            Abstract method, defined by convention only
         """
-        raise NotImplementedError("Subclass must implement abstract method")
+        pass
         
     def right_panel_connect(self):
         self.show_right_panel = not self.show_right_panel

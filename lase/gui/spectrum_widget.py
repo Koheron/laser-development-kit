@@ -2,16 +2,14 @@
 
 import numpy as np
 from pyqtgraph.Qt import QtGui
-import pyqtgraph as pg
 
 from plot_widget import PlotWidget
 from lase_widget import LaseWidget
 from cursor_widget import CursorWidget
 from noise_floor_widget import NoiseFloorWidget
 from lidar_widget import LidarWidget
-from slider_widget import SliderWidget
 
-from PyQt4.QtCore import SIGNAL, pyqtSignal
+from PyQt4.QtCore import pyqtSignal
 
 class SpectrumWidget(LaseWidget):
 
@@ -57,6 +55,7 @@ class SpectrumWidget(LaseWidget):
                         1e-6 * np.fft.fftshift(self.driver.sampling.f_fft),
                         1e-15 * np.fft.fftshift(self.spectrum),
                         pen=(0,4), clear=True, _callSync='off')
+        
         
     def set_plot_widget(self, new_plot_widget):
         self.plot_widget.setParent(None)
