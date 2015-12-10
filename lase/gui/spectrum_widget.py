@@ -57,6 +57,9 @@ class SpectrumWidget(LaseWidget):
                         1e-6 * np.fft.fftshift(self.driver.sampling.f_fft),
                         1e-15 * np.fft.fftshift(self.spectrum),
                         pen=(0,4), clear=True, _callSync='off')
+
+    def refresh_dac(self):
+        pass
         
     def set_plot_widget(self, new_plot_widget):
         self.plot_widget.setParent(None)
