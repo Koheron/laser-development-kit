@@ -66,7 +66,7 @@ driver.close()
 
 ### Installation
 
-Get [latest release](https://github.com/Koheron/zynq-sdk/releases/download/v0.1-beta.7/oscillo.img) of SD card image.
+Get [latest release](https://github.com/Koheron/zynq-sdk/releases/download/v0.1/oscillo.img) of SD card image.
 
 ## Copyright
 
