@@ -10,7 +10,7 @@
 On Windows, you can use [win32diskimager](http://sourceforge.net/projects/win32diskimager/) to burn the SD card.
 
 2) Insert the SD card on the Red Pitaya, then plug ethernet and power cables. 
-The last number of the board IP address is displayed on binary form on the 8 Red Pitaya LEDs for convenience.
+The last number of the board IP address is displayed on binary format on the 8 Red Pitaya LEDs for convenience.
 
 3) Make sure the following packages are installed:
 * Python 2.7
@@ -28,6 +28,10 @@ python interface.py
 You will need to enter the board IP adress and the root password (`changeme` by default) to connect to the board.
 
 ![Demo](https://cloud.githubusercontent.com/assets/1735094/9765362/317e8212-5714-11e5-8480-ab3e311260c9.gif)
+
+## Build your custom FPGA bitstream
+
+You can build custom bitstreams from the reference designs in the [zynq-sdk](https://github.com/Koheron/zynq-sdk) repository.
 
 ## Simulation mode
 
