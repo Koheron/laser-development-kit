@@ -4,25 +4,38 @@
 
 #### `Python API for Koheron Laser Development Kit`
 
-## Requirements
+## Installation
 
+1) Get [latest release](https://github.com/Koheron/zynq-sdk/releases/download/v0.1/oscillo.img) of SD card image.
+On Windows, you can use [win32diskimager](http://sourceforge.net/projects/win32diskimager/) to burn the SD card.
+
+2) Insert the SD card on the Red Pitaya, then plug ethernet and power cables. 
+The last number of the board IP address is displayed on binary format on the 8 Red Pitaya LEDs for convenience.
+
+3) Make sure the following packages are installed:
 * Python 2.7
 * PyQtGraph
 * PyQt or PySide 
 * Scipy
 * NumPy
 
-## Run demo
+4) Run demo:
 
 ```sh
 python interface.py
 ```
 
+You will need to enter the board IP adress and the root password (`changeme` by default) to connect to the board.
+
 ![Demo](https://cloud.githubusercontent.com/assets/1735094/9765362/317e8212-5714-11e5-8480-ab3e311260c9.gif)
 
-## Basic simulation example
+## Build your custom FPGA bitstream
 
-Python API can run in simulation mode i.e. without a board:
+You can build custom bitstreams from the reference designs in the [zynq-sdk](https://github.com/Koheron/zynq-sdk) repository.
+
+## Simulation mode
+
+The software can also run in simulation mode i.e. without a board:
 
 ```python
 from lase.drivers import OscilloSimu
@@ -61,12 +74,6 @@ driver.stop_laser()
 driver.close()
 
 ```
-
-## Control the laser
-
-### Installation
-
-Get [latest release](https://github.com/Koheron/zynq-sdk/releases/download/v0.1-beta.7/oscillo.img) of SD card image.
 
 ## Copyright
 
