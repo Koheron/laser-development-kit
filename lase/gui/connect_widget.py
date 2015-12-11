@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from pyqtgraph.Qt import QtGui, QtCore
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QApplication, QCursor
+
 import json, os
 import time
 from lase.core import ZynqSSH, KClient
@@ -107,12 +110,24 @@ class ConnectWidget(QtGui.QWidget):
             
     def connect(self):
         if not self.is_connected:
+            QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+            
             self.client = KClient(self.host, verbose=False)
 
-            while (not self.client.is_connected):
+            n_steps_timeout = 100
+            cnt_timeout = 0
+            while not self.client.is_connected:
                 time.sleep(0.015)
+                cnt_timeout += 1
+                
+                if cnt_timeout > n_steps_timeout:
+                    self.connection_info.setText('Failed to connect to host\nCheck IP address')
+                    self._set_disconnect()
+                    QApplication.restoreOverrideCursor()
+                    return
             
-            self.connection_info.setText('Connecting to '+self.host+' ...')
+            self.connection_info.setText('Connecting to ' + self.host + ' ...')
+            
             if self.client.is_connected:
                 self.connection_info.setText('Connected to '+self.host)
                 self.password = str(self.password_widget.text())
@@ -125,10 +140,8 @@ class ConnectWidget(QtGui.QWidget):
                     else:
                         self.connection_info.setText('Cannot open SSH connection\nCheck password')
                         
-                    self.is_connected = False
-                    self.connect_button.setStyleSheet('QPushButton {color: green;}')
-                    self.connect_button.setText('Connect')
-                    self.parent.disconnected()
+                    self._set_disconnect()
+                    QApplication.restoreOverrideCursor()
                     return
                      
                 self.is_connected = True   
@@ -138,13 +151,16 @@ class ConnectWidget(QtGui.QWidget):
             else:
                 self.connection_info.setText('Failed to connect to '+self.host)
                 
+            QApplication.restoreOverrideCursor()
+                
         else:
             if hasattr(self,'client'):
                 self.client.__del__()
             self.connection_info.setText('Disconnected')    
-            self.parent.disconnected()
-            self.connect_button.setStyleSheet('QPushButton {color: green;}')
-            self.connect_button.setText('Connect')
-            self.is_connected = False
+            self._set_disconnect()
         
-            
+    def _set_disconnect(self):
+        self.is_connected = False
+        self.connect_button.setStyleSheet('QPushButton {color: green;}')
+        self.connect_button.setText('Connect')
+        self.parent.disconnected()
