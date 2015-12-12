@@ -172,5 +172,3 @@ class PlotWidget(pg.PlotWidget):
         self.dataItem[3].setVisible(self.show_dac[1])
         
         self.plotItem = self.getPlotItem()
-        self.plotItem.setMouseEnabled(x=False, y = True)
-         
