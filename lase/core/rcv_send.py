@@ -20,13 +20,17 @@ def recv_n_bytes(sock, n_bytes):
     n_rcv = 0
     
     while n_rcv < n_bytes:
-        chunk = sock.recv(n_bytes - n_rcv)
-        
-        if chunk == '':
-            break
+        try:
+            chunk = sock.recv(n_bytes - n_rcv)
             
-        n_rcv = n_rcv + len(chunk)
-        data.append(chunk)
+            if chunk == '':
+                break
+                
+            n_rcv = n_rcv + len(chunk)
+            data.append(chunk)
+        except:
+            print "recv_n_bytes: sock.recv failed"
+            return ''
         
     return ''.join(data)
 
@@ -82,6 +86,11 @@ def recv_buffer(socket, buff_size, data_type = 'uint32'):
 #    buff = recv_n_bytes(socket, 4 * buff_size) # 4 = sizeof(uint32)
     np_dtype = np.dtype(data_type)
     buff = recv_n_bytes(socket, np_dtype.itemsize * buff_size)
+    
+    if buff == '':
+        print "recv_buffer: reception failed"
+        return np.zeros(buff_size)
+
     np_dtype = np_dtype.newbyteorder('<')
     data = np.frombuffer(buff, dtype = np_dtype)
     return data
