@@ -1,6 +1,6 @@
 import socket
 import struct
-import time 
+import time
 
 from rcv_send import recv_timeout, recv_n_bytes, recv_buffer, send_handshaking
 
@@ -131,14 +131,20 @@ class KClient:
                      send an message signaling an error occured and 
                      that no data can be retrieve.
         """
-        data_recv = self.sock.recv(buff_size)
-        
-        if data_recv == '':
-            raise RuntimeError("Socket connection broken")
+        try:
+            data_recv = self.sock.recv(buff_size)
             
-        if err_msg != None:
-            if data_recv[:len(err_msg)] == err_msg:
-                raise RuntimeError("No data available")
+            if data_recv == '':
+                print "kclient-recv_int: Socket connection broken"
+                return float('nan')
+                
+            if err_msg != None:
+                if data_recv[:len(err_msg)] == err_msg:
+                    print "kclient-recv_int: No data available"
+                    return float('nan')
+        except:
+            print "kclient-recv_int: Reception error"
+            return float('nan')
             
         return struct.unpack("I", data_recv)[0]
         
