@@ -65,7 +65,7 @@ def recv_timeout(socket, escape_seq, timeout=5):
         except:
             pass
         
-        # To avoid the progrqm to freeze at connection sometimes
+        # To avoid the program to freeze at connection sometimes
         time.sleep(0.005)
      
     return ''.join(total_data)
