@@ -1,5 +1,6 @@
 from kclient import KClient
 from device import command
+from device import Device
 from dev_mem import DevMem
 from gpio import Gpio
 from xadc import Xadc
@@ -12,4 +13,5 @@ __all__ = [
   'Gpio',
   'Xadc',
   'ZynqSSH',
+  'Device'
 ]

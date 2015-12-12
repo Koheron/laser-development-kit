@@ -63,7 +63,7 @@ class KClient:
     It is also in charge of reception/emission of data with KServer
     """
     
-    def __init__(self, host, port=36000, verbose = False, timeout=2.0):
+    def __init__(self, host, port=36000, verbose=False, timeout=2.0):
         """ Initialize connection with KServer
         
         Args:
@@ -117,11 +117,20 @@ class KClient:
         
         Args:
             cmd: The command to be send
+            
+        Return 0 on success, -1 else.
         """
-        sent = self.sock.send(cmd)
-        
-        if sent == 0:
-            raise RuntimeError("Socket connection broken")
+        try:
+            sent = self.sock.send(cmd)
+            
+            if sent == 0:
+                print("kclient-send: Socket connection broken")
+                return -1
+        except:
+            print("kclient-send: Can't send command")
+            return -1
+            
+        return 0
 
     def send_command(self, device_id, operation_ref, *args):
         self.send(make_command(device_id, operation_ref, *args))
