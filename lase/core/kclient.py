@@ -1,5 +1,7 @@
 import socket
 import struct
+import time 
+
 from rcv_send import recv_timeout, recv_n_bytes, recv_buffer, send_handshaking
 
 # --------------------------------------------
@@ -93,7 +95,15 @@ class KClient:
         # If connected get the commands
         if self.is_connected:
             self.cmds = Commands(self)
-        
+            
+            if not self.cmds.success:
+                # Wait a bit and retry
+                time.sleep(0.1)
+                self.cmds = Commands(self)
+                
+                if not self.cmds.success:
+                   self.is_connected = False 
+                
     # -------------------------------------------------------
     # Send/Receive
     # -------------------------------------------------------
@@ -203,12 +213,6 @@ class KClient:
             return True
         else:
             return False
-            
-    def get_devices_status(self):
-        """ Status of the devices
-        """
-        # TODO
-        return
         
     def __del__(self):
         if hasattr(self,'sock'):
@@ -223,16 +227,23 @@ class Commands:
     def __init__(self, client):
         """ Receive and parse the commands description message sent by KServer
         """
-        sent = client.sock.send(make_command(1,1))        
+        self.success = True        
         
-        if sent == 0:
-            raise RuntimeError("Socket connection broken")
+        try:
+            sent = client.sock.send(make_command(1,1)) 
             
-            
+            if sent == 0:
+                print "Socket connection broken"
+                self.success = False
+        except:
+            print "Socket connection broken"
+            self.success = False
+             
         msg = recv_timeout(client.sock, 'EOC')
         
         if msg == "RECV_ERR_TIMEOUT":
-            raise RuntimeError("Timeout at message reception")
+            print "Timeout at message reception"
+            self.success = False
         
         lines = msg.split('\n')
 
