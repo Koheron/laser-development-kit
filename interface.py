@@ -12,9 +12,9 @@ import platform
 
 class KWindow(QtGui.QMainWindow):
     """
-    Main window of the interface    
+    Main window of the interface
     """
-    
+
     def __init__(self, app):
         super(KWindow, self).__init__()
 
@@ -27,15 +27,15 @@ class KWindow(QtGui.QMainWindow):
         self.tmp_path = os.path.join(self.current_path,'tmp')
         if not os.path.exists(self.tmp_path):
             os.makedirs(self.tmp_path)
-        
+
         self.data_path = os.path.join(self.tmp_path, 'data')
         if not os.path.exists(self.data_path):
             os.makedirs(self.data_path)
-            
+
         self.ip_path = os.path.join(self.tmp_path, 'ip')
         if not os.path.exists(self.ip_path):
             os.makedirs(self.ip_path)
-        
+
         # Init const
         self.app = app
         self.session_opened = True
@@ -43,18 +43,18 @@ class KWindow(QtGui.QMainWindow):
         self.setWindowIcon(QtGui.QIcon(os.path.join(self.img_path,'icon_koheron.png')))
         self.resize(1400, 900) # Size
         self.frame_rate = 0
-        
-        # Layout        
+
+        # Layout
         self.stacked_widget = QtGui.QStackedWidget()
         self.welcome_widget = WelcomeWidget(self, ip_path=self.ip_path)
-        self.stacked_widget.addWidget(self.welcome_widget)        
+        self.stacked_widget.addWidget(self.welcome_widget)
         self.setCentralWidget(self.stacked_widget)
-        
+
         self.show()
-        
+
         self.stacked_widget.currentWidget().setFocus()
         self.connect(self, SIGNAL('triggered()'), self.closeEvent)
-       
+
         self.start_time = time.time()
         self.prev_time = 0
 
@@ -64,44 +64,44 @@ class KWindow(QtGui.QMainWindow):
             time.sleep(0.02)
         else:
             widget = self.stacked_widget.currentWidget()
-            if widget.driver.opened:                
+            if widget.driver.opened:
                 widget.frame_rate = self.frame_rate
                 widget.update()
-            else:                                
+            else:
                 widget.driver.close()
                 self.stacked_widget.removeWidget(widget)
                 self.stacked_widget.currentWidget().setFocus()
                 
     def closeEvent(self, event):
-        if self.stacked_widget.currentIndex() != 0:     
+        if self.stacked_widget.currentIndex() != 0:
                 self.stacked_widget.currentWidget().driver.close()
         self.session_opened = False
         self.close()
-        
+
 def main():
-    
-    app = QtGui.QApplication.instance()    
-    pg.setConfigOptions(background='k')  
-    pg.setConfigOptions(foreground='d')  
+
+    app = QtGui.QApplication.instance()
+    pg.setConfigOptions(background='k')
+    pg.setConfigOptions(foreground='d')
     if app == None:
         app = QtGui.QApplication([])
-    app.quitOnLastWindowClosed()    
-    
+    app.quitOnLastWindowClosed()
+
     # Icon to show in task bar for Windows
     if platform.system() == 'Windows':
-	myappid = 'koheron.lase'
+        myappid = 'koheron.lase'
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
-    
+
     window = KWindow(app)
-        
+
     prev_time = 0
     i = 0
     # Start the update loop:
-    while window.session_opened:         
+    while window.session_opened:
         i = i+1  
         window.update()
         time_ = time.time() 
-        window.frame_rate = 0.90 * window.frame_rate + 0.1/(0.001+time_-prev_time)        
+        window.frame_rate = 0.90 * window.frame_rate + 0.1/(0.001+time_-prev_time)
         QtGui.QApplication.processEvents()
         prev_time = time_
 
