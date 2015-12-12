@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from ..core import DevMem, Gpio, Xadc
 import numpy as np
+import math
+
+from ..core import DevMem, Gpio, Xadc
 from ..signal import Sampling
 
 class Lase(object):
@@ -52,11 +54,16 @@ class Lase(object):
         self._xadc   = Xadc(self.dvm)
 
         self.opened = True
+        self._is_failed = False
 
         self.dac = np.zeros((2,self.sampling.n))
 
         self.laser_power_channel = 1
         self.laser_current_channel = 8
+
+    @property
+    def is_failed(self):
+        return self._is_failed
 
     def update(self):
         pass # Used in LaseSimu
@@ -84,10 +91,20 @@ class Lase(object):
         self._gpio.set_bit(7, channel=2) # Laser enable pin on DIO7_P
 
     def get_laser_current(self):
-        return self._xadc.read(self.laser_current_channel)
+        current = self._xadc.read(self.laser_current_channel)
+
+        if math.isnan(current):
+            self._is_failed = True 
+            
+        return current
 
     def get_laser_power(self):
-        return self._xadc.read(self.laser_power_channel)
+        power = self._xadc.read(self.laser_power_channel)
+
+        if math.isnan(power):
+            self._is_failed = True
+        
+        return power
 
     def start_laser(self):
         """ Start laser emission
@@ -114,9 +131,11 @@ class Lase(object):
         if warning:
             if np.max(np.abs(self.dac)) >= 1:
                 print 'WARNING : dac out of bounds'
+                
         dac_data_1 = np.mod(np.floor(8192*self.dac[0,:]) + 8192,16384)+8192
         dac_data_2 = np.mod(np.floor(8192*self.dac[1,:]) + 8192,16384)+8192
         self.dvm.write_buffer(self._dac, 0, dac_data_1 + 65536 * dac_data_2)
+        
         if reset:
             self.reset_acquisition()
 

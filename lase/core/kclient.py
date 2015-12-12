@@ -1,8 +1,10 @@
 import socket
+import select
 import struct
 import time
+import numpy as np
 
-from rcv_send import recv_timeout, recv_n_bytes, recv_buffer, send_handshaking
+from rcv_send import recv_timeout, recv_n_bytes, send_handshaking
 
 # --------------------------------------------
 # Helper functions
@@ -79,10 +81,12 @@ class KClient:
         self.port = port
         self.verbose = verbose
         self.is_connected = False
+        self.timeout = timeout
 
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.sock.settimeout(timeout)
+            # self.sock.settimeout(timeout)
+            
             #   Disable Nagle algorithm for real-time response:
             self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
             # Connect to Kserver
@@ -130,9 +134,14 @@ class KClient:
             err_msg: Error message. If you require the server to 
                      send an message signaling an error occured and 
                      that no data can be retrieve.
+                     
+        Return: The integer on success, NaN on failure
         """
         try:
-            data_recv = self.sock.recv(buff_size)
+            ready = select.select([self.sock], [], [], self.timeout)
+            
+            if ready[0]:
+                data_recv = self.sock.recv(buff_size)
             
             if data_recv == '':
                 print "kclient-recv_int: Socket connection broken"
@@ -161,8 +170,20 @@ class KClient:
         
         Args:
             buff_size Number of samples to receive
-        """
-        return recv_buffer(self.sock, buff_size, data_type=data_type)
+            
+        Return: A Numpy array with the data on success. 
+                A Numpy array of NaN on failure.
+        """        
+        np_dtype = np.dtype(data_type)
+        buff = recv_n_bytes(self.sock, np_dtype.itemsize * buff_size)
+    
+        if buff == '':
+            print "recv_buffer: reception failed"
+            return np.empty(buff_size) * np.nan
+    
+        np_dtype = np_dtype.newbyteorder('<')
+        data = np.frombuffer(buff, dtype = np_dtype)
+        return data
         
     def recv_tuple(self):
         tmp_buffer = [' ']

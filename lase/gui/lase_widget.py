@@ -5,6 +5,7 @@ from pyqtgraph.Qt import QtGui, QtCore
 from monitor_widget import MonitorWidget
 from laser_widget import LaserWidget
 from dac_widget import DacWidget
+
 import os
 
 class LaseWidget(QtGui.QWidget):
@@ -77,7 +78,7 @@ class LaseWidget(QtGui.QWidget):
 
     def update(self):
         self.driver.update() # Used in simulation
-        self.monitor_widget.update(frame_rate=self.frame_rate)
+        self.monitor_widget.update(frame_rate=self.frame_rate)            
 
     def update_dac(self, index):
         self.driver.dac[index,:] = self.dac_wid[index].data

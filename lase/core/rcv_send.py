@@ -1,8 +1,6 @@
 import time
 import struct
 
-import numpy as np
-
 # ----------------------------------
 # Receive
 # ----------------------------------
@@ -67,33 +65,10 @@ def recv_timeout(socket, escape_seq, timeout=5):
         except:
             pass
         
-        # To avoid the progrqm to freeze at connection sometimes
+        # To avoid the program to freeze at connection sometimes
         time.sleep(0.005)
      
     return ''.join(total_data)
-    
-def recv_buffer(socket, buff_size, data_type = 'uint32'):
-    """
-    Receive a buffer of uint32
-    
-    Args:
-        socket: The socket used for communication
-        buff_size: Number of uint32 to receive
-        
-    Return:
-        The buffer of uint32
-    """
-#    buff = recv_n_bytes(socket, 4 * buff_size) # 4 = sizeof(uint32)
-    np_dtype = np.dtype(data_type)
-    buff = recv_n_bytes(socket, np_dtype.itemsize * buff_size)
-    
-    if buff == '':
-        print "recv_buffer: reception failed"
-        return np.zeros(buff_size)
-
-    np_dtype = np_dtype.newbyteorder('<')
-    data = np.frombuffer(buff, dtype = np_dtype)
-    return data
     
 # ----------------------------------
 # Send
