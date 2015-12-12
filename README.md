@@ -1,6 +1,6 @@
 # laser-development-kit
 
-[![Join the chat at https://gitter.im/Koheron/laser-development-kit](https://img.shields.io/badge/GITTER-join%20chat-green.svg)](https://gitter.im/Koheron/laser-development-kit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Circle CI](https://circleci.com/gh/Koheron/laser-development-kit.svg?style=shield)](https://circleci.com/gh/Koheron/laser-development-kit)
+[![Join the chat at https://gitter.im/Koheron/laser-development-kit](https://img.shields.io/badge/GITTER-join%20chat-green.svg)](https://gitter.im/Koheron/laser-development-kit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Circle CI](https://circleci.com/gh/Koheron/laser-development-kit.svg?style=shield)](https://circleci.com/gh/Koheron/laser-development-kit) [![Code Climate](https://codeclimate.com/github/Koheron/laser-development-kit/badges/gpa.svg)](https://codeclimate.com/github/Koheron/laser-development-kit)
 
 #### `Python API for Koheron Laser Development Kit`
 
