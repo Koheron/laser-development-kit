@@ -85,6 +85,10 @@ class DevMem:
             offset: Offset of the register to read
             buff_size: Number of registers to read
             data_type: Type of received data
+            
+        Returns:
+            A Numpy array with the data on success.
+            A Numpy array of NaNs on failure.
         """
         self.client.send_command(self.ref['id'], self.ref['read_buffer'], mmap_idx, offset, buff_size)
         return self.client.recv_buffer(buff_size, data_type)

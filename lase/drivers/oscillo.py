@@ -65,12 +65,19 @@ class Oscillo(Lase):
         time.sleep(0.001)
         self.adc[0,:] = self.dvm.read_buffer(self._adc_1,0,self.n)
         self.adc[1,:] = self.dvm.read_buffer(self._adc_2,0,self.n)
+        
+        # Check reception
+        if np.isnan(self.adc[0,0]) or np.isnan(self.adc[1,0]):
+            self._is_failed = True
+            return
+        
         self.adc = np.mod(self.adc-2**31,2**32)-2**31
+        
         if self.avg_on:
-            # TODO
             n_avg1 = self.dvm.read(self._status,self._n_avg1_off)
-            n_avg2 = self.dvm.read(self._status,self._n_avg2_off)
+            # n_avg2 = self.dvm.read(self._status,self._n_avg2_off) # unused
             self.adc /= np.float(n_avg1)
+            
         self.dvm.clear_bit(self._config, self._addr_off,1)
         self.adc[0,:] -= self.adc_offset[0]
         self.adc[1,:] -= self.adc_offset[1]

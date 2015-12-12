@@ -60,6 +60,12 @@ class Spectrum(Lase):
         self.dvm.set_bit(self._config, self._addr_off,1)
         time.sleep(0.001)
         self.spectrum = self.dvm.read_buffer(self._spectrum, 0, self.sampling.n, data_type='float32')
+
+        # Check reception
+        if np.isnan(self.spectrum[0]):
+            self._is_failed = True
+            return        
+        
         n_avg = self.dvm.read(self._status, self._n_avg1_off)
         self.spectrum = self.spectrum / np.float(n_avg)
         self.spectrum[1] = 1
