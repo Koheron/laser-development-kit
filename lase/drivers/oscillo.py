@@ -2,28 +2,27 @@
 # -*- coding: utf-8 -*-
 
 import time
+import math
 import numpy as np
-from lase import Lase
 
-class Oscillo():
+from lase import Lase
+from ..core import Device, command
+
+class Oscillo(Device):
     """ Driver for the oscillo bitstream
     """
     
-    def __init__(self, client, map_size=4096, 
-                 verbose = False, current_mode = 'pwm'):
-        n = 8192
-        self.lase_base = Lase(n, client, map_size = 4096, current_mode = 'pwm')
-
-        # Addresses of memory maps
-        _adc_1_addr = int('0x42000000',0)
-        _adc_2_addr = int('0x44000000',0)
+    def __init__(self, client, map_size=4096, verbose = False):
+        super(Oscillo, self).__init__(client)   
         
+        n = 8192
+        self.waveform_size = n
+        self.lase_base = Lase(self.waveform_size, client, map_size = 4096)
+        
+        self.open(self.waveform_size)
+
         # Config offsets
         self._avg_off = 24   
-
-        # Add memory maps
-        self._adc_1 = self.lase_base.dvm.add_memory_map(_adc_1_addr, self.lase_base.n/1024*map_size)
-        self._adc_2 = self.lase_base.dvm.add_memory_map(_adc_2_addr, self.lase_base.n/1024*map_size)
        
         self.avg_on = False
 
@@ -44,39 +43,56 @@ class Oscillo():
         
         self.reset()
     
+    @command
+    def open(self, waveform_size):
+        pass    
+    
     def reset(self):
         self.lase_base.reset()
         self.avg_on = False
         self.set_averaging(self.avg_on)
         
-    def set_averaging(self, avg_on, reset=True):
-        self.avg_on = avg_on
-        if self.avg_on:
-            self.lase_base.dvm.clear_bit(self.lase_base._config, self.lase_base._avg1_off,0)
-            self.lase_base.dvm.clear_bit(self.lase_base._config, self.lase_base._avg2_off,0)
+    @command
+    def set_averaging(self, avg_status):
+        """ Enable/disable averaging
+        
+        Args:
+            avg_status: Status ON or OFF
+        """
+        if avg_status:
+            status = 1;
         else:
-            self.lase_base.dvm.set_bit(self.lase_base._config, self.lase_base._avg1_off,0)
-            self.lase_base.dvm.set_bit(self.lase_base._config, self.lase_base._avg2_off,0)
+            status = 0;   
+            
+        @command
+        def set_averaging(self, status):  
+            pass
+            
+        set_averaging(self, status)
+    
+    @command
+    def get_num_average(self):
+        """ Number of averages """
+        n_avg = self.client.recv_int(4)
+        
+        if math.isnan(n_avg):
+            print("Can't read laser power")
+            self.is_failed = True
+            
+        return n_avg
+        
+    @command
+    def read_all_channels(self):
+        """ Read all the acquired channels """
+        return self.client.recv_buffer(2*self.waveform_size, data_type='float32')
+        # TODO Check reception
 
     def get_adc(self):
-        self.lase_base.dvm.set_bit(self.lase_base._config, self.lase_base._addr_off,1) 
-        time.sleep(0.001)
-        self.adc[0,:] = self.lase_base.dvm.read_buffer(self._adc_1, 0, self.lase_base.n)
-        self.adc[1,:] = self.lase_base.dvm.read_buffer(self._adc_2, 0, self.lase_base.n)
-        
-        # Check reception
-        if np.isnan(self.adc[0,0]) or np.isnan(self.adc[1,0]):
-            self._is_failed = True
-            return
-        
-        self.adc = np.mod(self.adc-2**31,2**32)-2**31
-        
-        if self.avg_on:
-            n_avg1 = self.lase_base.dvm.read(self.lase_base._status,self.lase_base._n_avg1_off)
-            # n_avg2 = self.dvm.read(self._status,self._n_avg2_off) # unused
-            self.adc /= np.float(n_avg1)
+        data = self.read_all_channels()
             
-        self.lase_base.dvm.clear_bit(self.lase_base._config, self.lase_base._addr_off,1)
+        self.adc[0,:] = data[0:self.waveform_size]
+        self.adc[1,:] = data[self.waveform_size:]
+            
         self.adc[0,:] -= self.adc_offset[0]
         self.adc[1,:] -= self.adc_offset[1]
         self.adc[0,:] *= self.optical_power[0] /self.power[0]

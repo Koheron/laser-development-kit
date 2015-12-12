@@ -16,7 +16,7 @@ class Lase(Device):
         client : instance of KClient class, used to connect to the board.        
     """    
     
-    def __init__(self, dac_wfm_size, client, map_size=4096, current_mode='pwm'):
+    def __init__(self, dac_wfm_size, client, map_size=4096):
         super(Lase, self).__init__(client)
         self.open(dac_wfm_size)
          
@@ -24,7 +24,6 @@ class Lase(Device):
         self.dvm = DevMem(self.client)
       
         self.n = dac_wfm_size # Number of points in the waveform 'ex : n = 8192'
-        self.current_mode = current_mode
         self.max_current = 50 # mA
 
         # Addresses of memory maps
@@ -33,15 +32,9 @@ class Lase(Device):
         self._dac_addr    = int('0x40000000',0)
 
         # Config offsets
-        self._leds_off  = 0
-        self._pwm0_off  = 4
-        self._pwm1_off  = 8
-        self._pwm2_off  = 12
-        self._pwm3_off  = 16
         self._addr_off  = 20
         self._avg1_off  = 24
         self._avg2_off  = 28
-        self._bitstream_id_off = 36
 
         # Status offsets
         self._n_avg1_off = 0
