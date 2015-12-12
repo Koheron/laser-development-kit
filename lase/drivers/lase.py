@@ -130,7 +130,7 @@ class Lase(object):
     def set_dac(self, warning=False, reset=False):
         if warning:
             if np.max(np.abs(self.dac)) >= 1:
-                print 'WARNING : dac out of bounds'
+                print('WARNING : dac out of bounds')
                 
         dac_data_1 = np.mod(np.floor(8192*self.dac[0,:]) + 8192,16384)+8192
         dac_data_2 = np.mod(np.floor(8192*self.dac[1,:]) + 8192,16384)+8192

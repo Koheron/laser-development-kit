@@ -27,7 +27,7 @@ def recv_n_bytes(sock, n_bytes):
             n_rcv = n_rcv + len(chunk)
             data.append(chunk)
         except:
-            print "recv_n_bytes: sock.recv failed"
+            print("recv_n_bytes: sock.recv failed")
             return ''
         
     return ''.join(data)
@@ -51,7 +51,7 @@ def recv_timeout(socket, escape_seq, timeout=5):
     
     while 1:
         if time.time()-begin > timeout:
-            print "Error in recv_timeout Timeout exceeded"
+            print("Error in recv_timeout Timeout exceeded")
             return "RECV_ERR_TIMEOUT"
          
         try:

@@ -69,7 +69,7 @@ class LaseSimu(object):
         return 42        
     
     def set_led(self, ip):
-        print 'LED set to ', ip
+        print('LED set to '+ip)
         
     def get_live_current(self):
             self._live_laser_current = self.model.laser_current( 
