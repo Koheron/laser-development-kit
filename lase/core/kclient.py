@@ -61,7 +61,7 @@ class KClient:
     It is also in charge of reception/emission of data with KServer
     """
     
-    def __init__(self, host, port=36000, verbose = False, timeout=2.0):
+    def __init__(self, host, port=36000, verbose = False, timeout=10.0):
         """ Initialize connection with KServer
         
         Args:
