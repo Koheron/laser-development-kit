@@ -1,5 +1,5 @@
 # Configuration file
 
 bitstreams:
-  oscillo_url: https://github.com/Koheron/zynq-sdk/releases/download/v0.1/oscillo.bit
-  spectrum_url: https://github.com/Koheron/zynq-sdk/releases/download/v0.1/spectrum.bit
+  oscillo_url: https://github.com/Koheron/zynq-sdk/releases/download/v0.1.1/oscillo.bit
+  spectrum_url: https://github.com/Koheron/zynq-sdk/releases/download/v0.1.1/spectrum.bit
