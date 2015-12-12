@@ -341,7 +341,7 @@ class DevParam:
         print('\n> ' + self.name)
         print('ID: ' + str(self.id))
         
-        print 'Operations:'
+        print('Operations:')
         for idx, op in enumerate(self.operations):
             print('  ' + op + '(' + str(idx) + ')')
 
