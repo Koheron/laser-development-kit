@@ -29,10 +29,10 @@ def reference_dict(self):
 
 def _class_to_device_name(classname):
     """
-    If the device name is in a single word DEVNAME then the associated 
+    If the device name is in a single word DEVNAME then the associated
     class name must be Devname.
     
-    If the device name is in a several words DEV_NAME then the associated 
+    If the device name is in a several words DEV_NAME then the associated
     class name must be DevName.
     """
     dev_name = []
@@ -125,7 +125,7 @@ class KClient:
 
     def send_command(self, device_id, operation_ref, *args):
         self.send(make_command(device_id, operation_ref, *args))
-        
+
     def recv_int(self, buff_size, err_msg=None):
         """ Receive an integer
 
@@ -171,7 +171,7 @@ class KClient:
         Args:
             buff_size Number of samples to receive
 
-        Return: A Numpy array with the data on success. 
+        Return: A Numpy array with the data on success.
                 A Numpy array of NaN on failure.
         """
         np_dtype = np.dtype(data_type)
@@ -245,12 +245,13 @@ class KClient:
         if hasattr(self, 'sock'):
             self.sock.close()
 
+
 class Commands:
     """ KServer commands
 
     Retrieves and stores the commands (devices and 
     associated operations) available in KServer.
-    """ 
+    """
     def __init__(self, client):
         """ Receive and parse the commands description message sent by KServer
         """
@@ -297,6 +298,7 @@ class Commands:
         for device in self.devices:
             device.show()
 
+
 class DevParam:
     """ Device parameters
 
@@ -315,7 +317,7 @@ class DevParam:
 
         self.operations = []
         op_num = 0
-        
+
         for tok in tokens[2:]:
             if len(tok.strip()) != 0:
                 self.operations.append(tok.strip())
@@ -339,7 +341,6 @@ class DevParam:
         """
         print('\n> ' + self.name)
         print('ID: ' + str(self.id))
-        
         print('Operations:')
         for idx, op in enumerate(self.operations):
             print('  ' + op + '(' + str(idx) + ')')
