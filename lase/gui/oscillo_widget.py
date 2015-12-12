@@ -109,6 +109,10 @@ class OscilloWidget(LaseWidget):
                                              self.driver.adc[0,:])
             self.plotWid.dataItem[1].setData(1e6*self.driver.sampling.t,
                                              self.driver.adc[1,:])   
+                                            
+        if self.driver.is_failed:
+            print "An error occured during oscillo widget update"
+            self.monitor_widget.close_session()
                  
     def update_dac(self, index):
         if self.dac_wid[index].button.text() == 'OFF':
