@@ -1,4 +1,5 @@
 import socket
+import select
 import struct
 import time
 
@@ -61,7 +62,7 @@ class KClient:
     It is also in charge of reception/emission of data with KServer
     """
     
-    def __init__(self, host, port=36000, verbose = False, timeout=10.0):
+    def __init__(self, host, port=36000, verbose = False, timeout=2.0):
         """ Initialize connection with KServer
         
         Args:
@@ -79,10 +80,12 @@ class KClient:
         self.port = port
         self.verbose = verbose
         self.is_connected = False
+        self.timeout = timeout
 
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.sock.settimeout(timeout)
+            # self.sock.settimeout(timeout)
+            
             #   Disable Nagle algorithm for real-time response:
             self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
             # Connect to Kserver
@@ -132,7 +135,10 @@ class KClient:
                      that no data can be retrieve.
         """
         try:
-            data_recv = self.sock.recv(buff_size)
+            ready = select.select([self.sock], [], [], self.timeout)
+            
+            if ready[0]:
+                data_recv = self.sock.recv(buff_size)
             
             if data_recv == '':
                 print "kclient-recv_int: Socket connection broken"
