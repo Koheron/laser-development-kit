@@ -29,8 +29,8 @@ class DacWidget(QtGui.QWidget):
     def __init__(self, driver, index=0):
         super(DacWidget, self).__init__()
         
-        self.n = driver.sampling.n
-        self.fs = driver.sampling.fs
+        self.n = driver.lase_base.sampling.n
+        self.fs = driver.lase_base.sampling.fs
         
         self.index = index # used to track which DAC is related to the widget
         self.enable = False

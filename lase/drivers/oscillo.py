@@ -5,16 +5,14 @@ import time
 import numpy as np
 from lase import Lase
 
-class Oscillo(Lase):
-    """
-    @brief Driver for the oscillo bitstream
+class Oscillo():
+    """ Driver for the oscillo bitstream
     """
     
     def __init__(self, client, map_size=4096, 
                  verbose = False, current_mode = 'pwm'):
         n = 8192
-        super(Oscillo, self).__init__(n, client, map_size = 4096, 
-                                      current_mode = 'pwm')
+        self.lase_base = Lase(n, client, map_size = 4096, current_mode = 'pwm')
 
         # Addresses of memory maps
         _adc_1_addr = int('0x42000000',0)
@@ -24,20 +22,20 @@ class Oscillo(Lase):
         self._avg_off = 24   
 
         # Add memory maps
-        self._adc_1 = self.dvm.add_memory_map(_adc_1_addr, self.n/1024*map_size)
-        self._adc_2 = self.dvm.add_memory_map(_adc_2_addr, self.n/1024*map_size)
+        self._adc_1 = self.lase_base.dvm.add_memory_map(_adc_1_addr, self.lase_base.n/1024*map_size)
+        self._adc_2 = self.lase_base.dvm.add_memory_map(_adc_2_addr, self.lase_base.n/1024*map_size)
        
         self.avg_on = False
 
-        self.adc = np.zeros((2,self.n))
-        self.spectrum = np.zeros((2,self.n/2))
-        self.avg_spectrum = np.zeros((2,self.n/2))
-        self.ideal_amplitude_waveform = np.zeros(self.n)
-        self.amplitude_transfer_function = np.ones(self.sampling.n, dtype=np.dtype('complex64'))
+        self.adc = np.zeros((2,self.lase_base.n))
+        self.spectrum = np.zeros((2,self.lase_base.n/2))
+        self.avg_spectrum = np.zeros((2,self.lase_base.n/2))
+        self.ideal_amplitude_waveform = np.zeros(self.lase_base.n)
+        self.amplitude_transfer_function = np.ones(self.lase_base.sampling.n, dtype=np.dtype('complex64'))
 
         # Correction
         sigma_freq = 5e6 # Hz
-        self.gaussian_filter = 1.0 * np.exp(-1.0*self.sampling.f_fft**2/(2*sigma_freq**2))
+        self.gaussian_filter = 1.0 * np.exp(-1.0*self.lase_base.sampling.f_fft**2/(2*sigma_freq**2))
         
         # Calibration
         self.adc_offset = np.zeros(2)
@@ -47,24 +45,24 @@ class Oscillo(Lase):
         self.reset()
     
     def reset(self):
-        super(Oscillo, self).reset()
+        self.lase_base.reset()
         self.avg_on = False
         self.set_averaging(self.avg_on)
         
     def set_averaging(self, avg_on, reset=True):
         self.avg_on = avg_on
         if self.avg_on:
-            self.dvm.clear_bit(self._config, self._avg1_off,0)
-            self.dvm.clear_bit(self._config, self._avg2_off,0)
+            self.lase_base.dvm.clear_bit(self.lase_base._config, self.lase_base._avg1_off,0)
+            self.lase_base.dvm.clear_bit(self.lase_base._config, self.lase_base._avg2_off,0)
         else:
-            self.dvm.set_bit(self._config, self._avg1_off,0)
-            self.dvm.set_bit(self._config, self._avg2_off,0)
+            self.lase_base.dvm.set_bit(self.lase_base._config, self.lase_base._avg1_off,0)
+            self.lase_base.dvm.set_bit(self.lase_base._config, self.lase_base._avg2_off,0)
 
     def get_adc(self):
-        self.dvm.set_bit(self._config, self._addr_off,1) 
+        self.lase_base.dvm.set_bit(self.lase_base._config, self.lase_base._addr_off,1) 
         time.sleep(0.001)
-        self.adc[0,:] = self.dvm.read_buffer(self._adc_1,0,self.n)
-        self.adc[1,:] = self.dvm.read_buffer(self._adc_2,0,self.n)
+        self.adc[0,:] = self.lase_base.dvm.read_buffer(self._adc_1, 0, self.lase_base.n)
+        self.adc[1,:] = self.lase_base.dvm.read_buffer(self._adc_2, 0, self.lase_base.n)
         
         # Check reception
         if np.isnan(self.adc[0,0]) or np.isnan(self.adc[1,0]):
@@ -74,11 +72,11 @@ class Oscillo(Lase):
         self.adc = np.mod(self.adc-2**31,2**32)-2**31
         
         if self.avg_on:
-            n_avg1 = self.dvm.read(self._status,self._n_avg1_off)
+            n_avg1 = self.lase_base.dvm.read(self.lase_base._status,self.lase_base._n_avg1_off)
             # n_avg2 = self.dvm.read(self._status,self._n_avg2_off) # unused
             self.adc /= np.float(n_avg1)
             
-        self.dvm.clear_bit(self._config, self._addr_off,1)
+        self.lase_base.dvm.clear_bit(self.lase_base._config, self.lase_base._addr_off,1)
         self.adc[0,:] -= self.adc_offset[0]
         self.adc[1,:] -= self.adc_offset[1]
         self.adc[0,:] *= self.optical_power[0] /self.power[0]

@@ -64,11 +64,11 @@ class KWindow(QtGui.QMainWindow):
             time.sleep(0.02)
         else:
             widget = self.stacked_widget.currentWidget()
-            if widget.driver.opened:                
+            if widget.driver.lase_base.opened:                
                 widget.frame_rate = self.frame_rate
                 widget.update()
             else:                                
-                widget.driver.close()
+                widget.driver.lase_base.close()
                 self.stacked_widget.removeWidget(widget)
                 self.stacked_widget.currentWidget().setFocus()
                 

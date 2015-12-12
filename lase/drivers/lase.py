@@ -47,7 +47,7 @@ class Lase(Device):
         self._n_avg1_off = 0
         self._n_avg2_off = 0
 
-        self.sampling = Sampling(n, 125e6)
+        self.sampling = Sampling(dac_wfm_size, 125e6)
 
         # Add memory maps
         self._config = self.dvm.add_memory_map(self._config_addr, map_size)
@@ -100,7 +100,7 @@ class Lase(Device):
         power = self.client.recv_int(4)
 
         if math.isnan(power):
-            print("Can't read laser current")
+            print("Can't read laser power")
             self.is_failed = True
         
         return power
