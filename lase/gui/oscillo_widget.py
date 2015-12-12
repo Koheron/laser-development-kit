@@ -111,7 +111,7 @@ class OscilloWidget(LaseWidget):
                                              self.driver.adc[1,:])   
                                             
         if self.driver.is_failed:
-            print "An error occured during update\nLeave Oscillo"
+            print("An error occured during update\nLeave Oscillo")
             self.monitor_widget.close_session()
                  
     def update_dac(self, index):

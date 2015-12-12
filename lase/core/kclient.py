@@ -94,7 +94,7 @@ class KClient:
             self.is_connected = True
             
         except socket.error as e:
-            print 'Failed to connect to {:s}:{:d} : {:s}'.format(host, port, e)
+            print('Failed to connect to {:s}:{:d} : {:s}'.format(host, port, e))
 
         # If connected get the commands
         if self.is_connected:
@@ -144,15 +144,15 @@ class KClient:
                 data_recv = self.sock.recv(buff_size)
             
             if data_recv == '':
-                print "kclient-recv_int: Socket connection broken"
+                print("kclient-recv_int: Socket connection broken")
                 return float('nan')
                 
             if err_msg != None:
                 if data_recv[:len(err_msg)] == err_msg:
-                    print "kclient-recv_int: No data available"
+                    print("kclient-recv_int: No data available")
                     return float('nan')
         except:
-            print "kclient-recv_int: Reception error"
+            print("kclient-recv_int: Reception error")
             return float('nan')
             
         return struct.unpack("I", data_recv)[0]
@@ -178,7 +178,7 @@ class KClient:
         buff = recv_n_bytes(self.sock, np_dtype.itemsize * buff_size)
     
         if buff == '':
-            print "recv_buffer: reception failed"
+            print("recv_buffer: reception failed")
             return np.empty(buff_size) * np.nan
     
         np_dtype = np_dtype.newbyteorder('<')
@@ -260,16 +260,16 @@ class Commands:
             sent = client.sock.send(make_command(1,1)) 
             
             if sent == 0:
-                print "Socket connection broken"
+                print("Socket connection broken")
                 self.success = False
         except:
-            print "Socket connection broken"
+            print("Socket connection broken")
             self.success = False
              
         msg = recv_timeout(client.sock, 'EOC')
         
         if msg == "RECV_ERR_TIMEOUT":
-            print "Timeout at message reception"
+            print("Timeout at message reception")
             self.success = False
         
         lines = msg.split('\n')
@@ -292,7 +292,7 @@ class Commands:
         
     def print_devices(self):
         """ Print the devices and operations available on KServer """
-        print "Devices available from KServer:"
+        print("Devices available from KServer:")
         
         for device in self.devices:      
             device.show()
@@ -338,10 +338,10 @@ class DevParam:
     def show(self):
         """ Display the device parameters
         """
-        print '\n> ' + self.name
-        print 'ID: ' + str(self.id)
+        print('\n> ' + self.name)
+        print('ID: ' + str(self.id))
         
         print 'Operations:'
         for idx, op in enumerate(self.operations):
-            print '  ' + op + '(' + str(idx) + ')'
+            print('  ' + op + '(' + str(idx) + ')')
 

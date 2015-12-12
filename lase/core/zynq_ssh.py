@@ -190,7 +190,7 @@ class ZynqSSH:
             Return: KServer PID
         """
         if self.kserver_is_started():
-            print "KServer already running !"
+            print("KServer already running !")
             return 
         
         self.run('/usr/local/kserver/kserver -c /usr/local/kserver/kserver.conf &')
@@ -233,6 +233,6 @@ if __name__ == '__main__':
     ssh = ZynqSSH(TCP_IP, "koheron")
      
     ssh.kserver_stop()
-    print str(ssh.kserver_pid())
-    print ssh.kserver_start()
-    print ssh.kserver_restart()
+    print(str(ssh.kserver_pid()))
+    print(ssh.kserver_start())
+    print(ssh.kserver_restart())

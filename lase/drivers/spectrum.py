@@ -51,7 +51,7 @@ class Spectrum(Lase):
     def set_demod(self, warning=False):
         if warning:
             if np.max(np.abs(self.demod)) >= 1:
-                print 'WARNING : dac out of bounds'
+                print('WARNING : dac out of bounds')
         demod_data_1 = np.mod(np.floor(8192*self.demod[0,:]) + 8192,16384)+8192
         demod_data_2 = np.mod(np.floor(8192*self.demod[1,:]) + 8192,16384)+8192
         self.dvm.write_buffer(self._demod, 0, demod_data_1 + 65536 * demod_data_2)
