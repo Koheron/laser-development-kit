@@ -13,15 +13,17 @@ class OscilloSimu(LaseSimu):
         super(OscilloSimu, self).__init__(n)
 
         self.avg_on = False
+        self.waveform_size = n
+        self.lase_base = LaseSimu(self.waveform_size)
 
-        self.adc = np.zeros((2,self.sampling.n))
-        self.spectrum = np.zeros((2,self.sampling.n/2))        
-        self.avg_spectrum = np.zeros((2,self.sampling.n/2))
-        self.ideal_amplitude_waveform = np.zeros(self.sampling.n)
+        self.adc = np.zeros((2,self.lase_base.sampling.n))
+        self.spectrum = np.zeros((2,self.lase_base.sampling.n/2))        
+        self.avg_spectrum = np.zeros((2,self.lase_base.sampling.n/2))
+        self.ideal_amplitude_waveform = np.zeros(self.lase_base.sampling.n)
         sigma_freq = 5e6 # Hz
-        self.gaussian_filter = 1.0 * np.exp(-1.0*self.sampling.f_fft**2/(2*sigma_freq**2))
+        self.gaussian_filter = 1.0 * np.exp(-1.0*self.lase_base.sampling.f_fft**2/(2*sigma_freq**2))
 
-        self.amplitude_transfer_function = np.ones(self.sampling.n, dtype=np.dtype('complex128'))
+        self.amplitude_transfer_function = np.ones(self.lase_base.sampling.n, dtype=np.dtype('complex128'))
         
         # Calibration
         self.adc_offset = np.zeros(2)
