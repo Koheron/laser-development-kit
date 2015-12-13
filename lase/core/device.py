@@ -9,6 +9,8 @@ def command(func):
     
     If the name of the command is CMD_NAME, 
     then the name of the function must be cmd_name.
+    
+    /!\ The order of kwargs matters.
     """
     def decorator(self, *args, **kwargs):
         self.client.send_command(self.ref['id'], self.ref[func.__name__], 
