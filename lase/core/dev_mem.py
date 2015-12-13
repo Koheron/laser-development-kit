@@ -4,7 +4,7 @@
 
 import math
 
-from kclient import reference_dict
+from .kclient import reference_dict
 
 class DevMem:
     """

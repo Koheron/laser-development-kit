@@ -3,11 +3,11 @@
 import numpy as np
 from pyqtgraph.Qt import QtGui
 
-from plot_widget import PlotWidget
-from lase_widget import LaseWidget
-from cursor_widget import CursorWidget
-from noise_floor_widget import NoiseFloorWidget
-from lidar_widget import LidarWidget
+from .plot_widget import PlotWidget
+from .lase_widget import LaseWidget
+from .cursor_widget import CursorWidget
+from .noise_floor_widget import NoiseFloorWidget
+from .lidar_widget import LidarWidget
 
 from PyQt4.QtCore import pyqtSignal
 

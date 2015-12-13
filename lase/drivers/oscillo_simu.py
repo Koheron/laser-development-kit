@@ -3,7 +3,7 @@
 
 import time
 import numpy as np
-from lase_simu import LaseSimu
+from .lase_simu import LaseSimu
 
 
 class OscilloSimu(LaseSimu):

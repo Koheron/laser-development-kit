@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from lase_simu import LaseSimu
+from .lase_simu import LaseSimu
 
 
 class SpectrumSimu(LaseSimu):

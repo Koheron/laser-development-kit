@@ -4,7 +4,7 @@ import struct
 import time
 import numpy as np
 
-from rcv_send import recv_timeout, recv_n_bytes, send_handshaking
+from .rcv_send import recv_timeout, recv_n_bytes, send_handshaking
 
 # --------------------------------------------
 # Helper functions
@@ -356,7 +356,7 @@ class DevParam:
         print('\n> ' + self.name)
         print('ID: ' + str(self.id))
         
-        print 'Operations:'
+        print ('Operations:')
         for idx, op in enumerate(self.operations):
             print('  ' + op + '(' + str(idx) + ')')
 

@@ -3,7 +3,7 @@
 
 import time
 import numpy as np
-from lase import Lase
+from .lase import Lase
 
 class Spectrum(Lase):
     """ Driver for the spectrum bitstream """ 
