@@ -51,8 +51,7 @@ class Oscillo(Device):
         self.lase_base.reset()
         self.avg_on = False
         self.set_averaging(self.avg_on)
-        
-    @command
+
     def set_averaging(self, avg_status):
         """ Enable/disable averaging
         
@@ -141,14 +140,14 @@ class Oscillo(Device):
         
     def get_spectrum(self):
         fft_adc = np.fft.fft(self.adc, axis=1)
-        self.spectrum = fft_adc[:,0:self.sampling.n/2]
+        self.spectrum = fft_adc[:,0:self.lase_base.sampling.n/2]
         
     def get_avg_spectrum(self, n_avg=1):
-        self.avg_spectrum = np.zeros((2,self.sampling.n/2))               
+        self.avg_spectrum = np.zeros((2,self.lase_base.sampling.n/2))               
         for i in range(n_avg):
             self.get_adc()
             fft_adc = np.abs(np.fft.fft(self.adc, axis=1))
-            self.avg_spectrum += fft_adc[:,0:self.sampling.n/2]                    
+            self.avg_spectrum += fft_adc[:,0:self.lase_base.sampling.n/2]                    
 
         self.avg_spectrum = self.avg_spectrum / n_avg
         

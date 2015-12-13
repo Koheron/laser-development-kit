@@ -97,11 +97,11 @@ class OscilloWidget(LaseWidget):
         if self.math_widget.fourier: 
             self.driver.get_avg_spectrum(self.math_widget.n_avg_spectrum)                      
             self.plotWid.dataItem[0].setData(
-                1e-6 * self.driver.sampling.f_fft[1: self.driver.sampling.n/2], 
+                1e-6 * self.driver.lase_base.sampling.f_fft[1: self.driver.lase_base.sampling.n/2], 
                 10*np.log10((self.driver.avg_spectrum[0,1:])**2)
             )
             self.plotWid.dataItem[1].setData(
-                1e-6 * self.driver.sampling.f_fft[1: self.driver.sampling.n/2],
+                1e-6 * self.driver.lase_base.sampling.f_fft[1: self.driver.lase_base.sampling.n/2],
                 10*np.log10((self.driver.avg_spectrum[1,1:])**2)
             )
         else:

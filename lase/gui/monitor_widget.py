@@ -46,6 +46,10 @@ class MonitorWidget(QtGui.QWidget):
         self.close_button.clicked.connect(self.close_session)
 
     def update(self, frame_rate = 0):
+        #monitoring_data = self.driver.lase_base.get_monitoring()
+        #self.laser_current_label.setText('Measured current (mA) : '+"{:.2f}".format(0.01 * monitoring_data[0]))
+        #self.laser_power_label.setText('Laser power (u.a.) : '+"{:.2f}".format(monitoring_data[1]))
+
         self.laser_current_label.setText('Measured current (mA) : '+"{:.2f}".format(0.01 * self.driver.lase_base.get_laser_current()))
         self.laser_power_label.setText('Laser power (u.a.) : '+"{:.2f}".format(self.driver.lase_base.get_laser_power()))
         self.frame_rate_label.setText('Frame rate (Hz) : '+"{:.2f}".format(frame_rate))

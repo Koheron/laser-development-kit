@@ -152,17 +152,23 @@ class KClient:
             if ready[0]:
                 data_recv = self.sock.recv(buff_size)
             
-            if data_recv == '':
-                print("kclient-recv_int: Socket connection broken")
-                return float('nan')
-                
-            if err_msg != None:
-                if data_recv[:len(err_msg)] == err_msg:
-                    print("kclient-recv_int: No data available")
+                if data_recv == '':
+                    print("kclient-recv_int: Socket connection broken")
                     return float('nan')
+                    
+                if len(data_recv) != buff_size:
+                    print("kclient-recv_int: Invalid size received")
+                    return float('nan')
+                    
+                if err_msg != None:
+                    if data_recv[:len(err_msg)] == err_msg:
+                        print("kclient-recv_int: No data available")
+                        return float('nan')
         except:
             print("kclient-recv_int: Reception error")
             return float('nan')
+            
+       # print str(len(data_recv)) + " vs " + str(buff_size)
             
         return struct.unpack("I", data_recv)[0]
         
@@ -202,11 +208,11 @@ class KClient:
             char = recv_n_bytes(self.sock, 1)
             
             if char == ':':
-                if tmp_buffer[1] == '\x00':
-                    toks = ''.join(tmp_buffer[2:]).split('@')
-                else:
-                    toks = ''.join(tmp_buffer[1:]).split('@')
-                elmt_type = toks[0].strip()
+                toks = ''.join(tmp_buffer[1:]).split('@')
+                    
+                # Receive an unwanted unicode character on the first char
+                #We thus clean all unicode characters
+                elmt_type = toks[0].decode('unicode_escape').encode('ascii','ignore').strip()
                 
                 if elmt_type == 'i' or elmt_type == 'j':
                     res_tuple.append(int(toks[1]))

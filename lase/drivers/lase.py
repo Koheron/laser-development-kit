@@ -43,9 +43,13 @@ class Lase(Device):
         self.sampling = Sampling(dac_wfm_size, 125e6)
 
         # Add memory maps
-        self._config = self.dvm.add_memory_map(self._config_addr, map_size)
+        self._config = self.dvm.add_memory_map(self._config_addr, map_size)        
         self._status = self.dvm.add_memory_map(self._status_addr, map_size)
         self._dac    = self.dvm.add_memory_map(self._dac_addr, self.n/1024*map_size)
+        
+        if math.isnan(self._config) or math.isnan(self._status) or math.isnan(self._dac):        
+            self.is_failed = True
+
         self._gpio   = Gpio(self.dvm)
         self._xadc   = Xadc(self.dvm)
 
@@ -97,6 +101,10 @@ class Lase(Device):
             self.is_failed = True
         
         return power
+        
+    @command 
+    def get_monitoring(self):
+        return self.client.recv_tuple()
 
     @command
     def set_laser_current(self, current):
