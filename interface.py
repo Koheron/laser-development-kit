@@ -74,7 +74,7 @@ class KWindow(QtGui.QMainWindow):
                 
     def closeEvent(self, event):
         if self.stacked_widget.currentIndex() != 0:     
-                self.stacked_widget.currentWidget().driver.close()
+                self.stacked_widget.currentWidget().driver.lase_base.close()
         self.session_opened = False
         self.close()
         
