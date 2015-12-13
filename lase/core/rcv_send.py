@@ -1,6 +1,8 @@
 import time
 import struct
 
+import numpy as np
+
 # ----------------------------------
 # Receive
 # ----------------------------------
@@ -19,7 +21,7 @@ def recv_n_bytes(sock, n_bytes):
     
     while n_rcv < n_bytes:
         try:
-            chunk = sock.recv(n_bytes - n_rcv).decode('utf-8')
+            chunk = sock.recv(n_bytes - n_rcv)
             
             if chunk == '':
                 break
@@ -30,7 +32,7 @@ def recv_n_bytes(sock, n_bytes):
             print("recv_n_bytes: sock.recv failed")
             return ''
         
-    return ''.join(data)
+    return b''.join(data)
 
 def recv_timeout(socket, escape_seq, timeout=5):   
     """
@@ -91,14 +93,13 @@ def send_handshaking(sock, data, format_char='I'):
     """
     
     data_recv = sock.recv(4)
-    print(data_recv)
     num = struct.unpack(">I", data_recv)[0]
-    print(num)
     n_pts = len(data)
-    print(data)
     
     if num == n_pts:
-        buff = struct.pack(('%s'+format_char) % n_pts, *data)
+        format_ = ('%s'+format_char) % n_pts
+        print(format_)
+        buff = struct.pack(format_, *data.astype(np.int64))
         sent = sock.send(buff)
             
         if sent == 0:
