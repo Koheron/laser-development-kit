@@ -5,13 +5,13 @@ import numpy as np
 from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph as pg
 
-from lase_widget import LaseWidget
-from save_widget import SaveWidget
-from cursor_widget import CursorWidget
-from stats_widget import StatsWidget
-from select_channel_widget import SelectChannelWidget
-from math_widget import MathWidget
-from calibration_widget import CalibrationWidget
+from .lase_widget import LaseWidget
+from .save_widget import SaveWidget
+from .cursor_widget import CursorWidget
+from .stats_widget import StatsWidget
+from .select_channel_widget import SelectChannelWidget
+from .math_widget import MathWidget
+from .calibration_widget import CalibrationWidget
 
 class OscilloWidget(LaseWidget):
     def __init__(self, oscillo, parent):

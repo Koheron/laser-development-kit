@@ -5,7 +5,7 @@ import time
 import math
 import numpy as np
 
-from lase import Lase
+from .lase import Lase
 from ..core import Device, command
 
 class Oscillo(Device):

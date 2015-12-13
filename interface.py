@@ -89,7 +89,7 @@ def main():
     
     # Icon to show in task bar for Windows
     if platform.system() == 'Windows':
-	myappid = 'koheron.lase'
+        myappid = 'koheron.lase'
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
     
     window = KWindow(app)

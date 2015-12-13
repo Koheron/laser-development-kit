@@ -1,4 +1,4 @@
-from kclient import reference_dict
+from .kclient import reference_dict
 
 # --------------------------------------------
 # Decorators

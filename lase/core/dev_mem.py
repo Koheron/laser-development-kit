@@ -2,7 +2,7 @@
 # Client API for the DEV_MEM device
 # (c) Koheron 2014-2015 
 
-from kclient import reference_dict
+from .kclient import reference_dict
 
 class DevMem:
     """

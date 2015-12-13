@@ -9,9 +9,9 @@ import yaml
 
 from ..drivers import Oscillo, Spectrum
 from ..drivers import OscilloSimu, SpectrumSimu
-from oscillo_widget import OscilloWidget
-from spectrum_widget import SpectrumWidget
-from connect_widget import ConnectWidget
+from .oscillo_widget import OscilloWidget
+from .spectrum_widget import SpectrumWidget
+from .connect_widget import ConnectWidget
 
 class WelcomeWidget(QtGui.QWidget):
     """ This widget allows to connect to one of the available drivers.

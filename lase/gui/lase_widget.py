@@ -2,9 +2,9 @@
 
 
 from pyqtgraph.Qt import QtGui, QtCore
-from monitor_widget import MonitorWidget
-from laser_widget import LaserWidget
-from dac_widget import DacWidget
+from .monitor_widget import MonitorWidget
+from .laser_widget import LaserWidget
+from .dac_widget import DacWidget
 
 import os
 

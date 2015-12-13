@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from pyqtgraph.Qt import QtGui
-from slider_widget import SliderWidget
+from .slider_widget import SliderWidget
 from PyQt4.QtCore import SIGNAL, pyqtSignal
 import numpy as np
 from scipy import signal
