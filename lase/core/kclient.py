@@ -248,7 +248,7 @@ class KClient:
         Return: True if an error occured in the current session.
         """
         self.send(make_command(1,2))
-        data_recv = self.sock.recv(3)
+        data_recv = self.sock.recv(3).decode('utf-8')
         
         if data_recv == '':
             raise RuntimeError("Socket connection broken")
@@ -284,7 +284,7 @@ class Commands:
             print("Socket connection broken")
             self.success = False
             return
-             
+
         msg = recv_timeout(client.sock, 'EOC')
         
         if msg == "RECV_ERR_TIMEOUT":

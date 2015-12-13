@@ -19,7 +19,7 @@ def recv_n_bytes(sock, n_bytes):
     
     while n_rcv < n_bytes:
         try:
-            chunk = sock.recv(n_bytes - n_rcv)
+            chunk = sock.recv(n_bytes - n_rcv).decode('utf-8')
             
             if chunk == '':
                 break
@@ -55,7 +55,8 @@ def recv_timeout(socket, escape_seq, timeout=5):
             return "RECV_ERR_TIMEOUT"
          
         try:
-            data = socket.recv(2048)
+            data = socket.recv(2048).decode('utf-8')
+
             if data:
                 total_data.append(data)
                 begin=time.time()
@@ -90,8 +91,11 @@ def send_handshaking(sock, data, format_char='I'):
     """
     
     data_recv = sock.recv(4)
+    print(data_recv)
     num = struct.unpack(">I", data_recv)[0]
+    print(num)
     n_pts = len(data)
+    print(data)
     
     if num == n_pts:
         buff = struct.pack(('%s'+format_char) % n_pts, *data)
