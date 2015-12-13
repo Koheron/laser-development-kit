@@ -8,8 +8,7 @@ import numpy as np
 # ----------------------------------
 
 def recv_n_bytes(sock, n_bytes):
-    """
-    Receive exactly n bytes
+    """ Receive exactly n bytes
     
     Args:
         sock: The socket used for communication

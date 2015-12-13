@@ -25,36 +25,16 @@ class Lase(Device):
       
         self.n = dac_wfm_size # Number of points in the waveform 'ex : n = 8192'
         self.max_current = 50 # mA
-
-        # Addresses of memory maps
-        self._config_addr = int('0x60000000',0)
-        self._status_addr = int('0x50000000',0)
-        self._dac_addr    = int('0x40000000',0)
-
-        # Config offsets
-        self._addr_off  = 20
-        self._avg1_off  = 24
-        self._avg2_off  = 28
-
-        # Status offsets
-        self._n_avg1_off = 0
-        self._n_avg2_off = 0
-
         self.sampling = Sampling(dac_wfm_size, 125e6)
 
         # Add memory maps
-        self._config = self.dvm.add_memory_map(self._config_addr, map_size)        
-        self._status = self.dvm.add_memory_map(self._status_addr, map_size)
-        self._dac    = self.dvm.add_memory_map(self._dac_addr, self.n/1024*map_size)
+        self._dac_addr = int('0x40000000',0)
+        self._dac = self.dvm.add_memory_map(self._dac_addr, self.n/1024*map_size)
         
-        if math.isnan(self._config) or math.isnan(self._status) or math.isnan(self._dac):        
+        if math.isnan(self._dac):        
             self.is_failed = True
 
-        self._gpio   = Gpio(self.dvm)
-        self._xadc   = Xadc(self.dvm)
-
         self.opened = True
-
         self.dac = np.zeros((2,self.sampling.n))
         
     @command

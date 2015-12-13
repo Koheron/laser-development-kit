@@ -325,8 +325,7 @@ class DevParam:
     """
     
     def __init__(self, line):
-        """
-        Parse device informations sent by KServer
+        """ Parse device informations sent by KServer
         """
         tokens = line.split(':')
         self.id = int(tokens[0][1:])
