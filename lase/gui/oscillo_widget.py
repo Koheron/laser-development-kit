@@ -49,11 +49,19 @@ class OscilloWidget(LaseWidget):
         self.cursors_box = QtGui.QGroupBox('Cursors')
         self.cursor_widget = CursorWidget(self.plotWid)
         self.cursors_box.setLayout(self.cursor_widget.layout)
-        # Autoscale
+        # Zoom
+        self.zoom_layout = QtGui.QHBoxLayout()
+        self.zoom_button = QtGui.QPushButton('Zoom Y')        
+        self.zoom_button.setStyleSheet('QPushButton {color: green;}')
+        self.zoom_button.setFixedWidth(312)
+        self.zoom_layout.addWidget(self.zoom_button, QtCore.Qt.AlignCenter)
+        # Autoscale & Zoom
         self.auto_scale_layout = QtGui.QHBoxLayout()
-        self.auto_scale_button = QtGui.QPushButton('Auto scale')        
+        self.zoom_button = QtGui.QPushButton('Zoom Y')        
+        self.zoom_button.setStyleSheet('QPushButton {color: green;}')
+        self.auto_scale_button = QtGui.QPushButton('Auto scale')
         self.auto_scale_button.setStyleSheet('QPushButton {color: green;}')
-        self.auto_scale_button.setFixedWidth(312)
+        self.auto_scale_layout.addWidget(self.zoom_button, QtCore.Qt.AlignCenter)
         self.auto_scale_layout.addWidget(self.auto_scale_button, QtCore.Qt.AlignCenter)
         # Math
         self.math_widget = MathWidget(self.driver, self.plotWid)
@@ -79,6 +87,7 @@ class OscilloWidget(LaseWidget):
 
         # Connexions
         self.auto_scale_button.clicked.connect(self.auto_scale)
+        self.zoom_button.clicked.connect(self.toggle_zoom)
    
     def update(self):
         super(OscilloWidget, self).update()
@@ -141,6 +150,13 @@ class OscilloWidget(LaseWidget):
     def auto_scale(self):
         self.plotWid.enableAutoRange()
     
+    def toggle_zoom(self):
+        if self.zoom_button.text() == 'Zoom Y':
+            self.zoom_button.setText('Zoom X')
+            self.plotWid.setMouseEnabled(x=True, y=False)
+        else:
+            self.zoom_button.setText('Zoom Y')
+            self.plotWid.setMouseEnabled(x=False, y=True)
     
 class PlotWidget(pg.PlotWidget):
     def __init__(self, driver, *args, **kwargs):

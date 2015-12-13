@@ -18,8 +18,8 @@ class MonitorWidget(QtGui.QWidget):
         # Close button
         self.close_button = QtGui.QPushButton('Home')            
         self.close_button.setStyleSheet('QPushButton {color: blue;}')    
-        self.close_button.setFixedWidth(80)        
-        
+        self.close_button.setFixedWidth(80)
+     
         # Frame rate
         self.frame_rate_label = QtGui.QLabel()
         self.frame_rate_label.setText('Frame rate (Hz) : '+"{:.1f}".format(0))
@@ -64,4 +64,3 @@ class MonitorWidget(QtGui.QWidget):
         
         self.laser_widget.stop_laser()
         self.driver.lase_base.opened = False
-
