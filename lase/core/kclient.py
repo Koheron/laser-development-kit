@@ -121,7 +121,8 @@ class KClient:
         Return 0 on success, -1 else.
         """
         try:
-            sent = self.sock.send(cmd)
+            print(bytes(cmd, encoding='utf-8'))
+            sent = self.sock.send(bytes(cmd, encoding='utf-8'))
             
             if sent == 0:
                 print("kclient-send: Socket connection broken")
@@ -270,7 +271,7 @@ class Commands:
         self.success = True        
         
         try:
-            sent = client.sock.send(make_command(1,1)) 
+            sent = client.send(make_command(1,1)) 
             
             if sent == 0:
                 print("Socket connection broken")
