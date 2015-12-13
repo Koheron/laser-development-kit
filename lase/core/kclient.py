@@ -168,8 +168,6 @@ class KClient:
             print("kclient-recv_int: Reception error")
             return float('nan')
             
-       # print str(len(data_recv)) + " vs " + str(buff_size)
-            
         return struct.unpack("I", data_recv)[0]
         
     def recv_n_bytes(self, n_bytes):
@@ -277,15 +275,18 @@ class Commands:
             if sent == 0:
                 print("Socket connection broken")
                 self.success = False
+                return
         except:
             print("Socket connection broken")
             self.success = False
+            return
              
         msg = recv_timeout(client.sock, 'EOC')
         
         if msg == "RECV_ERR_TIMEOUT":
             print("Timeout at message reception")
             self.success = False
+            return
         
         lines = msg.split('\n')
 
