@@ -2,7 +2,6 @@ import socket
 import select
 import struct
 import time
-import sys
 import numpy as np
 
 from .rcv_send import recv_timeout, recv_n_bytes, send_handshaking

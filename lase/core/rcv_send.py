@@ -78,8 +78,7 @@ def recv_timeout(socket, escape_seq, timeout=5):
 # ----------------------------------
 
 def send_handshaking(sock, data, format_char='I'):
-    """
-    Send data according to the handshaking protocol:
+    """ Send data according to the handshaking protocol
     
     1) The size of the buffer must have been send as a 
        command argument to KServer before
@@ -91,14 +90,12 @@ def send_handshaking(sock, data, format_char='I'):
         sock: The socket to use for communication
         data: The data buffer to be send
     """
-    
     data_recv = sock.recv(4)
     num = struct.unpack(">I", data_recv)[0]
     n_pts = len(data)
     
     if num == n_pts:
         format_ = ('%s'+format_char) % n_pts
-        print(format_)
         buff = struct.pack(format_, *data.astype(np.int64))
         sent = sock.send(buff)
             
