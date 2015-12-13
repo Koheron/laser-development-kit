@@ -2,6 +2,7 @@ import socket
 import select
 import struct
 import time
+import sys
 import numpy as np
 
 from .rcv_send import recv_timeout, recv_n_bytes, send_handshaking
@@ -96,17 +97,20 @@ class KClient:
         except socket.error as e:
             print('Failed to connect to {:s}:{:d} : {:s}'.format(host, port, e))
 
-        # If connected get the commands
         if self.is_connected:
-            self.cmds = Commands(self)
+            self._get_commands()
             
-            if not self.cmds.success:
-                # Wait a bit and retry
-                time.sleep(0.1)
-                self.cmds = Commands(self)
+    def _get_commands(self):
+        self.cmds = Commands(self)
+            
+        if not self.cmds.success:
+            # Wait a bit and retry
+            time.sleep(0.1)
+            self.cmds = Commands(self)
                 
-                if not self.cmds.success:
-                   self.is_connected = False 
+            if not self.cmds.success:
+                self.is_connected = False 
+                self.sock.close()
                 
     # -------------------------------------------------------
     # Send/Receive
@@ -121,8 +125,7 @@ class KClient:
         Return 0 on success, -1 else.
         """
         try:
-            print(bytes(cmd, encoding='utf-8'))
-            sent = self.sock.send(bytes(cmd, encoding='utf-8'))
+            sent = self.sock.send(cmd.encode('utf-8'))
             
             if sent == 0:
                 print("kclient-send: Socket connection broken")
@@ -273,7 +276,7 @@ class Commands:
         try:
             sent = client.send(make_command(1,1)) 
             
-            if sent == 0:
+            if sent < 0:
                 print("Socket connection broken")
                 self.success = False
                 return
