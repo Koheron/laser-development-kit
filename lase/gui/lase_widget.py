@@ -114,8 +114,8 @@ class LaseWidget(QtGui.QWidget):
         self.monitor_widget.update(frame_rate=self.frame_rate)            
 
     def update_dac(self, index):
-        self.driver.dac[index,:] = self.dac_wid[index].data
-        self.driver.set_dac()
+        self.driver.lase_base.dac[index,:] = self.dac_wid[index].data
+        self.driver.lase_base.set_dac()
         self.refresh_dac()
         
     def refresh_dac(self):

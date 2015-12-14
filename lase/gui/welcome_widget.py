@@ -116,7 +116,8 @@ class WelcomeWidget(QtGui.QWidget):
             self.load_bitstream("spectrum")
             time.sleep(0.01)
             driver = Spectrum(self.connect_widget.client)
-            driver.set_led(driver.client.host.split('.')[-1])
+            driver.lase_base.set_led(driver.client.host.split('.')[-1])
+
         else:
             driver = SpectrumSimu()
         index = self.parent.stacked_widget.addWidget(
