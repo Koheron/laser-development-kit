@@ -2,7 +2,9 @@
 # Client API for the DEV_MEM device
 # (c) Koheron 2014-2015 
 
-from kclient import reference_dict
+import math
+
+from .kclient import reference_dict
 
 class DevMem:
     """
@@ -31,7 +33,13 @@ class DevMem:
             The ID of the memory map
         """
         self.client.send_command(self.ref['id'], self.ref['add_memory_map'], device_addr, map_size)
-        return self.client.recv_int(12, 'ERR')
+        
+        map_id = self.client.recv_int(4, 'ERR')
+
+        if math.isnan(map_id):
+            print("Can't open memory map")
+        
+        return map_id
 
 
     def rm_memory_map(self, mmap_idx):

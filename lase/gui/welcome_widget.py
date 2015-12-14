@@ -9,9 +9,9 @@ import yaml
 
 from ..drivers import Oscillo, Spectrum
 from ..drivers import OscilloSimu, SpectrumSimu
-from oscillo_widget import OscilloWidget
-from spectrum_widget import SpectrumWidget
-from connect_widget import ConnectWidget
+from .oscillo_widget import OscilloWidget
+from .spectrum_widget import SpectrumWidget
+from .connect_widget import ConnectWidget
 
 class WelcomeWidget(QtGui.QWidget):
     """ This widget allows to connect to one of the available drivers.
@@ -103,8 +103,8 @@ class WelcomeWidget(QtGui.QWidget):
             time.sleep(0.01)
             self.load_bitstream("oscillo")
             time.sleep(0.01)
-            driver = Oscillo(self.connect_widget.client, current_mode='pwm')
-            driver.set_led(driver.client.host.split('.')[-1])
+            driver = Oscillo(self.connect_widget.client)
+            driver.lase_base.set_led(driver.lase_base.client.host.split('.')[-1])
         else:
             driver = OscilloSimu()
         index = self.parent.stacked_widget.addWidget(OscilloWidget(driver, self.parent))
@@ -115,8 +115,9 @@ class WelcomeWidget(QtGui.QWidget):
             time.sleep(0.01)
             self.load_bitstream("spectrum")
             time.sleep(0.01)
-            driver = Spectrum(self.connect_widget.client, current_mode='pwm')
-            driver.set_led(driver.client.host.split('.')[-1])
+            driver = Spectrum(self.connect_widget.client)
+            driver.lase_base.set_led(driver.client.host.split('.')[-1])
+
         else:
             driver = SpectrumSimu()
         index = self.parent.stacked_widget.addWidget(

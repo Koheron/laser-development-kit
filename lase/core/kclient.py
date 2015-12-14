@@ -4,7 +4,7 @@ import struct
 import time
 import numpy as np
 
-from rcv_send import recv_timeout, recv_n_bytes, send_handshaking
+from .rcv_send import recv_timeout, recv_n_bytes, send_handshaking
 
 # --------------------------------------------
 # Helper functions
@@ -96,17 +96,21 @@ class KClient:
         except socket.error as e:
             print('Failed to connect to {:s}:{:d} : {:s}'.format(host, port, e))
 
-        # If connected get the commands
         if self.is_connected:
+            self._get_commands()
+            
+    def _get_commands(self):
+        self.cmds = Commands(self)
+            
+        if not self.cmds.success:
+            # Wait a bit and retry
+            time.sleep(0.1)
             self.cmds = Commands(self)
-
+                
             if not self.cmds.success:
-                # Wait a bit and retry
-                time.sleep(0.1)
-                self.cmds = Commands(self)
-
-                if not self.cmds.success:
-                    self.is_connected = False
+                self.is_connected = False 
+                self.sock.close()
+                
 
     # -------------------------------------------------------
     # Send/Receive
@@ -117,11 +121,20 @@ class KClient:
 
         Args:
             cmd: The command to be send
+            
+        Return 0 on success, -1 else.
         """
-        sent = self.sock.send(cmd)
-
-        if sent == 0:
-            raise RuntimeError("Socket connection broken")
+        try:
+            sent = self.sock.send(cmd.encode('utf-8'))
+            
+            if sent == 0:
+                print("kclient-send: Socket connection broken")
+                return -1
+        except:
+            print("kclient-send: Can't send command")
+            return -1
+            
+        return 0
 
     def send_command(self, device_id, operation_ref, *args):
         self.send(make_command(device_id, operation_ref, *args))
@@ -142,15 +155,18 @@ class KClient:
 
             if ready[0]:
                 data_recv = self.sock.recv(buff_size)
-
-            if data_recv == '':
-                print("kclient-recv_int: Socket connection broken")
-                return float('nan')
-                
-            if err_msg != None:
-                if data_recv[:len(err_msg)] == err_msg:
-                    print("kclient-recv_int: No data available")
+                if data_recv == '':
+                    print("kclient-recv_int: Socket connection broken")
                     return float('nan')
+                    
+                if len(data_recv) != buff_size:
+                    print("kclient-recv_int: Invalid size received")
+                    return float('nan')
+                    
+                if err_msg != None:
+                    if data_recv[:len(err_msg)] == err_msg:
+                        print("kclient-recv_int: No data available")
+                        return float('nan')
         except:
             print("kclient-recv_int: Reception error")
             return float('nan')
@@ -193,12 +209,12 @@ class KClient:
             char = recv_n_bytes(self.sock, 1)
 
             if char == ':':
-                if tmp_buffer[1] == '\x00':
-                    toks = ''.join(tmp_buffer[2:]).split('@')
-                else:
-                    toks = ''.join(tmp_buffer[1:]).split('@')
-                elmt_type = toks[0].strip()
-
+                toks = ''.join(tmp_buffer[1:]).split('@')
+                    
+                # Receive an unwanted unicode character on the first char
+                #We thus clean all unicode characters
+                elmt_type = toks[0].decode('unicode_escape').encode('ascii','ignore').strip()
+                
                 if elmt_type == 'i' or elmt_type == 'j':
                     res_tuple.append(int(toks[1]))
                 elif elmt_type == 'f':
@@ -230,9 +246,9 @@ class KClient:
 
         Return: True if an error occured in the current session.
         """
-        self.send(make_command(1, 2))
-        data_recv = self.sock.recv(3)
-
+        self.send(make_command(1,2))
+        data_recv = self.sock.recv(3).decode('utf-8')
+        
         if data_recv == '':
             raise RuntimeError("Socket connection broken")
 
@@ -258,20 +274,23 @@ class Commands:
         self.success = True
 
         try:
-            sent = client.sock.send(make_command(1, 1)) 
-
-            if sent == 0:
+            sent = client.send(make_command(1,1)) 
+            
+            if sent < 0:
                 print("Socket connection broken")
                 self.success = False
+                return
         except:
             print("Socket connection broken")
             self.success = False
+            return
 
         msg = recv_timeout(client.sock, 'EOC')
 
         if msg == "RECV_ERR_TIMEOUT":
             print("Timeout at message reception")
             self.success = False
+            return
 
         lines = msg.split('\n')
 
@@ -308,8 +327,7 @@ class DevParam:
     """
 
     def __init__(self, line):
-        """
-        Parse device informations sent by KServer
+        """ Parse device informations sent by KServer
         """
         tokens = line.split(':')
         self.id = int(tokens[0][1:])
@@ -341,7 +359,8 @@ class DevParam:
         """
         print('\n> ' + self.name)
         print('ID: ' + str(self.id))
-        print('Operations:')
+        print ('Operations:')
+
         for idx, op in enumerate(self.operations):
             print('  ' + op + '(' + str(idx) + ')')
 

@@ -1,9 +1,10 @@
-from kclient import KClient
-from device import command
-from dev_mem import DevMem
-from gpio import Gpio
-from xadc import Xadc
-from zynq_ssh import ZynqSSH
+from .kclient import KClient
+from .device import command
+from .device import Device
+from .dev_mem import DevMem
+from .gpio import Gpio
+from .xadc import Xadc
+from .zynq_ssh import ZynqSSH
 
 __all__ = [
   'KClient',
@@ -12,4 +13,5 @@ __all__ = [
   'Gpio',
   'Xadc',
   'ZynqSSH',
+  'Device'
 ]

@@ -1,4 +1,3 @@
-from pyqtgraph.Qt import QtCore, QtGui
 import pyqtgraph as pg
 import numpy as np
 import datetime as datetime

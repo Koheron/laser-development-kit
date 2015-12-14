@@ -113,7 +113,7 @@ class ConnectWidget(QtGui.QWidget):
         if not self.is_connected:
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
             
-            self.client = KClient(self.host, verbose=False)
+            self.client = KClient(self.host, verbose=True)
 
             n_steps_timeout = 100
             cnt_timeout = 0

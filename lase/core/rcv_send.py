@@ -1,13 +1,14 @@
 import time
 import struct
 
+import numpy as np
+
 # ----------------------------------
 # Receive
 # ----------------------------------
 
 def recv_n_bytes(sock, n_bytes):
-    """
-    Receive exactly n bytes
+    """ Receive exactly n bytes
     
     Args:
         sock: The socket used for communication
@@ -30,7 +31,7 @@ def recv_n_bytes(sock, n_bytes):
             print("recv_n_bytes: sock.recv failed")
             return ''
         
-    return ''.join(data)
+    return b''.join(data)
 
 def recv_timeout(socket, escape_seq, timeout=5):   
     """
@@ -55,7 +56,8 @@ def recv_timeout(socket, escape_seq, timeout=5):
             return "RECV_ERR_TIMEOUT"
          
         try:
-            data = socket.recv(2048)
+            data = socket.recv(2048).decode('utf-8')
+
             if data:
                 total_data.append(data)
                 begin=time.time()
@@ -75,8 +77,7 @@ def recv_timeout(socket, escape_seq, timeout=5):
 # ----------------------------------
 
 def send_handshaking(sock, data, format_char='I'):
-    """
-    Send data according to the handshaking protocol:
+    """ Send data according to the handshaking protocol
     
     1) The size of the buffer must have been send as a 
        command argument to KServer before
@@ -88,13 +89,13 @@ def send_handshaking(sock, data, format_char='I'):
         sock: The socket to use for communication
         data: The data buffer to be send
     """
-    
     data_recv = sock.recv(4)
     num = struct.unpack(">I", data_recv)[0]
     n_pts = len(data)
     
     if num == n_pts:
-        buff = struct.pack(('%s'+format_char) % n_pts, *data)
+        format_ = ('%s'+format_char) % n_pts
+        buff = struct.pack(format_, *data.astype(np.int64))
         sent = sock.send(buff)
             
         if sent == 0:

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from pyqtgraph.Qt import QtGui
-from slider_widget import SliderWidget
+from .slider_widget import SliderWidget
 from PyQt4.QtCore import SIGNAL, pyqtSignal
 import numpy as np
 from scipy import signal
@@ -29,14 +29,15 @@ class DacWidget(QtGui.QWidget):
     def __init__(self, driver, index=0):
         super(DacWidget, self).__init__()
         
-        self.n = driver.sampling.n
-        self.fs = driver.sampling.fs
+        self.n = driver.lase_base.sampling.n
+        self.fs = driver.lase_base.sampling.fs
         
         self.index = index # used to track which DAC is related to the widget
         self.enable = False
         self.freq = 0
         self.mod_amp = 0
         self.waveform = 'Sine'
+        self.waveform_index = 0
         self.data = np.zeros(self.n)
 
         # Layout
