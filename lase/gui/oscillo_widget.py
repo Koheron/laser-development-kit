@@ -6,7 +6,6 @@ from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph as pg
 
 from .lase_widget import LaseWidget
-from .plot_widget import PlotWidget
 from .save_widget import SaveWidget
 from .cursor_widget import CursorWidget
 from .stats_widget import StatsWidget
@@ -26,12 +25,10 @@ class OscilloWidget(LaseWidget):
         # Layouts          
         self.control_layout = QtGui.QVBoxLayout()        
         
-        # Plot widget        
-        self.plot_widget = PlotWidget(name="data")
+        # Plot widget
         self.init_plot_widget()
 
         self.set_axis()
-        self.left_panel_layout.insertWidget(1, self.plot_widget, 1)
 
         # Tab widget 
         self.tabs = QtGui.QTabWidget()

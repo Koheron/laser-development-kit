@@ -24,12 +24,7 @@ class SpectrumWidget(LaseWidget):
         self.control_layout = QtGui.QVBoxLayout()
 
         # Plot widget
-        self.spectrum_plot_widget = PlotWidget(name="data")
-        self.spectrum_plot_widget.getPlotItem().getAxis('bottom').setLabel('Frequency', units='MHz')
-        self.spectrum_plot_widget.getPlotItem().getAxis('left').setLabel('PSD')
-            
-        self.plot_widget = self.spectrum_plot_widget
-        self.plot_widget.set_axis()
+        self.init_plot_widget()
 
         self.cursor_widget = CursorWidget(self.plot_widget)
         self.calibration_widget = NoiseFloorWidget(self.driver)
@@ -41,7 +36,6 @@ class SpectrumWidget(LaseWidget):
         self.control_layout.addStretch(1)
 
         self.right_panel_widget.setLayout(self.control_layout)
-        self.left_panel_layout.insertWidget(1, self.plot_widget, 1)
         
     def update(self):
         super(SpectrumWidget, self).update()
@@ -61,8 +55,15 @@ class SpectrumWidget(LaseWidget):
             self.monitor_widget.close_session()
 
     def refresh_dac(self):
-        pass        
-        
+        pass
+
+    def init_plot_widget(self):
+        self.spectrum_plot_widget = PlotWidget(name="data")
+        self.spectrum_plot_widget.getPlotItem().getAxis('bottom').setLabel('Frequency', units='MHz')
+        self.spectrum_plot_widget.getPlotItem().getAxis('left').setLabel('PSD')
+        self.plot_widget.set_axis()
+        self.set_plot_widget(self.spectrum_plot_widget)
+
     def set_plot_widget(self, new_plot_widget):
         self.plot_widget.setParent(None)
         self.plot_widget = new_plot_widget

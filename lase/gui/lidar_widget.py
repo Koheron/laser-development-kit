@@ -51,14 +51,14 @@ class LidarWidget(QtGui.QWidget):
         if self.is_velocity_plot: # switch to spectrum plot
             self.is_velocity_plot = False
             self.velocity_plot_button.setText('Velocity')
-            
-            self.spectrum_widget.set_plot_widget(self.spectrum_widget.spectrum_plot_widget)
-            self.rolling_time_plot.set_axis()
+            self.spectrum_widget.init_plot_widget()
+
         else: # switch to velocity plot
             self.is_velocity_plot = True
             self.velocity_plot_button.setText('Spectrum')
             self.spectrum_widget.set_plot_widget(self.rolling_time_plot)
-            
+            self.rolling_time_plot.set_axis()
+
         self.spectrum_widget.plot_widget.getPlotItem().enableAutoRange()
         self.spectrum_widget.plot_widget.set_axis()
         

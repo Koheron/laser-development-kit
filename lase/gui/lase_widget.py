@@ -3,6 +3,7 @@
 
 from pyqtgraph.Qt import QtGui, QtCore
 from .monitor_widget import MonitorWidget
+from .plot_widget import PlotWidget
 from .laser_widget import LaserWidget
 from .dac_widget import DacWidget
 
@@ -41,6 +42,8 @@ class LaseWidget(QtGui.QWidget):
         # Monitor widget
         self.monitor_widget = MonitorWidget(self.driver, self.laser_widget)
 
+        self.plot_widget = PlotWidget(name="data")
+
         # DAC Widgets
         self.dac_tabs = QtGui.QTabWidget()
         self.dac_wid = []
@@ -66,6 +69,8 @@ class LaseWidget(QtGui.QWidget):
         self.lay.addLayout(self.left_panel_layout,1)
         self.lay.addWidget(self.right_panel_button)
         self.lay.addWidget(self.right_panel_widget)
+
+        self.left_panel_layout.insertWidget(1, self.plot_widget, 1)
                
         # Connections
         self.right_panel_button.clicked.connect(self.right_panel_connect)
