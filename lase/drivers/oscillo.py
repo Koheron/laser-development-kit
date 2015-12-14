@@ -13,7 +13,7 @@ class Oscillo(Device):
     """
     
     def __init__(self, client, map_size=4096, verbose = False):
-        super(Oscillo, self).__init__(client)   
+        super(Oscillo, self).__init__(client)
         
         n = 8192
         self.waveform_size = n

@@ -4,7 +4,7 @@
 import numpy as np
 import math
 
-from ..core import DevMem, Gpio, Xadc
+from ..core import DevMem
 from ..signal import Sampling
 from ..core import Device, command
 
