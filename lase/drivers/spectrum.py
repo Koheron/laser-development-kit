@@ -17,8 +17,6 @@ class Spectrum(Device):
         self.lase_base = Lase(n, client, map_size)
         
         self.open(n)
-
-        self.ii = 0
                 
         # Addresses of memory maps
         _spectrum_addr = int('0x42000000',0)
@@ -74,13 +72,7 @@ class Spectrum(Device):
         
     @command
     def get_spectrum(self):
-        self.ii = self.ii + 1        
-        if (self.ii % 4 == 0):
-            time.sleep(0.1)
         self.spectrum = self.client.recv_buffer(self.lase_base.sampling.n, data_type='float32')
-        n_avg = self.get_num_average()
-        print(n_avg, np.median(self.spectrum))
-        #self.spectrum = self.spectrum / n_avg
         #self.spectrum[1] = 1
         
     @command
