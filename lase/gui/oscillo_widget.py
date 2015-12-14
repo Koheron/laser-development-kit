@@ -79,7 +79,7 @@ class OscilloWidget(LaseWidget):
         if (self.counter == 20):
             if self.math_widget.correction == True:
                 self.driver.optimize_amplitude(channel = 1)
-                self.driver.set_dac(warning=True) 
+                self.driver.lase_base.set_dac(warning=True) 
                 self.refresh_dac()
             self.counter = 0
         self.counter += 1

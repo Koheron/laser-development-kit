@@ -7,9 +7,9 @@ from .lase import Lase
 
 class Spectrum(Lase):
     """ Driver for the spectrum bitstream """ 
-    def __init__(self, client, map_size = 4096, verbose = False, current_mode = 'pwm'): 
+    def __init__(self, client, map_size = 4096, verbose = False): 
         n = 4096
-        super(Spectrum, self).__init__(n, client, map_size = 4096, current_mode = 'pwm')   
+        super(Spectrum, self).__init__(n, client, map_size = 4096)   
                 
         # Addresses of memory maps
         _spectrum_addr = int('0x42000000',0)

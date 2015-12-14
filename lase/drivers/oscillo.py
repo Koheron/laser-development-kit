@@ -106,26 +106,26 @@ class Oscillo(Device):
         white_noise = np.fft.irfft(amplitudes * np.exp(1j * random_phases))
         white_noise = np.fft.fft(white_noise)
         white_noise[0] = 0.01
-        white_noise[self.sampling.n/2]=1    
+        white_noise[self.lase_base.sampling.n/2]=1    
         white_noise = np.real(np.fft.ifft(white_noise))
         white_noise /= 1.7 * np.max(np.abs(white_noise))        
         return white_noise
 
     def get_amplitude_transfer_function(self, channel_dac=0, 
                                         channel_adc =0, transfer_avg=100):
-        n_freqs = self.sampling.n/2 +1
+        n_freqs = self.lase_base.sampling.n/2 +1
         self.amplitude_transfer_function *= 0
         
         for i in range(transfer_avg):
             white_noise = self._white_noise(n_freqs)
-            self.dac[channel_dac,:] = white_noise
+            self.lase_base.dac[channel_dac,:] = white_noise
             self.set_dac()
             time.sleep(0.01)
             self.get_adc()
             self.amplitude_transfer_function += np.fft.fft(self.adc[channel_adc,:])/np.fft.fft(white_noise)
         self.amplitude_transfer_function = self.amplitude_transfer_function/transfer_avg
         self.amplitude_transfer_function[0] = 1
-        self.dac[channel_dac,:] = np.zeros(self.sampling.n)
+        self.lase_base.dac[channel_dac,:] = np.zeros(self.lase_base.sampling.n)
         self.set_dac()
 
     def get_correction(self):
@@ -136,7 +136,7 @@ class Oscillo(Device):
 
     def optimize_amplitude(self, alpha=1, channel=0):
         self.amplitude_error = (self.adc[0,:] - np.mean(self.adc[0,:])) - self.ideal_amplitude_waveform
-        self.dac[channel,:] -= alpha*self.get_correction()
+        self.lase_base.dac[channel,:] -= alpha*self.get_correction()
         
     def get_spectrum(self):
         fft_adc = np.fft.fft(self.adc, axis=1)

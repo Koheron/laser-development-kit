@@ -37,6 +37,7 @@ class DacWidget(QtGui.QWidget):
         self.freq = 0
         self.mod_amp = 0
         self.waveform = 'Sine'
+        self.waveform_index = 0
         self.data = np.zeros(self.n)
 
         # Layout
