@@ -6,6 +6,7 @@ from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph as pg
 
 from .lase_widget import LaseWidget
+from .plot_widget import PlotWidget
 from .save_widget import SaveWidget
 from .cursor_widget import CursorWidget
 from .stats_widget import StatsWidget
@@ -26,9 +27,11 @@ class OscilloWidget(LaseWidget):
         self.control_layout = QtGui.QVBoxLayout()        
         
         # Plot widget        
-        self.plotWid = PlotWidget(self.driver, name="data")
+        self.plot_widget = PlotWidget(name="data")
+        self.init_plot_widget()
+
         self.set_axis()
-        self.left_panel_layout.insertWidget(1, self.plotWid, 1)
+        self.left_panel_layout.insertWidget(1, self.plot_widget, 1)
 
         # Tab widget 
         self.tabs = QtGui.QTabWidget()
@@ -40,14 +43,14 @@ class OscilloWidget(LaseWidget):
         self.tabs.addTab(self.calibration_widget,"Calibration")
     
         # Display
-        self.select_channel_widget = SelectChannelWidget(self.plotWid)
+        self.select_channel_widget = SelectChannelWidget(self.plot_widget)
         self.display_box = QtGui.QGroupBox("Display")
-        self.display_box.setLayout(self.select_channel_widget.layout)        
+        self.display_box.setLayout(self.select_channel_widget.layout)
         # Stats
         self.stats_widget = StatsWidget(self.driver)        
         # Cursors
         self.cursors_box = QtGui.QGroupBox('Cursors')
-        self.cursor_widget = CursorWidget(self.plotWid)
+        self.cursor_widget = CursorWidget(self.plot_widget)
         self.cursors_box.setLayout(self.cursor_widget.layout)
         # Zoom
         self.zoom_layout = QtGui.QHBoxLayout()
@@ -64,7 +67,7 @@ class OscilloWidget(LaseWidget):
         self.auto_scale_layout.addWidget(self.zoom_button, QtCore.Qt.AlignCenter)
         self.auto_scale_layout.addWidget(self.auto_scale_button, QtCore.Qt.AlignCenter)
         # Math
-        self.math_widget = MathWidget(self.driver, self.plotWid)
+        self.math_widget = MathWidget(self.driver, self.plot_widget)
         self.math_box = QtGui.QGroupBox("Math")
         self.math_box.setLayout(self.math_widget.layout)   
         # Save
@@ -105,18 +108,18 @@ class OscilloWidget(LaseWidget):
         # This should be in the PlotWidget class
         if self.math_widget.fourier: 
             self.driver.get_avg_spectrum(self.math_widget.n_avg_spectrum)                      
-            self.plotWid.dataItem[0].setData(
+            self.plot_widget.dataItem[0].setData(
                 1e-6 * self.driver.lase_base.sampling.f_fft[1: self.driver.lase_base.sampling.n/2], 
                 10*np.log10((self.driver.avg_spectrum[0,1:])**2)
             )
-            self.plotWid.dataItem[1].setData(
+            self.plot_widget.dataItem[1].setData(
                 1e-6 * self.driver.lase_base.sampling.f_fft[1: self.driver.lase_base.sampling.n/2],
                 10*np.log10((self.driver.avg_spectrum[1,1:])**2)
             )
         else:
-            self.plotWid.dataItem[0].setData(1e6*self.driver.lase_base.sampling.t,
+            self.plot_widget.dataItem[0].setData(1e6*self.driver.lase_base.sampling.t,
                                              self.driver.adc[0,:])
-            self.plotWid.dataItem[1].setData(1e6*self.driver.lase_base.sampling.t,
+            self.plot_widget.dataItem[1].setData(1e6*self.driver.lase_base.sampling.t,
                                              self.driver.adc[1,:])   
                                             
         if self.driver.lase_base.is_failed:
@@ -139,53 +142,49 @@ class OscilloWidget(LaseWidget):
                 self.refresh_dac()
              
     def refresh_dac(self):
-        self.plotWid.dataItem[2].setData(1e6*self.driver.lase_base.sampling.t, 8192*self.driver.lase_base.dac[0,:])
-        self.plotWid.dataItem[3].setData(1e6*self.driver.lase_base.sampling.t, 8192*self.driver.lase_base.dac[1,:])
+        self.plot_widget.dataItem[2].setData(1e6*self.driver.lase_base.sampling.t, 8192*self.driver.lase_base.dac[0,:])
+        self.plot_widget.dataItem[3].setData(1e6*self.driver.lase_base.sampling.t, 8192*self.driver.lase_base.dac[1,:])
     
     def set_axis(self):
-        self.plotWid.getPlotItem().getAxis('bottom').setLabel('Time (us)')
-        self.plotWid.getPlotItem().getAxis('left').setLabel('Optical power (arb. units)')
-        self.plotWid.getViewBox().setMouseMode(self.plotWid.getViewBox().PanMode)
+        self.plot_widget.getPlotItem().getAxis('bottom').setLabel('Time (us)')
+        self.plot_widget.getPlotItem().getAxis('left').setLabel('Optical power (arb. units)')
+        self.plot_widget.getViewBox().setMouseMode(self.plot_widget.getViewBox().PanMode)
         
     def auto_scale(self):
-        self.plotWid.enableAutoRange()
+        self.plot_widget.enableAutoRange()
     
     def toggle_zoom(self):
         if self.zoom_button.text() == 'Zoom Y':
             self.zoom_button.setText('Zoom X')
-            self.plotWid.setMouseEnabled(x=True, y=False)
+            self.plot_widget.setMouseEnabled(x=True, y=False)
         else:
             self.zoom_button.setText('Zoom Y')
-            self.plotWid.setMouseEnabled(x=False, y=True)
+            self.plot_widget.setMouseEnabled(x=False, y=True)
     
-class PlotWidget(pg.PlotWidget):
-    def __init__(self, driver, *args, **kwargs):
-        super(PlotWidget, self).__init__(*args, **kwargs)
-        
-        self.driver = driver
-        
+    def init_plot_widget(self):
+      
         # Right part
-        self.show_adc = [True, True]
-        self.show_dac = [False, False]        
+        self.plot_widget.show_adc = [True, True]
+        self.plot_widget.show_dac = [False, False]        
         
-        # Plot Widget   
-        self.dataItem = []
-        self.dataItem.append(pg.PlotDataItem(1e6*self.driver.lase_base.sampling.t,
+        # Plot Widget
+        self.plot_widget.dataItem = []
+        self.plot_widget.dataItem.append(pg.PlotDataItem(1e6*self.driver.lase_base.sampling.t,
                                              self.driver.adc[0,:], pen=(0,4)))
-        self.dataItem.append(pg.PlotDataItem(1e6*self.driver.lase_base.sampling.t,
+        self.plot_widget.dataItem.append(pg.PlotDataItem(1e6*self.driver.lase_base.sampling.t,
                                              self.driver.adc[1,:], pen=(1,4)))
-        self.dataItem.append(pg.PlotDataItem(1e6*self.driver.lase_base.sampling.t,
+        self.plot_widget.dataItem.append(pg.PlotDataItem(1e6*self.driver.lase_base.sampling.t,
                                              self.driver.lase_base.dac[0,:], pen=(0,4)))
-        self.dataItem.append(pg.PlotDataItem(1e6*self.driver.lase_base.sampling.t,
+        self.plot_widget.dataItem.append(pg.PlotDataItem(1e6*self.driver.lase_base.sampling.t,
                                              self.driver.lase_base.dac[1,:], pen=(1,4)))
         
-        for item in self.dataItem:
-            self.addItem(item)
+        for item in self.plot_widget.dataItem:
+            self.plot_widget.addItem(item)
 
-        self.dataItem[0].setVisible(self.show_adc[0])
-        self.dataItem[1].setVisible(self.show_adc[1])
-        self.dataItem[2].setVisible(self.show_dac[0])
-        self.dataItem[3].setVisible(self.show_dac[1])
-        self.plotItem.setMouseEnabled(x=False, y=True)
+        self.plot_widget.dataItem[0].setVisible(self.plot_widget.show_adc[0])
+        self.plot_widget.dataItem[1].setVisible(self.plot_widget.show_adc[1])
+        self.plot_widget.dataItem[2].setVisible(self.plot_widget.show_dac[0])
+        self.plot_widget.dataItem[3].setVisible(self.plot_widget.show_dac[1])
+        self.plot_widget.plotItem.setMouseEnabled(x=False, y=True)
         
-        self.plotItem = self.getPlotItem()
+        self.plot_widget.plotItem = self.plot_widget.getPlotItem()

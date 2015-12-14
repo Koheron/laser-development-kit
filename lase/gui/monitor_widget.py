@@ -60,7 +60,7 @@ class MonitorWidget(QtGui.QWidget):
         
         for current in current_ramp:
             self.driver.lase_base.set_laser_current(current)
-            time.sleep(0.05)
+            time.sleep(0.01)
         
         self.laser_widget.stop_laser()
         self.driver.lase_base.opened = False

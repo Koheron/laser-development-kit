@@ -13,7 +13,7 @@ from PyQt4.QtCore import pyqtSignal
 
 class SpectrumWidget(LaseWidget):
 
-    offset_updated_signal = pyqtSignal(int)
+    #offset_updated_signal = pyqtSignal(int)
 
     def __init__(self, spectrum, parent):
         super(SpectrumWidget, self).__init__(spectrum, parent)
@@ -24,7 +24,7 @@ class SpectrumWidget(LaseWidget):
         self.control_layout = QtGui.QVBoxLayout()
 
         # Plot widget
-        self.spectrum_plot_widget = PlotWidget(name="data") 
+        self.spectrum_plot_widget = PlotWidget(name="data")
         self.spectrum_plot_widget.getPlotItem().getAxis('bottom').setLabel('Frequency', units='MHz')
         self.spectrum_plot_widget.getPlotItem().getAxis('left').setLabel('PSD')
             
@@ -55,14 +55,13 @@ class SpectrumWidget(LaseWidget):
                         1e-6 * np.fft.fftshift(self.driver.sampling.f_fft),
                         1e-15 * np.fft.fftshift(self.spectrum),
                         pen=(0,4), clear=True, _callSync='off')
-                        
+
         if self.driver.is_failed:
             print("An error occured during update\nLeave Spectrum")
             self.monitor_widget.close_session()
 
     def refresh_dac(self):
-        pass
-        
+        pass        
         
     def set_plot_widget(self, new_plot_widget):
         self.plot_widget.setParent(None)
