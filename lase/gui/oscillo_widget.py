@@ -27,7 +27,6 @@ class OscilloWidget(LaseWidget):
         
         # Plot widget
         self.init_plot_widget()
-
         self.set_axis()
 
         # Tab widget 
@@ -49,20 +48,7 @@ class OscilloWidget(LaseWidget):
         self.cursors_box = QtGui.QGroupBox('Cursors')
         self.cursor_widget = CursorWidget(self.plot_widget)
         self.cursors_box.setLayout(self.cursor_widget.layout)
-        # Zoom
-        self.zoom_layout = QtGui.QHBoxLayout()
-        self.zoom_button = QtGui.QPushButton('Zoom Y')        
-        self.zoom_button.setStyleSheet('QPushButton {color: green;}')
-        self.zoom_button.setFixedWidth(312)
-        self.zoom_layout.addWidget(self.zoom_button, QtCore.Qt.AlignCenter)
-        # Autoscale & Zoom
-        self.auto_scale_layout = QtGui.QHBoxLayout()
-        self.zoom_button = QtGui.QPushButton('Zoom Y')        
-        self.zoom_button.setStyleSheet('QPushButton {color: green;}')
-        self.auto_scale_button = QtGui.QPushButton('Auto scale')
-        self.auto_scale_button.setStyleSheet('QPushButton {color: green;}')
-        self.auto_scale_layout.addWidget(self.zoom_button, QtCore.Qt.AlignCenter)
-        self.auto_scale_layout.addWidget(self.auto_scale_button, QtCore.Qt.AlignCenter)
+
         # Math
         self.math_widget = MathWidget(self.driver, self.plot_widget)
         self.math_box = QtGui.QGroupBox("Math")
@@ -76,7 +62,6 @@ class OscilloWidget(LaseWidget):
         self.control_layout.addWidget(self.display_box)
         self.control_layout.addLayout(self.stats_widget.layout)
         self.control_layout.addWidget(self.cursors_box)
-        self.control_layout.addLayout(self.auto_scale_layout)
         self.control_layout.addWidget(self.math_box)
         self.control_layout.addWidget(self.save_box)
         self.control_layout.addStretch(1)
@@ -85,10 +70,7 @@ class OscilloWidget(LaseWidget):
         self.right_panel.addWidget(self.tabs)
         self.right_panel_widget.setLayout(self.right_panel)
 
-        # Connexions
-        self.auto_scale_button.clicked.connect(self.auto_scale)
-        self.zoom_button.clicked.connect(self.toggle_zoom)
-   
+
     def update(self):
         super(OscilloWidget, self).update()
         self.driver.get_adc()
@@ -146,18 +128,7 @@ class OscilloWidget(LaseWidget):
         self.plot_widget.getPlotItem().getAxis('bottom').setLabel('Time (us)')
         self.plot_widget.getPlotItem().getAxis('left').setLabel('Optical power (arb. units)')
         self.plot_widget.getViewBox().setMouseMode(self.plot_widget.getViewBox().PanMode)
-        
-    def auto_scale(self):
-        self.plot_widget.enableAutoRange()
-    
-    def toggle_zoom(self):
-        if self.zoom_button.text() == 'Zoom Y':
-            self.zoom_button.setText('Zoom X')
-            self.plot_widget.setMouseEnabled(x=True, y=False)
-        else:
-            self.zoom_button.setText('Zoom Y')
-            self.plot_widget.setMouseEnabled(x=False, y=True)
-    
+ 
     def init_plot_widget(self):
       
         # Right part

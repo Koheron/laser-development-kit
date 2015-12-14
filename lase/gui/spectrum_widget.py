@@ -25,6 +25,7 @@ class SpectrumWidget(LaseWidget):
 
         # Plot widget
         self.init_plot_widget()
+        self.set_plot_widget(self.spectrum_plot_widget)
 
         self.cursor_widget = CursorWidget(self.plot_widget)
         self.calibration_widget = NoiseFloorWidget(self.driver)
@@ -61,8 +62,7 @@ class SpectrumWidget(LaseWidget):
         self.spectrum_plot_widget = PlotWidget(name="data")
         self.spectrum_plot_widget.getPlotItem().getAxis('bottom').setLabel('Frequency', units='MHz')
         self.spectrum_plot_widget.getPlotItem().getAxis('left').setLabel('PSD')
-        self.plot_widget.set_axis()
-        self.set_plot_widget(self.spectrum_plot_widget)
+        self.spectrum_plot_widget.plotItem.setMouseEnabled(x=False, y=True)
 
     def set_plot_widget(self, new_plot_widget):
         self.plot_widget.setParent(None)
