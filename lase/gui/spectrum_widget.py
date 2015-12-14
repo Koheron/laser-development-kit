@@ -48,7 +48,7 @@ class SpectrumWidget(LaseWidget):
         if not self.lidar_widget.is_velocity_plot:
             self.plot_widget.dataItem.setData(
                         1e-6 * np.fft.fftshift(self.driver.lase_base.sampling.f_fft),
-                        1e-15 * np.fft.fftshift(self.spectrum),
+                        np.fft.fftshift(self.spectrum),
                         pen=(0,4), clear=True, _callSync='off')
 
         if self.driver.is_failed:

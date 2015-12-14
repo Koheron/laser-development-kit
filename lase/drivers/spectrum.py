@@ -17,6 +17,8 @@ class Spectrum(Device):
         self.lase_base = Lase(n, client, map_size)
         
         self.open(n)
+
+        self.ii = 0
                 
         # Addresses of memory maps
         _spectrum_addr = int('0x42000000',0)
@@ -29,7 +31,6 @@ class Spectrum(Device):
         self._avg_off_off = 36
 
         # Add memory maps
-        self._spectrum = self.lase_base.dvm.add_memory_map(_spectrum_addr, self.lase_base.sampling.n/1024*map_size)
         self._demod = self.lase_base.dvm.add_memory_map(_demod_addr, self.lase_base.sampling.n/1024*map_size)
         
         # TODO Ckeck memory map ID is not NaN
@@ -40,7 +41,7 @@ class Spectrum(Device):
         self.demod[0,:] = 0.49 * (1- np.cos(2*np.pi*np.arange(self.lase_base.sampling.n)/self.lase_base.sampling.n))   #0.5*np.real(demod) 
         self.demod[1,:] = 0#0.5*np.imag(demod)
 
-        self.set_offset(-199, -21)
+        #self.set_offset(-199, -21)
         #self.set_offset(0, 0)
 
         self.set_demod()
@@ -73,9 +74,12 @@ class Spectrum(Device):
         
     @command
     def get_spectrum(self):
+        self.ii = self.ii + 1        
+        if (self.ii % 4 == 0):
+            time.sleep(0.1)
         self.spectrum = self.client.recv_buffer(self.lase_base.sampling.n, data_type='float32')
         n_avg = self.get_num_average()
-        print 10*n_avg
+        print(n_avg, np.median(self.spectrum))
         #self.spectrum = self.spectrum / n_avg
         #self.spectrum[1] = 1
         
