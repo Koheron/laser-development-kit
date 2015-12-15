@@ -15,18 +15,18 @@ from .welcome_widget import WelcomeWidget
 from .spectrum_widget import SpectrumWidget
 from .stats_widget import StatsWidget
 
-__all__ = [ 'CalibrationWidget',
-            'CursorWidget',
-            'DacWidget',
-            'LaseWidget',
-            'SliderWidget',
-            'OscilloWidget',
-            'LaserWidget',
-            'MathWidget',
-            'MonitorWidget',
-            'SaveWidget',
-            'SelectChannelWidget',
-            'WelcomeWidget',
-            'SpectrumWidget',
-            'StatsWidget'
-            ]
+__all__ = ['CalibrationWidget',
+           'CursorWidget',
+           'DacWidget',
+           'LaseWidget',
+           'SliderWidget',
+           'OscilloWidget',
+           'LaserWidget',
+           'MathWidget',
+           'MonitorWidget',
+           'SaveWidget',
+           'SelectChannelWidget',
+           'WelcomeWidget',
+           'SpectrumWidget',
+           'StatsWidget'
+          ]
