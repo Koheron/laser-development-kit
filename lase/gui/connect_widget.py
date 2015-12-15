@@ -4,13 +4,16 @@ from pyqtgraph.Qt import QtGui, QtCore
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import QApplication, QCursor
 
-import json, os
+import json
+import os
 import time
 from lase.core import ZynqSSH, KClient
+
 
 class ConnectWidget(QtGui.QWidget):
     def __init__(self, parent, ip_path=None):
         super(ConnectWidget, self).__init__()
+
 
         self.parent = parent
         self.ip_path = ip_path
@@ -29,7 +32,7 @@ class ConnectWidget(QtGui.QWidget):
         self.point = []
         for i in range(3):
             self.point.append(QtGui.QLabel('.'))
-            
+
         self.lay_ip.addWidget(QtGui.QLabel('IP address: '))
 
         for i in range(3):
@@ -39,7 +42,7 @@ class ConnectWidget(QtGui.QWidget):
 
         # SSH password
         self.lay_password = QtGui.QHBoxLayout()
-        self.lay_password.addWidget(QtGui.QLabel('Password:')) 
+        self.lay_password.addWidget(QtGui.QLabel('Password:'))
         self.password_widget = QtGui.QLineEdit()
         self.password_widget.setEchoMode(QtGui.QLineEdit.Password)
         self.password_widget.setText('changeme')
@@ -78,10 +81,10 @@ class ConnectWidget(QtGui.QWidget):
 
         for i in range(3):
             self.host += self.line[i].text() + '.'
-            
-        self.host += self.line[3].text() 
+
+        self.host += self.line[3].text()
         self.host = str(self.host)
-        
+
         self.line[0].textChanged.connect(lambda: self.ip_changed(0))
         self.line[1].textChanged.connect(lambda: self.ip_changed(1))
         self.line[2].textChanged.connect(lambda: self.ip_changed(2))
@@ -94,7 +97,7 @@ class ConnectWidget(QtGui.QWidget):
         IP = []
         for i in range(3):
             self.host += self.line[i].text() + '.'
-        self.host += self.line[3].text() 
+        self.host += self.line[3].text()
         self.host = str(self.host)
         for i in range(4):
             IP.append(str(self.line[i].text()))
@@ -105,14 +108,14 @@ class ConnectWidget(QtGui.QWidget):
 
         with open(os.path.join(self.ip_path, 'ip_address' + '.json'), 'w') as fp:
             json.dump(parameters, fp)
-        if self.line[index].cursorPosition() == 3 and index < 3 :
+        if self.line[index].cursorPosition() == 3 and index < 3:
             self.line[index+1].setFocus()
             self.line[index+1].selectAll()
-            
+
     def connect(self):
         if not self.is_connected:
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-            
+
             self.client = KClient(self.host, verbose=True)
 
             n_steps_timeout = 100
@@ -155,7 +158,7 @@ class ConnectWidget(QtGui.QWidget):
             QApplication.restoreOverrideCursor()
 
         else:
-            if hasattr(self,'client'):
+            if hasattr(self, 'client'):
                 self.client.__del__()
             self.connection_info.setText('Disconnected')
             self._set_disconnect()
