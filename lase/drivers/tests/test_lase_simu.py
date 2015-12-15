@@ -2,8 +2,9 @@
 
 from ..lase_simu import LaseSimu
 
+
 class TestLaseSimu:
-      
+
     def test_laser_enable(self):
         n = 8192
         lase_simu = LaseSimu(n)
