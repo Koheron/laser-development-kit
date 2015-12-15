@@ -24,13 +24,12 @@ class ZynqSSH:
         """
         if type(tcp_ip_) != str:
             raise TypeError("IP address must be a string")
-            
+
         if type(password_) != str:
             raise TypeError("Password must be a string")
 
         self.ip = tcp_ip_
         self.password = password_
-
         self.ssh = paramiko.SSHClient()
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.ssh.connect(tcp_ip_, username='root', password=password_)
