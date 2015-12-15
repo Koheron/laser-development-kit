@@ -106,7 +106,8 @@ class ConnectWidget(QtGui.QWidget):
         if not os.path.exists(self.ip_path):
             os.makedirs(self.ip_path)
 
-        with open(os.path.join(self.ip_path, 'ip_address' + '.json'), 'w') as fp:
+        with open(os.path.join(self.ip_path,'ip_address' + '.json'), 'w')\
+             as fp:
             json.dump(parameters, fp)
         if self.line[index].cursorPosition() == 3 and index < 3:
             self.line[index+1].setFocus()
