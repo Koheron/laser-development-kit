@@ -4,8 +4,14 @@ from pyqtgraph.Qt import QtGui, QtCore
 from PyQt4.QtWebKit import QWebView
 import time
 import os
-import urllib
 import yaml
+import sys
+
+if sys.version_info[0] == 3:
+    import urllib.request
+else:
+    import urllib
+# http://stackoverflow.com/questions/17960942/attributeerror-module-object-has-no-attribute-urlretrieve
 
 from ..drivers import Oscillo, Spectrum
 from ..drivers import OscilloSimu, SpectrumSimu
@@ -95,7 +101,10 @@ class WelcomeWidget(QtGui.QWidget):
         bitstream_path = os.path.join(self.parent.bitstreams_path, bitstream_name+'.bit')
         if not os.path.isfile(bitstream_path):
             bitstream_url = self.config["bitstreams"][bitstream_name+"_url"]
-            urllib.urlretrieve(bitstream_url, bitstream_path)
+            if sys.version_info[0] == 3:
+                urllib.request.urlretrieve(bitstream_url, bitstream_path)
+            else:
+                urllib.urlretrieve(bitstream_url, bitstream_path)
         self.connect_widget.ssh.load_pl(bitstream_path)
 
     def oscillo_on(self):
