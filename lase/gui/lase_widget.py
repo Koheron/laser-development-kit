@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 from pyqtgraph.Qt import QtGui, QtCore
 from .monitor_widget import MonitorWidget
 from .plot_widget import PlotWidget
@@ -13,7 +12,7 @@ class LaseWidget(QtGui.QWidget):
     """ This widget serves as the base widget for `OscilloWidget` and
         `SpectrumWidget`.
     """
-    
+
     def __init__(self, driver, parent):
         super(LaseWidget, self).__init__()
     
@@ -24,20 +23,30 @@ class LaseWidget(QtGui.QWidget):
         self.show_right_panel = True
 
         # Icons
-        self.left_arrow_icon = QtGui.QIcon(os.path.join(self.img_path, 'left_arrow.png'))
-        self.right_arrow_icon = QtGui.QIcon(os.path.join(self.img_path, 'right_arrow.png'))
+        self.left_arrow_icon = QtGui.QIcon(os.path.join(self.img_path,
+                                                        'left_arrow.png')
+                                          )
+        self.right_arrow_icon = QtGui.QIcon(os.path.join(self.img_path,
+                                                         'right_arrow.png')
+                                           )
 
-        self.zoom_x_icon = QtGui.QIcon(os.path.join(self.img_path, 'zoom_x.png'))
-        self.zoom_y_icon = QtGui.QIcon(os.path.join(self.img_path, 'zoom_y.png'))
- 
-        self.autoscale_icon = QtGui.QIcon(os.path.join(self.img_path, 'autoscale.png'))
-        
+        self.zoom_x_icon = QtGui.QIcon(os.path.join(self.img_path,
+                                                    'zoom_x.png')
+                                      )
+        self.zoom_y_icon = QtGui.QIcon(os.path.join(self.img_path,
+                                                    'zoom_y.png')
+                                      )
+
+        self.autoscale_icon = QtGui.QIcon(os.path.join(self.img_path,
+                                                       'autoscale.png')
+                                         )
+
         self.driver = driver
-        
+
         # Initialize driver
         self.driver.lase_base.set_dac()
         self.power_offset = self.driver.lase_base.get_laser_power()
-  
+
         # Layout
         self.init_layout()
 
@@ -56,12 +65,12 @@ class LaseWidget(QtGui.QWidget):
         self.dac_wid = []
         n_dac = 2
         for i in range(n_dac):
-            self.dac_wid.append(DacWidget(self.driver, index = i))
+            self.dac_wid.append(DacWidget(self.driver, index=i))
             self.dac_wid[i].data_updated_signal.connect(self.update_dac)
-            self.dac_tabs.addTab(self.dac_wid[i],"DAC "+str(i+1))
+            self.dac_tabs.addTab(self.dac_wid[i], "DAC " + str(i + 1))
 
         self.left_panel_layout.addLayout(self.monitor_widget.layout)
-        self.left_panel_layout.addWidget(self.laser_box)   
+        self.left_panel_layout.addWidget(self.laser_box)
         self.left_panel_layout.addWidget(self.dac_tabs)
 
         # Toolbar
@@ -70,9 +79,9 @@ class LaseWidget(QtGui.QWidget):
         self.right_panel_button = QtGui.QPushButton()
         self.right_panel_button.setStyleSheet('QPushButton {color: green;}')
         self.right_panel_button.setIcon(self.right_arrow_icon)
-        self.right_panel_button.setIconSize(QtCore.QSize(30,30))
+        self.right_panel_button.setIconSize(QtCore.QSize(30, 30))
 
-        self.zoom_button = QtGui.QPushButton()        
+        self.zoom_button = QtGui.QPushButton()
         self.zoom_button.setStyleSheet('QPushButton {color: green;}')
         self.zoom_button.setIcon(self.zoom_y_icon)
         self.zoom = 'Y'
@@ -84,14 +93,14 @@ class LaseWidget(QtGui.QWidget):
         self.autoscale_button.setIconSize(QtCore.QSize(30,30))
 
         self.right_panel = QtGui.QVBoxLayout()
-        self.right_panel_widget = QtGui.QWidget()        
+        self.right_panel_widget = QtGui.QWidget()
 
         self.toolbar_layout.addWidget(self.right_panel_button)
         self.toolbar_layout.addWidget(self.zoom_button)
         self.toolbar_layout.addWidget(self.autoscale_button)
         self.toolbar_layout.addStretch(1)
 
-        self.lay.addLayout(self.left_panel_layout,1)
+        self.lay.addLayout(self.left_panel_layout, 1)
         self.lay.addLayout(self.toolbar_layout)
 
         self.lay.addWidget(self.right_panel_widget)
@@ -110,25 +119,25 @@ class LaseWidget(QtGui.QWidget):
         self.left_panel_layout = QtGui.QVBoxLayout()
 
     def update(self):
-        self.driver.lase_base.update() # Used in simulation
-        self.monitor_widget.update(frame_rate=self.frame_rate)            
+        self.driver.lase_base.update()  # Used in simulation
+        self.monitor_widget.update(frame_rate=self.frame_rate)
 
     def update_dac(self, index):
-        self.driver.lase_base.dac[index,:] = self.dac_wid[index].data
+        self.driver.lase_base.dac[index, :] = self.dac_wid[index].data
         self.driver.lase_base.set_dac()
         self.refresh_dac()
         
     def refresh_dac(self):
         """ Refresh the DAC plots
-        
+
             Abstract method, defined by convention only
         """
         pass
-        
+
     def right_panel_connect(self):
         self.show_right_panel = not self.show_right_panel
         self.right_panel_widget.setVisible(self.show_right_panel)
-        if self.show_right_panel:            
+        if self.show_right_panel:
             self.right_panel_button.setIcon(self.right_arrow_icon)
         else:
             self.right_panel_button.setIcon(self.left_arrow_icon)
@@ -145,6 +154,3 @@ class LaseWidget(QtGui.QWidget):
 
     def autoscale(self):
         self.plot_widget.enableAutoRange()
-
-
-        
