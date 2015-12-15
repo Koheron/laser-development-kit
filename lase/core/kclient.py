@@ -10,11 +10,13 @@ from .rcv_send import recv_timeout, recv_n_bytes, send_handshaking
 # Helper functions
 # --------------------------------------------
 
+
 def make_command(*args):
     return "|".join([str(arg) for arg in args])+'|\n'
 
+
 # TODO
-# This approach implies some strong constraints on the class and 
+# This approach implies some strong constraints on the class and
 # method naming. This should be referenced in some doc.
 
 def reference_dict(self):
@@ -31,7 +33,7 @@ def _class_to_device_name(classname):
     """
     If the device name is in a single word DEVNAME then the associated
     class name must be Devname.
-    
+
     If the device name is in a several words DEV_NAME then the associated
     class name must be DevName.
     """
@@ -56,7 +58,7 @@ def _class_to_device_name(classname):
 class KClient:
     """ KServer client
 
-    Initializes the connection with KServer, then retrieves 
+    Initializes the connection with KServer, then retrieves
     the current configuration: that is the available devices and
     the commands associated.
 
@@ -73,7 +75,7 @@ class KClient:
         """
         if type(host) != str:
             raise TypeError("IP address must be a string")
-           
+
         if type(port) != int:
             raise TypeError("Port number must be an integer")
 
@@ -98,19 +100,18 @@ class KClient:
 
         if self.is_connected:
             self._get_commands()
-            
+
     def _get_commands(self):
         self.cmds = Commands(self)
-            
+
         if not self.cmds.success:
             # Wait a bit and retry
             time.sleep(0.1)
             self.cmds = Commands(self)
-                
+
             if not self.cmds.success:
-                self.is_connected = False 
+                self.is_connected = False
                 self.sock.close()
-                
 
     # -------------------------------------------------------
     # Send/Receive
@@ -121,19 +122,19 @@ class KClient:
 
         Args:
             cmd: The command to be send
-            
+
         Return 0 on success, -1 else.
         """
         try:
             sent = self.sock.send(cmd.encode('utf-8'))
-            
+
             if sent == 0:
                 print("kclient-send: Socket connection broken")
                 return -1
         except:
             print("kclient-send: Can't send command")
             return -1
-            
+
         return 0
 
     def send_command(self, device_id, operation_ref, *args):
@@ -144,8 +145,8 @@ class KClient:
 
         Args:
             buff_size: Maximum amount of data to be received at once
-            err_msg: Error message. If you require the server to 
-                     send an message signaling an error occured and 
+            err_msg: Error message. If you require the server to
+                     send an message signaling an error occured and
                      that no data can be retrieve.
 
         Return: The integer on success, NaN on failure
@@ -158,12 +159,12 @@ class KClient:
                 if data_recv == '':
                     print("kclient-recv_int: Socket connection broken")
                     return float('nan')
-                    
+
                 if len(data_recv) != buff_size:
                     print("kclient-recv_int: Invalid size received")
                     return float('nan')
                     
-                if err_msg != None:
+                if err_msg is not None:
                     if data_recv[:len(err_msg)] == err_msg:
                         print("kclient-recv_int: No data available")
                         return float('nan')
@@ -180,7 +181,7 @@ class KClient:
             n_bytes: Number of bytes to receive
         """
         return recv_n_bytes(self.sock, n_bytes)
-        
+
     def recv_buffer(self, buff_size, data_type='uint32'):
         """ Receive a buffer of uint32
 
@@ -210,11 +211,11 @@ class KClient:
 
             if char == ':':
                 toks = ''.join(tmp_buffer[1:]).split('@')
-                    
+
                 # Receive an unwanted unicode character on the first char
-                #We thus clean all unicode characters
-                elmt_type = toks[0].decode('unicode_escape').encode('ascii','ignore').strip()
-                
+                # We thus clean all unicode characters
+                elmt_type = toks[0].decode('unicode_escape').encode('ascii', 'ignore').strip()
+
                 if elmt_type == 'i' or elmt_type == 'j':
                     res_tuple.append(int(toks[1]))
                 elif elmt_type == 'f':
@@ -233,7 +234,7 @@ class KClient:
 
         Args:
             data: The data buffer to be sent
-            format_char: format character, unsigned int by default (see https://docs.python.org/2/library/struct.html#format-characters)
+            format_char: format character, unsigned int by default (https://docs.python.org/2/library/struct.html#format-characters)
         """
         send_handshaking(self.sock, data, format_char=format_char)
 
@@ -246,9 +247,9 @@ class KClient:
 
         Return: True if an error occured in the current session.
         """
-        self.send(make_command(1,2))
+        self.send(make_command(1, 2))
         data_recv = self.sock.recv(3).decode('utf-8')
-        
+
         if data_recv == '':
             raise RuntimeError("Socket connection broken")
 
@@ -261,11 +262,10 @@ class KClient:
         if hasattr(self, 'sock'):
             self.sock.close()
 
-
 class Commands:
     """ KServer commands
 
-    Retrieves and stores the commands (devices and 
+    Retrieves and stores the commands (devices and
     associated operations) available in KServer.
     """
     def __init__(self, client):
@@ -274,8 +274,8 @@ class Commands:
         self.success = True
 
         try:
-            sent = client.send(make_command(1,1)) 
-            
+            sent = client.send(make_command(1, 1))
+
             if sent < 0:
                 print("Socket connection broken")
                 self.success = False
@@ -321,8 +321,8 @@ class Commands:
 class DevParam:
     """ Device parameters
 
-    Store the parameters related to a devices: 
-    the device name and its ID, together with 
+    Store the parameters related to a devices:
+    the device name and its ID, together with
     the associated operations and their reference
     """
 
@@ -359,8 +359,7 @@ class DevParam:
         """
         print('\n> ' + self.name)
         print('ID: ' + str(self.id))
-        print ('Operations:')
+        print('Operations:')
 
         for idx, op in enumerate(self.operations):
             print('  ' + op + '(' + str(idx) + ')')
-
