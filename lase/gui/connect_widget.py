@@ -52,7 +52,8 @@ class ConnectWidget(QtGui.QWidget):
 
         if os.path.exists(self.ip_path):
             try:
-                with open(os.path.join(self.ip_path, 'ip_address' + '.json')) as fp:
+                with open(os.path.join(self.ip_path,
+                                       'ip_address' + '.json')) as fp:
                     json_data = fp.read()
                     parameters = json.loads(json_data)
                     IP = parameters['TCP_IP']
@@ -60,7 +61,7 @@ class ConnectWidget(QtGui.QWidget):
                 IP = ['192', '168', '1', '1']
             self.set_text_from_ip(IP)
 
-        self.retrieve_host()
+        self.set_host_from_text()
 
         self.line[0].textChanged.connect(lambda: self.ip_changed(0))
         self.line[1].textChanged.connect(lambda: self.ip_changed(1))
@@ -92,23 +93,25 @@ class ConnectWidget(QtGui.QWidget):
         for i in range(4):
             self.line[i].setText(str(ip[i]))
 
-    def retrieve_host(self):
+    def set_host_from_text(self):
         self.host = ''
         for i in range(3):
             self.host += self.line[i].text() + '.'
         self.host += self.line[3].text()
         self.host = str(self.host)
 
-    def ip_changed(self, index):
-        IP = []
-        self.retrieve_host()
+    def get_ip_from_text(self):
+        ip = []
         for i in range(4):
-            IP.append(str(self.line[i].text()))
+            ip.append(str(self.line[i].text()))
+        return ip
+
+    def ip_changed(self, index):
+        self.set_host_from_text()
         parameters = {}
-        parameters['TCP_IP'] = IP
+        parameters['TCP_IP'] = self.get_ip_from_text()
         if not os.path.exists(self.ip_path):
             os.makedirs(self.ip_path)
-
         with open(os.path.join(self.ip_path, 'ip_address' + '.json'), 'w') as fp:
             json.dump(parameters, fp)
         if self.line[index].cursorPosition() == 3 and index < 3:
@@ -128,7 +131,8 @@ class ConnectWidget(QtGui.QWidget):
                 cnt_timeout += 1
 
                 if cnt_timeout > n_steps_timeout:
-                    self.connection_info.setText('Failed to connect to host\nCheck IP address')
+                    self.connection_info.setText(
+                        'Failed to connect to host\nCheck IP address')
                     self._set_disconnect()
                     QApplication.restoreOverrideCursor()
                     return
@@ -145,7 +149,8 @@ class ConnectWidget(QtGui.QWidget):
                     if not self.password:
                         self.connection_info.setText('Please enter password')
                     else:
-                        self.connection_info.setText('Cannot open SSH connection\nCheck password')
+                        self.connection_info.setText(
+                            'Cannot open SSH connection\nCheck password')
 
                     self._set_disconnect()
                     QApplication.restoreOverrideCursor()
