@@ -6,6 +6,7 @@ from PyQt4.QtCore import SIGNAL, pyqtSignal
 import numpy as np
 from scipy import signal
 
+
 class WaveformList(QtGui.QWidget):
     def __init__(self, items=['Sine', 'Triangle', 'Square']):
         super(WaveformList, self).__init__()
@@ -46,17 +47,18 @@ class DacWidget(QtGui.QWidget):
         self.slider_layout = QtGui.QVBoxLayout()
         # DAC ON/OFF button
         self.button = QtGui.QPushButton('ON')
-        self.button.setStyleSheet('QPushButton {color: green;}') 
+        self.button.setStyleSheet('QPushButton {color: green;}')
         self.button.setFixedWidth(80)
         self.button.setCheckable(True)
         # Waveform list
         self.waveform_list = WaveformList()
         # Sliders
-        self.freq_slider = SliderWidget(name='Modulation frequency (MHz)           ', 
-                                         max_slider=1e-6 * self.fs / 2, 
-                                         step=1e-6 * self.fs / self.n, alpha=1)
-        self.mod_amp_slider = SliderWidget(name='Modulation amplitude (arb. units.) ', 
-                                            max_slider=1)
+        self.freq_slider = SliderWidget(name='Modulation frequency (MHz)           ',
+                                        max_slider=1e-6 * self.fs / 2,
+                                        step=1e-6 * self.fs / self.n, alpha=1)
+        self.mod_amp_slider = SliderWidget(name='Modulation amplitude\
+                                                 (arb. units.) ',
+                                           max_slider=1)
         # Add Widgets to Layout
         self.layout.addWidget(self.button)
         self.slider_layout.addWidget(self.mod_amp_slider)
@@ -99,7 +101,9 @@ class DacWidget(QtGui.QWidget):
             self.data = self.mod_amp * np.cos(2 * np.pi * self.freq / self.n * np.arange(self.n))
         elif self.waveform_list.list[1].isChecked():
             self.waveform_index = 1
-            self.data = self.mod_amp * signal.sawtooth(2*np.pi * self.freq / self.n * np.arange(self.n), width=0.5)
+            self.data = self.mod_amp * signal.sawtooth(2 * np.pi * self.freq /
+                                                       self.n * np.arange(self.n),
+                                                       width=0.5)
         elif self.waveform_list.list[2].isChecked():
             self.waveform_index = 2
             self.data = self.mod_amp * signal.square(2 * np.pi * self.freq / self.n * np.arange(self.n), duty=0.5)
