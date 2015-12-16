@@ -20,9 +20,6 @@ class Oscillo(Device):
         self.lase_base = Lase(self.waveform_size, client, map_size=4096)
 
         self.open(self.waveform_size)
-
-        # Config offsets
-        self._avg_off = 24
        
         self.avg_on = False
 

@@ -4,7 +4,6 @@
 import numpy as np
 import math
 
-from ..core import DevMem
 from ..signal import Sampling
 from ..core import Device, command, write_buffer
 #from ..core import Dac
@@ -23,25 +22,11 @@ class Lase(Device):
         self.open(dac_wfm_size)
 
         self.client = client
-        self.dvm = DevMem(self.client)
 
         self.n = dac_wfm_size
         # Number of points in the waveform 'ex : n = 8192'
         self.max_current = 50  # mA
         self.sampling = Sampling(dac_wfm_size, 125e6)
-
-        # Add memory maps
-        #self._dac_addr = int('0x40000000',0)
-        #self._dac = self.dvm.add_memory_map(self._dac_addr, self.n/1024*map_size)
-
-        #self._dac = Dac(dac_wfm_size)
-             
-        self._dac_addr = int('0x40000000', 0)
-        self._dac = self.dvm.add_memory_map(self._dac_addr,
-                                            self.n / 1024 * map_size)
-
-        if math.isnan(self._dac):
-            self.is_failed = True
 
         self.opened = True
         self.dac = np.zeros((2, self.sampling.n))
@@ -55,7 +40,6 @@ class Lase(Device):
 
     def close(self):
         self.reset()
-        del self.dvm.client
 
     @command
     def reset(self):

@@ -56,8 +56,7 @@ class DacWidget(QtGui.QWidget):
         self.freq_slider = SliderWidget(name='Modulation frequency (MHz)           ',
                                         max_slider=1e-6 * self.fs / 2,
                                         step=1e-6 * self.fs / self.n, alpha=1)
-        self.mod_amp_slider = SliderWidget(name='Modulation amplitude\
-                                                 (arb. units.) ',
+        self.mod_amp_slider = SliderWidget(name='Modulation amplitude (arb. units.) ',
                                            max_slider=1)
         # Add Widgets to Layout
         self.layout.addWidget(self.button)
