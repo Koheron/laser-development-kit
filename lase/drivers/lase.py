@@ -6,7 +6,7 @@ import math
 
 from ..core import DevMem
 from ..signal import Sampling
-from ..core import Device, command
+from ..core import Device, command, write_buffer
 #from ..core import Dac
 
 
@@ -104,19 +104,17 @@ class Lase(Device):
         """
         pass
 
+    @write_buffer
+    def set_dac_buffer(self, data):
+        pass
+
     def set_dac(self, warning=False, reset=False):
         if warning:
             if np.max(np.abs(self.dac)) >= 1:
                 print('WARNING : dac out of bounds')
-                
-        #dac_data_1 = np.mod(np.floor(8192*self.dac[0,:]) + 8192,16384)+8192
-        #dac_data_2 = np.mod(np.floor(8192*self.dac[1,:]) + 8192,16384)+8192
-        #self.dvm.write_buffer(self._dac, 0, dac_data_1 + 65536 * dac_data_2)
-        #self._dac.set_dac(dac_data_1 + 65536 * dac_data_)
-
         dac_data_1 = np.mod(np.floor(8192 * self.dac[0, :]) + 8192,16384) + 8192
         dac_data_2 = np.mod(np.floor(8192 * self.dac[1, :]) + 8192,16384) + 8192
-        self.dvm.write_buffer(self._dac, 0, dac_data_1 + 65536 * dac_data_2)
+        self.set_dac_buffer(dac_data_1 + 65536 * dac_data_2)
 
         if reset:
             self.reset_acquisition()
