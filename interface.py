@@ -39,7 +39,7 @@ class KWindow(QtGui.QMainWindow):
         # Init const
         self.app = app
         self.session_opened = True
-        self.setWindowTitle('Lase') # Title
+        self.setWindowTitle('Koheron') # Title
         self.setWindowIcon(QtGui.QIcon(os.path.join(self.img_path,'icon_koheron.png')))
         self.resize(1400, 900) # Size
         self.frame_rate = 0
