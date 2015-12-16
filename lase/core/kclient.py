@@ -2,6 +2,7 @@ import socket
 import select
 import struct
 import time
+import math
 import numpy as np
 
 from .rcv_send import recv_timeout, recv_n_bytes, send_handshaking
@@ -236,12 +237,35 @@ class KClient:
     def send_handshaking(self, data, format_char='I'):
         """ Send data with handshaking protocol
 
+        1) The size of the buffer must have been send as a
+           command argument to KServer before
+        2) KServer acknowledges reception readiness by sending
+           the number of points to receive to the client
+        3) The client send the data buffer
+
         Args:
             data: The data buffer to be sent
             format_char: format character, unsigned int by default
             (https://docs.python.org/2/library/struct.html#format-characters)
+
+        Return 0 on success, -1 otherwise.
         """
-        send_handshaking(self.sock, data, format_char=format_char)
+        data_recv = self.sock.recv(4)
+
+        num = struct.unpack(">I", data_recv)[0]
+        n_pts = len(data)
+
+        if num == n_pts:
+            format_ = ('%s'+format_char) % n_pts
+            buff = struct.pack(format_, *data.astype(np.int32))
+            sent = self.sock.send(buff)
+
+            if sent == 0:
+                return -1
+        else:
+            return -1
+
+        return 0
 
     # -------------------------------------------------------
     # Current session information

@@ -5,7 +5,7 @@ import time
 import numpy as np
 
 from .lase import Lase
-from ..core import Device, command
+from ..core import Device, command, write_buffer
 
 
 class Spectrum(Device):
@@ -16,21 +16,7 @@ class Spectrum(Device):
 
         n = 4096
         self.lase_base = Lase(n, client, map_size)
-
         self.open(n)
-
-        # Addresses of memory maps
-        _spectrum_addr = int('0x42000000', 0)
-        _demod_addr = int('0x44000000', 0)
-
-        # Config offsets
-        self._subtract_mean_off = 24
-        self._cfg_fft_off = 28
-        self._demod_off = 32
-        self._avg_off_off = 36
-
-        # Add memory maps
-        self._demod = self.lase_base.dvm.add_memory_map(_demod_addr, self.lase_base.sampling.n/1024*map_size)
 
         # TODO Check memory map ID is not NaN
 
@@ -63,26 +49,24 @@ class Spectrum(Device):
     def set_offset(self, offset_real, offset_imag):
         pass
 
-#    def set_demod(self):
-#        self.dvm.write(self._config,self._demod_off, 8192 + 65356 * 8192)
+    @write_buffer
+    def set_demod_buffer(self, data):
+        pass
 
     def set_demod(self, warning=False):
         if warning:
             if np.max(np.abs(self.demod)) >= 1:
                 print('WARNING : dac out of bounds')
         demod_data_1 = np.mod(np.floor(8192 * self.demod[0, :]) +
-                              8192, 16384)\
-                       + 8192
+                              8192, 16384) + 8192
         demod_data_2 = np.mod(np.floor(8192 * self.demod[1, :]) +
-                              8192, 16384)\
-                       + 8192
-        self.lase_base.dvm.write_buffer(self._demod, 0,
-                                        demod_data_1 + 65536 *
-                                        demod_data_2)
+                              8192, 16384) + 8192
+        self.set_demod_buffer(demod_data_1 + 65536 * demod_data_2)
 
     @command
     def get_spectrum(self):
-        self.spectrum = self.client.recv_buffer(self.lase_base.sampling.n, data_type='float32')
+        self.spectrum = self.client.recv_buffer(self.lase_base.sampling.n,
+                                                data_type='float32')
         # self.spectrum[1] = 1
 
     @command
