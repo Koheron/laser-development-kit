@@ -4,7 +4,7 @@
 import initExample
 from lase.core import KClient
 
-# Driver to use 
+# Driver to use
 from lase.drivers import Oscillo
 
 # Modules to import
@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import time
 
 # Connect to Lase
-host = '192.168.1.4'  # Lase IP address 
+host = '192.168.1.4'  # Lase IP address
 client = KClient(host)
 driver = Oscillo(client)  # Replace with appropriate driver
 
@@ -32,13 +32,13 @@ driver.set_dac()
 
 # Signal on ADC
 driver.get_adc()
-signal = driver.adc[0,:]
+signal = driver.adc[0, :]
 
-# Plot 
+# Plot
 plt.plot(driver.sampling.t, signal)
 plt.show()
 
-# Plot 
+# Plot
 psd_signal = np.abs(np.fft.fft(signal)) ** 2
 
 plt.semilogy(1e-6 * np.fft.fftshift(driver.sampling.f_fft), np.fft.fftshift(psd_signal))

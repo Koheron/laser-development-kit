@@ -9,7 +9,7 @@ class CursorWidget(QtGui.QWidget):
 
     def __init__(self, plot_widget):
         super(CursorWidget, self).__init__()
-        
+
         self.plot_widget = plot_widget
         
         self.cursor = [False, False]
@@ -131,30 +131,32 @@ class CursorWidget(QtGui.QWidget):
             self.reset_text()
             self.delta_box.setVisible(False)
 
+    def is_inbounds(self, coord):
+        return 1e-2 < np.abs(coord) < 1e3
+
     def mouseMoved(self, pos):
         if self.plot_widget.sceneBoundingRect().contains(pos):
             self.mousePoint = self.view_box.mapSceneToView(pos)
             self.vLine_1.setPos(self.mousePoint.x())
             self.hLine_1.setPos(self.mousePoint.y())
             if self.cursor[0]:
-                if 1e-2 < np.abs(self.mousePoint.x()) < 1e3:
+                if self.is_inbounds(self.mousePoint.x()):
                     self.cursor_1_X.setText('{:.2f}'.format(self.mousePoint.x()))
                 else:
                     self.cursor_1_X.setText('%.2e' % (self.mousePoint.x()))
-                if 1e-2 < np.abs(self.mousePoint.y()) < 1e3:
+                if self.is_inbounds(self.mousePoint.y()):
                     self.cursor_1_Y.setText('{:.2f}'.format(self.mousePoint.y()))
                 else:
                     self.cursor_1_Y.setText('%.2e' % (self.mousePoint.y()))
                 if self.cursor[1] is True:
-                    if 1e-2 < np.abs(self.mousePoint.x() - self.cursor_2_x) < 1e3:
+                    if self.is_inbounds(self.mousePoint.x() - self.cursor_2_x):
                         self.delta_X.setText('X   ' + '{:.2f}'.format(self.mousePoint.x() - self.cursor_2_x))
                     else:
                         self.delta_X.setText('X   ' + '%.2e' % (self.mousePoint.x() - self.cursor_2_x))
-                    if 1e-2 < np.abs(self.mousePoint.y() - self.cursor_2_y) < 1e3:
+                    if self.is_inbounds(self.mousePoint.x() - self.cursor_2_y):
                         self.delta_Y.setText('Y   ' + '{:.2f}'.format(self.mousePoint.y() - self.cursor_2_y))
                     else:
                         self.delta_Y.setText('Y   ' + '%.2e' % (self.mousePoint.y() - self.cursor_2_y))
-
         else:
             self.reset_text()
             self.delta_X.setText('X')
@@ -171,11 +173,11 @@ class CursorWidget(QtGui.QWidget):
             self.delta_box.setVisible(True)
             self.vLine_2.setVisible(self.cursor[1])
             self.hLine_2.setVisible(self.cursor[1])
-            if 1e-2 < np.abs(self.mousePoint.x()) < 1e3:
+            if self.is_inbounds(self.mousePoint.x()):
                 self.cursor_2_X.setText('{:.2f}'.format(self.mousePoint.x()))
             else:
                 self.cursor_2_X.setText('%.2e' % (self.mousePoint.x()))
-            if 1e-2 < np.abs(self.mousePoint.y()) < 1e3:
+            if self.is_inbounds(self.mousePoint.y()):
                 self.cursor_2_Y.setText('{:.2f}'.format(self.mousePoint.y()))
             else:
                 self.cursor_2_Y.setText('%.2e' % (self.mousePoint.y()))

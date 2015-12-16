@@ -86,20 +86,20 @@ class OscilloWidget(LaseWidget):
         self.counter += 1
 
         # This should be in the PlotWidget class
-        if self.math_widget.fourier: 
+        if self.math_widget.fourier:
             self.driver.get_avg_spectrum(self.math_widget.n_avg_spectrum)
             self.plot_widget.dataItem[0].setData(
-                1e-6 * self.driver.lase_base.sampling.f_fft[1: self.driver.lase_base.sampling.n/2],
-                10*np.log10((self.driver.avg_spectrum[0, 1:])**2)
+                1e-6 * self.driver.lase_base.sampling.f_fft[1: self.driver.lase_base.sampling.n / 2],
+                10 * np.log10((self.driver.avg_spectrum[0, 1:]) ** 2)
             )
             self.plot_widget.dataItem[1].setData(
-                1e-6 * self.driver.lase_base.sampling.f_fft[1: self.driver.lase_base.sampling.n/2],
-                10*np.log10((self.driver.avg_spectrum[1, 1:])**2)
+                1e-6 * self.driver.lase_base.sampling.f_fft[1: self.driver.lase_base.sampling.n / 2],
+                10 * np.log10((self.driver.avg_spectrum[1, 1:]) ** 2)
             )
         else:
-            self.plot_widget.dataItem[0].setData(1e6*self.driver.lase_base.sampling.t,
+            self.plot_widget.dataItem[0].setData(1e6 * self.driver.lase_base.sampling.t,
                                             self.driver.adc[0, :])
-            self.plot_widget.dataItem[1].setData(1e6*self.driver.lase_base.sampling.t,
+            self.plot_widget.dataItem[1].setData(1e6 * self.driver.lase_base.sampling.t,
                                             self.driver.adc[1, :])
 
         if self.driver.lase_base.is_failed:
@@ -122,8 +122,10 @@ class OscilloWidget(LaseWidget):
                 self.refresh_dac()
 
     def refresh_dac(self):
-        self.plot_widget.dataItem[2].setData(1e6*self.driver.lase_base.sampling.t, 8192*self.driver.lase_base.dac[0, :])
-        self.plot_widget.dataItem[3].setData(1e6*self.driver.lase_base.sampling.t, 8192*self.driver.lase_base.dac[1, :])
+        self.plot_widget.dataItem[2].setData(1e6 * self.driver.lase_base.sampling.t,
+                                             8192 * self.driver.lase_base.dac[0, :])
+        self.plot_widget.dataItem[3].setData(1e6 * self.driver.lase_base.sampling.t,
+                                             8192 * self.driver.lase_base.dac[1, :])
 
     def set_axis(self):
         self.plot_widget.getPlotItem().getAxis('bottom').setLabel('Time (us)')
@@ -139,13 +141,13 @@ class OscilloWidget(LaseWidget):
         # Plot Widget
         self.plot_widget.dataItem = []
         self.plot_widget.dataItem.append(pg.PlotDataItem(1e6*self.driver.lase_base.sampling.t,
-                                            self.driver.adc[0, :], pen=(0, 4)))
+                                         self.driver.adc[0, :], pen=(0, 4)))
         self.plot_widget.dataItem.append(pg.PlotDataItem(1e6*self.driver.lase_base.sampling.t,
-                                            self.driver.adc[1, :], pen=(1, 4)))
+                                         self.driver.adc[1, :], pen=(1, 4)))
         self.plot_widget.dataItem.append(pg.PlotDataItem(1e6*self.driver.lase_base.sampling.t,
-                                            self.driver.lase_base.dac[0, :], pen=(0, 4)))
+                                         self.driver.lase_base.dac[0, :], pen=(0, 4)))
         self.plot_widget.dataItem.append(pg.PlotDataItem(1e6*self.driver.lase_base.sampling.t,
-                                            self.driver.lase_base.dac[1, :], pen=(1, 4)))
+                                         self.driver.lase_base.dac[1, :], pen=(1, 4)))
 
         for item in self.plot_widget.dataItem:
             self.plot_widget.addItem(item)

@@ -37,7 +37,9 @@ class Spectrum(Device):
         self.spectrum = np.zeros(self.lase_base.sampling.n, dtype=np.float32)
         self.demod = np.zeros((2, self.lase_base.sampling.n))
 
-        self.demod[0, :] = 0.49 * (1 - np.cos(2 * np.pi * np.arange(self.lase_base.sampling.n) / self.lase_base.sampling.n))
+        self.demod[0, :] = 0.49 * (1 - np.cos(2 * np.pi *
+                                              np.arange(self.lase_base.sampling.n) /
+                                              self.lase_base.sampling.n))
         # 0.5*np.real(demod)
         self.demod[1, :] = 0  # 0.5*np.imag(demod)
 
@@ -68,9 +70,15 @@ class Spectrum(Device):
         if warning:
             if np.max(np.abs(self.demod)) >= 1:
                 print('WARNING : dac out of bounds')
-        demod_data_1 = np.mod(np.floor(8192 * self.demod[0, :]) + 8192,16384) + 8192
-        demod_data_2 = np.mod(np.floor(8192 * self.demod[1, :]) + 8192,16384) + 8192
-        self.lase_base.dvm.write_buffer(self._demod, 0, demod_data_1 + 65536 * demod_data_2)
+        demod_data_1 = np.mod(np.floor(8192 * self.demod[0, :]) +
+                              8192, 16384)\
+                       + 8192
+        demod_data_2 = np.mod(np.floor(8192 * self.demod[1, :]) +
+                              8192, 16384)\
+                       + 8192
+        self.lase_base.dvm.write_buffer(self._demod, 0,
+                                        demod_data_1 + 65536 *
+                                        demod_data_2)
 
     @command
     def get_spectrum(self):

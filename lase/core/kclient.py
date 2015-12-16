@@ -20,7 +20,8 @@ def make_command(*args):
 # method naming. This should be referenced in some doc.
 
 def reference_dict(self):
-    params = self.client.cmds.get_device(_class_to_device_name(self.__class__.__name__))
+    params = self.client.cmds.get_device(_class_to_device_name
+                                         (self.__class__.__name__))
     ref_dict = {'id': str(params.id)}
     for method in dir(self):
         if callable(getattr(self, method)):
@@ -28,6 +29,7 @@ def reference_dict(self):
             if op_ref >= 0:
                 ref_dict[method] = str(params.get_op_ref(method.upper()))
     return ref_dict
+
 
 def _class_to_device_name(classname):
     """
@@ -96,7 +98,8 @@ class KClient:
             self.is_connected = True
 
         except socket.error as e:
-            print('Failed to connect to {:s}:{:d} : {:s}'.format(host, port, e))
+            print('Failed to connect to {:s}:{:d} : {:s}'
+                  .format(host, port, e))
 
         if self.is_connected:
             self._get_commands()
@@ -163,7 +166,7 @@ class KClient:
                 if len(data_recv) != buff_size:
                     print("kclient-recv_int: Invalid size received")
                     return float('nan')
-                    
+
                 if err_msg is not None:
                     if data_recv[:len(err_msg)] == err_msg:
                         print("kclient-recv_int: No data available")
@@ -214,7 +217,8 @@ class KClient:
 
                 # Receive an unwanted unicode character on the first char
                 # We thus clean all unicode characters
-                elmt_type = toks[0].decode('unicode_escape').encode('ascii', 'ignore').strip()
+                elmt_type = toks[0].decode('unicode_escape')\
+                .encode('ascii', 'ignore').strip()
 
                 if elmt_type == 'i' or elmt_type == 'j':
                     res_tuple.append(int(toks[1]))
@@ -234,7 +238,8 @@ class KClient:
 
         Args:
             data: The data buffer to be sent
-            format_char: format character, unsigned int by default (https://docs.python.org/2/library/struct.html#format-characters)
+            format_char: format character, unsigned int by default
+            (https://docs.python.org/2/library/struct.html#format-characters)
         """
         send_handshaking(self.sock, data, format_char=format_char)
 
@@ -261,6 +266,7 @@ class KClient:
     def __del__(self):
         if hasattr(self, 'sock'):
             self.sock.close()
+
 
 class Commands:
     """ KServer commands

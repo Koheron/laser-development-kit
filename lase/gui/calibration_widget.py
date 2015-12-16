@@ -2,7 +2,9 @@
 
 from pyqtgraph.Qt import QtGui, QtCore
 import numpy as np
-import glob, os
+import glob
+import os
+
 
 class CalibrationWidget(QtGui.QWidget):
 
@@ -71,9 +73,12 @@ class CalibrationWidget(QtGui.QWidget):
         
         self.load_combo = QtGui.QComboBox(self)
         self.load_combo.addItem('')
-        for file in glob.glob(os.path.join(self.data_path,'*_transfer_function.csv')): 
+        for file in glob.glob(os.path.join\
+                              (self.data_path,
+                               '*_transfer_function.csv')
+                             ):
             [filepath, filename] = os.path.split(file)
-            self.load_combo.addItem(str(filename).replace('_transfer_function.csv',''))
+            self.load_combo.addItem(str(filename).replace('_transfer_function.csv', ''))
         self.load_button = QtGui.QPushButton()
         self.load_button.setText('Load')
 
@@ -120,16 +125,15 @@ class CalibrationWidget(QtGui.QWidget):
             index = 1
         if self.calibration_line.text() == '' :
             return
-        else :
+        else:
             self.driver.optical_power[index] *= float(self.calibration_line.text())
-            self.driver.power[index] *= np.mean(self.driver.adc[index,:])
+            self.driver.power[index] *= np.mean(self.driver.adc[index, :])
             self.calibration_line.setText('')
-
 
     def adc_offset(self):
         self.driver.get_adc()
-        self.driver.adc_offset[0] += np.mean(self.driver.adc[0,:])   
-        self.driver.adc_offset[1] += np.mean(self.driver.adc[1,:])    
+        self.driver.adc_offset[0] += np.mean(self.driver.adc[0, :])
+        self.driver.adc_offset[1] += np.mean(self.driver.adc[1, :])
 
     def get_amplitude_transfer_function(self):
         if self.transfer_list[0].isChecked():
@@ -139,15 +143,15 @@ class CalibrationWidget(QtGui.QWidget):
         self.driver.get_amplitude_transfer_function(channel_dac)
 
     def save(self):
-        if self.save_line.text() =='' :
+        if self.save_line.text() == '':
             return
-        else:            
+        else:
             data = np.zeros((2,self.driver.n))
-            data[0,:] = np.abs(self.driver.amplitude_transfer_function)
-            data[1,:] = np.angle(self.driver.amplitude_transfer_function)
+            data[0, :] = np.abs(self.driver.amplitude_transfer_function)
+            data[1, :] = np.angle(self.driver.amplitude_transfer_function)
             np.savetxt(os.path.join(self.data_path,
                 str(self.save_line.text()) + '_transfer_function' + '.csv'),
-                np.transpose(data[:,1:]), delimiter=',', header='gain, phase')
+                np.transpose(data[:, 1:]), delimiter=',', header='gain, phase')
             self.load_combo.addItem(str(self.save_line.text()))
             self.save_line.setText('')
 
@@ -158,8 +162,12 @@ class CalibrationWidget(QtGui.QWidget):
             data = np.zeros((2,self.driver.n))
             data[:,0] = 1
             data[:,1:] = np.transpose(np.loadtxt(
-                os.path.join(self.data_path, str(self.load_combo.currentText()) + '_transfer_function' + '.csv'),
-                skiprows=1, delimiter=','))
-            self.driver.set_amplitude_transfer_function(data[0,:] * np.exp(1j*data[1,:]))
+                os.path.join(self.data_path,
+                             str(self.load_combo.currentText()) +
+                             '_transfer_function' + '.csv'),
+                             skiprows=1, delimiter=','))
+            self.driver.set_amplitude_transfer_function(data[0,:] *
+                                                        np.exp(1j *
+                                                               data[1, :])
+                                                       )
             self.load_combo.setCurrentIndex(0)
-
