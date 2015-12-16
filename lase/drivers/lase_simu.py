@@ -5,6 +5,7 @@ import numpy as np
 from ..models import LaseModel
 from ..signal import Sampling
 
+
 class LaseSimu(object):
     """ This class is used as a base class for `OscilloSimu` and `SpectrumSimu`
 
@@ -19,8 +20,8 @@ class LaseSimu(object):
         self.sampling = Sampling(n, 125e6)
         self.opened = True
 
-        self.dac = np.zeros((2,self.sampling.n))  # V
-        
+        self.dac = np.zeros((2, self.sampling.n))  # V
+
         self._laser_current = 0
         self._laser_enable = False
         self._laser_power = 0
@@ -79,10 +80,13 @@ class LaseSimu(object):
                                             self.dac[1, :])
 
     def get_live_laser_frequency(self):
-        self._live_laser_frequency = self.model.laser_frequency(self._live_laser_current)
+        self._live_laser_frequency = self.model.laser_frequency(
+                                     self._live_laser_current)
 
     def get_live_laser_power(self):
-        self._live_laser_power = self.model.laser_power(self._live_laser_current)
+        self._live_laser_power = self.model.laser_power(
+                                 self._live_laser_current)
 
     def get_live_mach_zehnder_power(self):
-        self._live_mach_zehnder_power = self.model.mach_zehnder_power(self._live_laser_frequency, self._live_laser_power)
+        self._live_mach_zehnder_power = self.model.mach_zehnder_power(
+                                        self._live_laser_frequency, self._live_laser_power)

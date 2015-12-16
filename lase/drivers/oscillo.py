@@ -18,7 +18,7 @@ class Oscillo(Device):
         n = 8192
         self.waveform_size = n
         self.lase_base = Lase(self.waveform_size, client, map_size=4096)
-        
+
         self.open(self.waveform_size)
 
         # Config offsets
@@ -27,14 +27,15 @@ class Oscillo(Device):
         self.avg_on = False
 
         self.adc = np.zeros((2, self.lase_base.n))
-        self.spectrum = np.zeros((2, self.lase_base.n/2))
-        self.avg_spectrum = np.zeros((2, self.lase_base.n/2))
+        self.spectrum = np.zeros((2, self.lase_base.n / 2))
+        self.avg_spectrum = np.zeros((2, self.lase_base.n / 2))
         self.ideal_amplitude_waveform = np.zeros(self.lase_base.n)
-        self.amplitude_transfer_function = np.ones(self.lase_base.sampling.n, dtype=np.dtype('complex64'))
+        self.amplitude_transfer_function = np.ones(self.lase_base.sampling.n,
+                                                   dtype=np.dtype('complex64'))
 
         # Correction
         sigma_freq = 5e6  # Hz
-        self.gaussian_filter = 1.0 * np.exp(-1.0*self.lase_base.sampling.f_fft**2/(2*sigma_freq**2))
+        self.gaussian_filter = 1.0 * np.exp(-1.0 * self.lase_base.sampling.f_fft ** 2 / (2 * sigma_freq ** 2))
 
         # Calibration
         self.adc_offset = np.zeros(2)
@@ -83,7 +84,8 @@ class Oscillo(Device):
     @command
     def read_all_channels(self):
         """ Read all the acquired channels """
-        return self.client.recv_buffer(2*self.waveform_size, data_type='float32')
+        return self.client.recv_buffer(2 * self.waveform_size,
+                                       data_type='float32')
         # TODO Check reception
 
     def get_adc(self):
@@ -98,22 +100,22 @@ class Oscillo(Device):
         self.adc[1, :] *= self.optical_power[1] / self.power[1]
 
     def _white_noise(self, n_freqs, n_stop=None):
-        if n_stop == None:
-            n_stop=n_freqs
+        if n_stop is None:
+            n_stop = n_freqs
         amplitudes = np.zeros(n_freqs)
         amplitudes[0:n_stop] = 1
         random_phases = 2 * np.pi * np.random.rand(n_freqs)
         white_noise = np.fft.irfft(amplitudes * np.exp(1j * random_phases))
         white_noise = np.fft.fft(white_noise)
         white_noise[0] = 0.01
-        white_noise[self.lase_base.sampling.n / 2]=1
+        white_noise[self.lase_base.sampling.n / 2] = 1
         white_noise = np.real(np.fft.ifft(white_noise))
         white_noise /= 1.7 * np.max(np.abs(white_noise))
         return white_noise
 
     def get_amplitude_transfer_function(self, channel_dac=0,
                                         channel_adc=0, transfer_avg=100):
-        n_freqs = self.lase_base.sampling.n/2 +1
+        n_freqs = self.lase_base.sampling.n / 2 + 1
         self.amplitude_transfer_function *= 0
 
         for i in range(transfer_avg):
@@ -122,14 +124,14 @@ class Oscillo(Device):
             self.set_dac()
             time.sleep(0.01)
             self.get_adc()
-            self.amplitude_transfer_function += np.fft.fft(self.adc[channel_adc,:]) / np.fft.fft(white_noise)
+            self.amplitude_transfer_function += np.fft.fft(self.adc[channel_adc, :]) / np.fft.fft(white_noise)
         self.amplitude_transfer_function = self.amplitude_transfer_function / transfer_avg
         self.amplitude_transfer_function[0] = 1
         self.lase_base.dac[channel_dac, :] = np.zeros(self.lase_base.sampling.n)
         self.set_dac()
 
     def get_correction(self):
-        tmp = np.fft.fft(self.amplitude_error)/self.amplitude_transfer_function
+        tmp = np.fft.fft(self.amplitude_error) / self.amplitude_transfer_function
         tmp[0] = 0
         tmp = self.gaussian_filter * tmp
         return np.real(np.fft.ifft(tmp))
@@ -141,13 +143,13 @@ class Oscillo(Device):
     def get_spectrum(self):
         fft_adc = np.fft.fft(self.adc, axis=1)
         self.spectrum = fft_adc[:, 0:self.lase_base.sampling.n / 2]
-        
+
     def get_avg_spectrum(self, n_avg=1):
         self.avg_spectrum = np.zeros((2, self.lase_base.sampling.n / 2))
         for i in range(n_avg):
             self.get_adc()
             fft_adc = np.abs(np.fft.fft(self.adc, axis=1))
-            self.avg_spectrum += fft_adc[:,0:self.lase_base.sampling.n / 2]
+            self.avg_spectrum += fft_adc[:, 0:self.lase_base.sampling.n / 2]
 
         self.avg_spectrum = self.avg_spectrum / n_avg
 
