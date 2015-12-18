@@ -13,11 +13,9 @@ On Windows, you can use [win32diskimager](http://sourceforge.net/projects/win32d
 The last number of the board IP address is displayed on binary format on the 8 Red Pitaya LEDs for convenience.
 
 3) Make sure the following packages are installed:
-* Python 2.7
-* PyQtGraph
-* PyQt or PySide 
-* Scipy
-* NumPy
+* Python (2.7+ or 3.5+) with Numpy and Scipy
+* PyQtGraph (`pip install python-pyqtgraph`)
+* paramiko (`pip install paramiko`)
 
 4) Run demo:
 
