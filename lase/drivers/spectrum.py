@@ -4,7 +4,7 @@
 import time
 import numpy as np
 
-from .lase import Lase
+from .base import Base
 from ..core import Device, command, write_buffer
 
 
@@ -15,17 +15,17 @@ class Spectrum(Device):
         super(Spectrum, self).__init__(client)
 
         n = 4096
-        self.lase_base = Lase(n, client, map_size)
+        self.base = Base(n, client, map_size)
         self.open(n)
 
         # TODO Check memory map ID is not NaN
 
-        self.spectrum = np.zeros(self.lase_base.sampling.n, dtype=np.float32)
-        self.demod = np.zeros((2, self.lase_base.sampling.n))
+        self.spectrum = np.zeros(self.base.sampling.n, dtype=np.float32)
+        self.demod = np.zeros((2, self.base.sampling.n))
 
         self.demod[0, :] = 0.49 * (1 - np.cos(2 * np.pi *
-                                              np.arange(self.lase_base.sampling.n) /
-                                              self.lase_base.sampling.n))
+                                              np.arange(self.base.sampling.n) /
+                                              self.base.sampling.n))
         # 0.5*np.real(demod)
         self.demod[1, :] = 0  # 0.5*np.imag(demod)
 
@@ -35,7 +35,7 @@ class Spectrum(Device):
         self.set_demod()
         # self.dvm.write(self._config, self._scale_sch_off, 427)
 
-        self.lase_base.reset()
+        self.base.reset()
 
     @command
     def open(self, samples_num):
@@ -65,7 +65,7 @@ class Spectrum(Device):
 
     @command
     def get_spectrum(self):
-        self.spectrum = self.client.recv_buffer(self.lase_base.sampling.n,
+        self.spectrum = self.client.recv_buffer(self.base.sampling.n,
                                                 data_type='float32')
         # self.spectrum[1] = 1
 

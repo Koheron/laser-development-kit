@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from ..models import LaseModel
+from ..models import LaserModel
 from ..signal import Sampling
 
 
-class LaseSimu(object):
+class BaseSimu(object):
     """ This class is used as a base class for `OscilloSimu` and `SpectrumSimu`
 
     args:
@@ -27,7 +27,7 @@ class LaseSimu(object):
         self._laser_power = 0
 
         # Lase model
-        self.model = LaseModel(self.sampling)
+        self.model = LaserModel(self.sampling)
 
         self._live_laser_current = np.zeros(self.sampling.n)  # A
         self._live_laser_power = np.zeros(self.sampling.n)  # W
