@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from ..lase_simu import BaseSimu
+from ..base_simu import BaseSimu
 
-
-class TestLaseSimu:
+class TestBaseSimu:
 
     def test_laser_enable(self):
         n = 8192
