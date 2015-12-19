@@ -1,7 +1,7 @@
-from .lase import *
+from .base import *
 from .oscillo import *
 from .spectrum import *
 
-from .lase_simu import LaseSimu
+from .base_simu import *
 from .oscillo_simu import *
 from .spectrum_simu import *

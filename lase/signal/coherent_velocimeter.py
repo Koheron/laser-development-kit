@@ -47,5 +47,5 @@ class CoherentVelocimeter:
         
         # TODO Handle the case where several peaks are detected
         
-        return self.lambda_opt * f_peak
+        return self.lambda_opt * f_peak / 2
         

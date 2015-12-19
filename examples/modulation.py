@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import initExample
+import os
 from lase.core import KClient
 
 # Driver to use
@@ -13,38 +14,38 @@ import matplotlib.pyplot as plt
 import time
 
 # Connect to Lase
-host = '192.168.1.4'  # Lase IP address
+host = os.getenv('HOST','192.168.1.100')
 client = KClient(host)
 driver = Oscillo(client)  # Replace with appropriate driver
 
 # Enable laser
-driver.start_laser()
+driver.base.start_laser()
 
 # Set laser current
-current = 15  # mA
-driver.set_laser_current(current)
+current = 30  # mA
+driver.base.set_laser_current(current)
 
 # Modulation on DAC
 amp_mod = 0.2
 freq_mod = 1e6
-driver.dac[1, :] = amp_mod*np.sin(2 * np.pi * freq_mod * driver.sampling.t)
-driver.set_dac()
+driver.base.dac[1, :] = amp_mod*np.sin(2 * np.pi * freq_mod * driver.base.sampling.t)
+driver.base.set_dac()
 
 # Signal on ADC
 driver.get_adc()
 signal = driver.adc[0, :]
 
 # Plot
-plt.plot(driver.sampling.t, signal)
+plt.plot(driver.base.sampling.t, signal)
 plt.show()
 
 # Plot
 psd_signal = np.abs(np.fft.fft(signal)) ** 2
 
-plt.semilogy(1e-6 * np.fft.fftshift(driver.sampling.f_fft), np.fft.fftshift(psd_signal))
+plt.semilogy(1e-6 * np.fft.fftshift(driver.base.sampling.f_fft), np.fft.fftshift(psd_signal))
 plt.xlabel('Frequency (MHz)')
 plt.show()
 
 # Disable laser
-driver.stop_laser()
-driver.close()
+driver.base.stop_laser()
+driver.base.close()

@@ -3,10 +3,10 @@
 
 import time
 import numpy as np
-from .lase_simu import LaseSimu
+from .base_simu import BaseSimu
 
 
-class OscilloSimu(LaseSimu):
+class OscilloSimu(BaseSimu):
 
     def __init__(self):
         n = 8192
@@ -14,18 +14,18 @@ class OscilloSimu(LaseSimu):
 
         self.avg_on = False
         self.waveform_size = n
-        self.lase_base = LaseSimu(self.waveform_size)
+        self.base = BaseSimu(self.waveform_size)
 
-        self.adc = np.zeros((2, self.lase_base.sampling.n))
-        self.spectrum = np.zeros((2, self.lase_base.sampling.n / 2))
-        self.avg_spectrum = np.zeros((2, self.lase_base.sampling.n / 2))
-        self.ideal_amplitude_waveform = np.zeros(self.lase_base.sampling.n)
+        self.adc = np.zeros((2, self.base.sampling.n))
+        self.spectrum = np.zeros((2, self.base.sampling.n / 2))
+        self.avg_spectrum = np.zeros((2, self.base.sampling.n / 2))
+        self.ideal_amplitude_waveform = np.zeros(self.base.sampling.n)
         sigma_freq = 5e6  # Hz
         self.gaussian_filter = 1.0 * np.exp(-1.0 *
-                                            self.lase_base.sampling.f_fft ** 2
+                                            self.base.sampling.f_fft ** 2
                                             / (2*sigma_freq**2))
 
-        self.amplitude_transfer_function = np.ones(self.lase_base.sampling.n,
+        self.amplitude_transfer_function = np.ones(self.base.sampling.n,
                                                    dtype=np.dtype('complex128'))
 
         # Calibration
@@ -66,7 +66,7 @@ class OscilloSimu(LaseSimu):
 
     def get_amplitude_transfer_function(self, channel_dac=0, channel_adc=0,
                                         transfer_avg=100):
-        n_freqs = self.sampling.n / 2 + 1
+        n_freqs = self.base.sampling.n / 2 + 1
         self.amplitude_transfer_function *= 0
         for i in range(transfer_avg):
             self.amplitudes = np.ones(n_freqs)
@@ -75,7 +75,7 @@ class OscilloSimu(LaseSimu):
                           np.exp(1j * random_phases))
             white_noise = np.fft.fft(white_noise)
             white_noise[0] = 0.01
-            white_noise[self.sampling.n / 2] = 1
+            white_noise[self.base.sampling.n / 2] = 1
             white_noise = np.real(np.fft.ifft(white_noise))
             white_noise /= 1.7 * np.max(np.abs(white_noise))
             self.dac[channel_dac, :] = white_noise
@@ -87,7 +87,7 @@ class OscilloSimu(LaseSimu):
         self.amplitude_transfer_function = self.amplitude_transfer_function /\
                                            transfer_avg
         self.amplitude_transfer_function[0] = 1
-        self.dac[channel_dac, :] = np.zeros(self.sampling.n)
+        self.dac[channel_dac, :] = np.zeros(self.base.sampling.n)
         self.set_dac()
 
     def get_correction(self):
@@ -104,14 +104,14 @@ class OscilloSimu(LaseSimu):
 
     def get_spectrum(self):
         fft_adc = np.fft.fft(self.adc, axis=1)
-        self.spectrum = fft_adc[:, 0:self.sampling.n / 2]
+        self.spectrum = fft_adc[:, 0:self.base.sampling.n / 2]
 
     def get_avg_spectrum(self, n_avg=1):
-        self.avg_spectrum = np.zeros((2, self.sampling.n / 2))
+        self.avg_spectrum = np.zeros((2, self.base.sampling.n / 2))
         for i in range(n_avg):
             self.get_adc()
             fft_adc = np.abs(np.fft.fft(self.adc, axis=1))
-            self.avg_spectrum += fft_adc[:, 0:self.sampling.n / 2]
+            self.avg_spectrum += fft_adc[:, 0:self.base.sampling.n / 2]
         self.avg_spectrum = self.avg_spectrum / n_avg
 
     def set_amplitude_transfer_function(self, amplitude_transfer_function):

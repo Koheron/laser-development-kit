@@ -80,9 +80,9 @@ class MathWidget(QtGui.QWidget):
         if state == QtCore.Qt.Checked:
             self.correction = True
             self.driver.ideal_amplitude_waveform = 1167 * self.driver.optical_power[0] /\
-                                                   self.driver.power[0] * self.driver.lase_base.dac[1]
+                                                   self.driver.power[0] * self.driver.base.dac[1]
             self.driver.amplitude_error = self.driver.ideal_amplitude_waveform
-            self.driver.lase_base.dac[1, :] = self.driver.get_correction()
+            self.driver.base.dac[1, :] = self.driver.get_correction()
         else:
             self.correction = False
 

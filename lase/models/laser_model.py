@@ -4,7 +4,7 @@
 import numpy as np
 
 
-class LaseModel(object):
+class LaserModel(object):
     def __init__(self, sampling):
 
         self.sampling = sampling
