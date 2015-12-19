@@ -9,7 +9,7 @@ from ..core import Device, command, write_buffer
 #from ..core import Dac
 
 
-class Lase(Device):
+class Base(Device):
     """ This class is used as a base class for `Oscillo` and `Spectrum`
 
     args:
@@ -18,7 +18,7 @@ class Lase(Device):
     """
 
     def __init__(self, dac_wfm_size, client, map_size=4096):
-        super(Lase, self).__init__(client)
+        super(Base, self).__init__(client)
         self.open(dac_wfm_size)
 
         self.client = client
@@ -36,7 +36,7 @@ class Lase(Device):
         pass
 
     def update(self):
-        pass  # Used in LaseSimu
+        pass  # Used in BaseSimu
 
     def close(self):
         self.reset()

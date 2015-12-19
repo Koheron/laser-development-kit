@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from ..lase_simu import LaseSimu
+from ..lase_simu import BaseSimu
 
 
 class TestLaseSimu:

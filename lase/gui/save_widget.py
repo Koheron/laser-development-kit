@@ -55,7 +55,7 @@ class SaveWidget(QtGui.QWidget):
             with open(os.path.join(self.data_path, str(self.save_line.text()) + '.json'), 'w') as fp:
                 json.dump(parameters, fp)
             self.load_combo.addItem(self.save_line.text())
-            data = np.ones((self.parent.driver.lase_base.sampling.n, 4))
+            data = np.ones((self.parent.driver.base.sampling.n, 4))
             data[:, 0] = self.parent.driver.adc[0, :]
             data[:, 1] = self.parent.driver.adc[1, :]
             data[:, 2] = self.parent.driver.dac[0, :]

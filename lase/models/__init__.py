@@ -1,2 +1,2 @@
-from .lase_model import LaseModel
+from .laser_model import LaserModel
 
