@@ -16,8 +16,9 @@ class Base(object):
     """
 
     def __init__(self, wfm_size, client):
+        print "Init BASE"
         self.client = client
-        self.open(wfm_size)
+        self.open_base(wfm_size)
 
         self.n = wfm_size
         self.max_current = 50  # mA
@@ -28,9 +29,12 @@ class Base(object):
 
         self.failed = False
 
-    @command('BASE')
-    def open(self, wfm_size):
-        pass
+    def open_base(self, wfm_size):
+        @command('BASE')
+        def open(self, wfm_size):
+            pass
+
+        open(self, wfm_size)
 
     def update(self):
         pass  # Used in BaseSimu
