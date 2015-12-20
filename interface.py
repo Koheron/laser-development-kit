@@ -102,7 +102,7 @@ def main():
         i = i+1  
         window.update()
         time_ = time.time() 
-        window.frame_rate = 0.90 * window.frame_rate + 0.1/(0.001+time_-prev_time)
+        window.frame_rate = 0.95 * window.frame_rate + 0.05/(0.001+time_-prev_time)
         QtGui.QApplication.processEvents()
         prev_time = time_
 
