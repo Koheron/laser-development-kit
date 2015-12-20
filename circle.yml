@@ -2,10 +2,8 @@ dependencies:
     pre:
         - sudo apt-get install -y python-numpy
         - sudo apt-get install -y python-scipy        
-        - sudo pip install tabulate
         - sudo pip install pyqtgraph
         - sudo pip install pytest
-        - sudo pip install peakutils
 
 test:
     pre:
