@@ -4,8 +4,54 @@ import struct
 import time
 import math
 import numpy as np
+import functools
 
 from .rcv_send import recv_timeout, recv_n_bytes, send_handshaking
+
+# --------------------------------------------
+# Decorators
+# --------------------------------------------
+
+# http://stackoverflow.com/questions/5929107/python-decorators-with-parameters
+# http://www.artima.com/weblogs/viewpost.jsp?thread=240845
+
+def command(device_name):
+    def real_command(func):
+        """ Decorate commands
+
+        If the name of the command is CMD_NAME,
+        then the name of the function must be cmd_name.
+
+        /!\ The order of kwargs matters.
+        """
+        @functools.wraps(func)
+        def wrapper(self, *args, **kwargs):
+            params = self.client.cmds.get_device(device_name)
+            device_id = str(params.id)
+            cmd_id = params.get_op_ref(func.__name__.upper())
+
+            self.client.send_command(device_id, cmd_id, *(args + tuple(kwargs.values())))
+            return func(self, *args, **kwargs)
+        return wrapper
+    return real_command
+
+def write_buffer(device_name):
+    def command_wrap(func):
+        def wrapper(self, *args, **kwargs):
+            params = self.client.cmds.get_device(device_name)
+            device_id = str(params.id)
+            cmd_id = params.get_op_ref(func.__name__.upper())
+
+            args_ = args[1:] + tuple(kwargs.values()) + (len(args[0]),)
+            self.client.send_command(device_id, cmd_id, *args_)
+
+            if self.client.send_handshaking(args[0]) < 0:
+                print(func.__name__ + ": Can't send buffer")
+                self.is_failed = True
+
+            func(self, *args, **kwargs)
+        return wrapper
+    return command_wrap
 
 # --------------------------------------------
 # Helper functions
@@ -14,11 +60,6 @@ from .rcv_send import recv_timeout, recv_n_bytes, send_handshaking
 
 def make_command(*args):
     return "|".join([str(arg) for arg in args])+'|\n'
-
-
-# TODO
-# This approach implies some strong constraints on the class and
-# method naming. This should be referenced in some doc.
 
 def reference_dict(self):
     params = self.client.cmds.get_device(_class_to_device_name

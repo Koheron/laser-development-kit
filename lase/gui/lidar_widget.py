@@ -44,7 +44,7 @@ class LidarWidget(QtGui.QWidget):
         self.velocity = 0
 
     def update(self, spectrum):
-        self.velocity = self.lidar.get_velocity(self.driver.base.sampling.f_fft,
+        self.velocity = self.lidar.get_velocity(self.driver.sampling.f_fft,
                                                 spectrum)
         self.velocity_label.setText('Velocity (m/s) : '+"{:.2f}".
                                     format(self.velocity)

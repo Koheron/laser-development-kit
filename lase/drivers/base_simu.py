@@ -32,7 +32,7 @@ class BaseSimu(object):
         self._live_laser_current = np.zeros(self.sampling.n)  # A
         self._live_laser_power = np.zeros(self.sampling.n)  # W
         self._live_laser_frequency = np.zeros(self.sampling.n)  # Hz
-        self.is_failed = False
+        self.failed = False
 
     def update(self):
         self.get_live_current()

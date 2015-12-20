@@ -15,7 +15,7 @@ class LaserWidget(QtGui.QWidget):
         self.laser_on = laser_on
         self.laser_current = laser_current
 
-        self.driver.base.set_laser_current(self.laser_current *
+        self.driver.set_laser_current(self.laser_current *
                                                 self.laser_on)
         # Layout
         self.layout = QtGui.QHBoxLayout()
@@ -27,7 +27,7 @@ class LaserWidget(QtGui.QWidget):
         self.on_button.setFixedWidth(80)
         # Laser current slider
         self.slider = SliderWidget(name='Laser current (mA) : ',
-                                   max_slider=self.driver.base.max_current)
+                                   max_slider=self.driver.max_current)
 
         self.layout.addWidget(self.on_button, 0)
         self.layout.addWidget(self.slider)
@@ -40,12 +40,12 @@ class LaserWidget(QtGui.QWidget):
         if self.laser_on:
             self.on_button.setStyleSheet('QPushButton {color: red;}')
             self.on_button.setText('Stop laser')
-            self.driver.base.start_laser()
+            self.driver.start_laser()
         else:
             self.on_button.setStyleSheet('QPushButton {color: green;}')
             self.on_button.setText('Start laser')
-            self.driver.base.stop_laser()
+            self.driver.stop_laser()
 
     def change_current(self, value):
         self.laser_current = value
-        self.driver.base.set_laser_current(self.laser_current)
+        self.driver.set_laser_current(self.laser_current)

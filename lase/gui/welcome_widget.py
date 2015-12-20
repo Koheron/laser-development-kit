@@ -113,7 +113,7 @@ class WelcomeWidget(QtGui.QWidget):
             self.load_bitstream("oscillo")
             time.sleep(0.01)
             driver = Oscillo(self.connect_widget.client)
-            driver.base.set_led(driver.base.client.host.split('.')[-1])
+            driver.set_led(driver.client.host.split('.')[-1])
         else:
             driver = OscilloSimu()
         index = self.parent.stacked_widget.addWidget(OscilloWidget(driver, self.parent))
@@ -125,10 +125,11 @@ class WelcomeWidget(QtGui.QWidget):
             self.load_bitstream("spectrum")
             time.sleep(0.01)
             driver = Spectrum(self.connect_widget.client)
-            driver.base.set_led(driver.client.host.split('.')[-1])
+            driver.set_led(driver.client.host.split('.')[-1])
 
         else:
             driver = SpectrumSimu()
         index = self.parent.stacked_widget.addWidget(
             SpectrumWidget(driver, self.parent))
         self.parent.stacked_widget.setCurrentIndex(index)
+

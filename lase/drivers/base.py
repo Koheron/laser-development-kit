@@ -5,34 +5,31 @@ import numpy as np
 import math
 
 from ..signal import Sampling
-from ..core import Device, command, write_buffer
-#from ..core import Dac
+from ..core import command, write_buffer
 
-
-class Base(Device):
+class Base(object):
     """ This class is used as a base class for `Oscillo` and `Spectrum`
 
     args:
-        n (int): number of points in the waveform (ex: n = 8192).
+        wfm_size: number of points in the waveform.
         client : instance of KClient class, used to connect to the board.
     """
 
-    def __init__(self, dac_wfm_size, client, map_size=4096):
-        super(Base, self).__init__(client)
-        self.open(dac_wfm_size)
-
+    def __init__(self, wfm_size, client):
         self.client = client
+        self.open(wfm_size)
 
-        self.n = dac_wfm_size
-        # Number of points in the waveform 'ex : n = 8192'
+        self.n = wfm_size
         self.max_current = 50  # mA
-        self.sampling = Sampling(dac_wfm_size, 125e6)
+        self.sampling = Sampling(wfm_size, 125e6)
 
         self.opened = True
         self.dac = np.zeros((2, self.sampling.n))
 
-    @command
-    def open(self, dac_wfm_size):
+        self.failed = False
+
+    @command('BASE')
+    def open(self, wfm_size):
         pass
 
     def update(self):
@@ -41,54 +38,48 @@ class Base(Device):
     def close(self):
         self.reset()
 
-    @command
+    @command('BASE')
     def reset(self):
         pass
 
-    @command
+    @command('BASE')
     def start_laser(self):
-        """ Start laser emission """
         pass
 
-    @command
+    @command('BASE')
     def stop_laser(self):
-        """ Stop laser emission """
         pass
 
-    @command
+    @command('BASE')
     def get_laser_current(self):
         current = self.client.recv_int(4)
 
         if math.isnan(current):
             print("Can't read laser current")
-            self.is_failed = True
+            self.failed = True
 
         return current
 
-    @command
+    @command('BASE')
     def get_laser_power(self):
         power = self.client.recv_int(4)
 
         if math.isnan(power):
             print("Can't read laser power")
-            self.is_failed = True
+            self.failed = True
 
         return power
 
-    @command
+    @command('BASE')
     def get_monitoring(self):
         return self.client.recv_tuple()
 
-    @command
+    @command('BASE')
     def set_laser_current(self, current):
-        """ Set the current bias of the laser diode
-
-        Args:
-            - current: The bias in mA
-        """
+        """ current: The bias in mA """
         pass
 
-    @write_buffer
+    @write_buffer('BASE')
     def set_dac_buffer(self, data):
         pass
 
@@ -103,14 +94,14 @@ class Base(Device):
         if reset:
             self.reset_acquisition()
 
-    @command
+    @command('BASE')
     def get_bitstream_id(self):
         pass
 
-    @command
+    @command('BASE')
     def set_led(self, value):
         pass
 
-    @command
+    @command('BASE')
     def reset_acquisition(self):
         pass

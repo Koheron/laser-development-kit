@@ -54,10 +54,10 @@ class StatsWidget(QtGui.QWidget):
             if 1e-2 < np.abs(np.mean(self.driver.adc[i,:])) < 1e3:
                 mean_text = '{:.2f}'.format(np.mean(self.driver.adc[i,:]))
             else:
-                mean_text = '%.2e'%(np.mean(self.driver.adc[i,:]))
+                mean_text = '%.4e'%(np.mean(self.driver.adc[i,:]))
             self.mean_labels[i+1].setText(mean_text)
             if 1e-2 < np.abs(np.max(self.driver.adc[i,:])-np.min(self.driver.adc[i,:])) < 1e3:
                 ampl_text = '{:.2f}'.format(np.max(self.driver.adc[i,:])-np.min(self.driver.adc[i,:]))
             else:
-                ampl_text = '%.2e'%(np.max(self.driver.adc[i,:])-np.min(self.driver.adc[i,:]))
+                ampl_text = '%.4e'%(np.max(self.driver.adc[i,:])-np.min(self.driver.adc[i,:]))
             self.ampl_labels[i+1].setText(ampl_text)

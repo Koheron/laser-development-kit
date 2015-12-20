@@ -5,51 +5,41 @@ import time
 import numpy as np
 
 from .base import Base
-from ..core import Device, command, write_buffer
+from ..core import command, write_buffer
 
-
-class Spectrum(Device):
+class Spectrum(Base):
     """ Driver for the spectrum bitstream """
 
-    def __init__(self, client, map_size=4096, verbose=False):
-        super(Spectrum, self).__init__(client)
+    def __init__(self, client, verbose=False):
+        self.wfm_size = 4096
+        super(Spectrum, self).__init__(self.wfm_size, client)
+        self.open(self.wfm_size)
 
-        n = 4096
-        self.base = Base(n, client, map_size)
-        self.open(n)
+        self.spectrum = np.zeros(self.wfm_size, dtype=np.float32)
+        self.demod = np.zeros((2, self.wfm_size))
 
-        # TODO Check memory map ID is not NaN
+        self.demod[0, :] = 0.49 * (1 - np.cos(2 * np.pi * np.arange(self.wfm_size) / self.wfm_size))
+        self.demod[1, :] = 0
 
-        self.spectrum = np.zeros(self.base.sampling.n, dtype=np.float32)
-        self.demod = np.zeros((2, self.base.sampling.n))
-
-        self.demod[0, :] = 0.49 * (1 - np.cos(2 * np.pi *
-                                              np.arange(self.base.sampling.n) /
-                                              self.base.sampling.n))
-        # 0.5*np.real(demod)
-        self.demod[1, :] = 0  # 0.5*np.imag(demod)
-
-        # self.set_offset(-199, -21)
         # self.set_offset(0, 0)
 
         self.set_demod()
-        # self.dvm.write(self._config, self._scale_sch_off, 427)
 
-        self.base.reset()
+        self.reset()
 
-    @command
-    def open(self, samples_num):
+    @command('SPECTRUM')
+    def open(self, wfm_size):
         pass
 
-    @command
+    @command('SPECTRUM')
     def set_scale_sch(self, scale_sch):
         pass
 
-    @command
+    @command('SPECTRUM')
     def set_offset(self, offset_real, offset_imag):
         pass
 
-    @write_buffer
+    @write_buffer('SPECTRUM')
     def set_demod_buffer(self, data):
         pass
 
@@ -63,12 +53,11 @@ class Spectrum(Device):
                               8192, 16384) + 8192
         self.set_demod_buffer(demod_data_1 + 65536 * demod_data_2)
 
-    @command
+    @command('SPECTRUM')
     def get_spectrum(self):
-        self.spectrum = self.client.recv_buffer(self.base.sampling.n,
+        self.spectrum = self.client.recv_buffer(self.wfm_size,
                                                 data_type='float32')
         # self.spectrum[1] = 1
 
-    @command
     def get_num_average(self):
         return self.client.recv_int(4)

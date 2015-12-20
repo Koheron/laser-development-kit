@@ -44,8 +44,8 @@ class LaseWidget(QtGui.QWidget):
         self.driver = driver
 
         # Initialize driver
-        self.driver.base.set_dac()
-        self.power_offset = self.driver.base.get_laser_power()
+        self.driver.set_dac()
+        self.power_offset = self.driver.get_laser_power()
 
         # Layout
         self.init_layout()
@@ -119,12 +119,12 @@ class LaseWidget(QtGui.QWidget):
         self.left_panel_layout = QtGui.QVBoxLayout()
 
     def update(self):
-        self.driver.base.update()  # Used in simulation
+        self.driver.update()  # Used in simulation
         self.monitor_widget.update(frame_rate=self.frame_rate)
 
     def update_dac(self, index):
-        self.driver.base.dac[index, :] = self.dac_wid[index].data
-        self.driver.base.set_dac()
+        self.driver.dac[index, :] = self.dac_wid[index].data
+        self.driver.set_dac()
         self.refresh_dac()
         
     def refresh_dac(self):
