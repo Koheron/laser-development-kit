@@ -16,7 +16,6 @@ class Base(object):
     """
 
     def __init__(self, wfm_size, client):
-        print "Init BASE"
         self.client = client
         self.open_base(wfm_size)
 
