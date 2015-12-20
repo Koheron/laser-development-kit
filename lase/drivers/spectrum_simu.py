@@ -12,14 +12,11 @@ class SpectrumSimu(BaseSimu):
         super(SpectrumSimu, self).__init__(n)
 
         self.waveform_size = n
-        self.base = BaseSimu(self.waveform_size)
 
-        self.spectrum = np.zeros(self.base.sampling.n, dtype=np.float32)
-        self.demod = np.zeros((2, self.base.sampling.n, n))
+        self.spectrum = np.zeros(self.sampling.n, dtype=np.float32)
+        self.demod = np.zeros((2, self.sampling.n, n))
 
-        self.demod[0, :] = 0.49 * (1-np.cos(2 * np.pi *
-                                            np.arange(self.base.sampling.n) /
-                                            self.base.sampling.n))
+        self.demod[0, :] = 0.49 * (1-np.cos(2 * np.pi * np.arange(self.sampling.n) /self.sampling.n))
         self.demod[1, :] = 0
 
         self.velocity_signal = 1
@@ -37,11 +34,9 @@ class SpectrumSimu(BaseSimu):
                            self.model.sampling.n *
                            self.model.sampling.dt,
                            self.model.sampling.n)
-        omega_doppler = 2 * np.pi *\
-                        velocity / self.model._wavelength
-                        # Doppler shift (rad/s)
-        self.velocity_signal = np.cos(omega_doppler*time) +\
-                               np.random.randn(self.model.sampling.n) / SNR
+        omega_doppler = 2 * np.pi * velocity / self.model._wavelength
+        # Doppler shift (rad/s)
+        self.velocity_signal = np.cos(omega_doppler*time) + np.random.randn(self.model.sampling.n) / SNR
 
     def get_spectrum(self):
         self.update()

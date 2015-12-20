@@ -7,25 +7,23 @@ from .base_simu import BaseSimu
 
 
 class OscilloSimu(BaseSimu):
-
     def __init__(self):
         n = 8192
         super(OscilloSimu, self).__init__(n)
 
         self.avg_on = False
         self.waveform_size = n
-        self.base = BaseSimu(self.waveform_size)
 
-        self.adc = np.zeros((2, self.base.sampling.n))
-        self.spectrum = np.zeros((2, self.base.sampling.n / 2))
-        self.avg_spectrum = np.zeros((2, self.base.sampling.n / 2))
-        self.ideal_amplitude_waveform = np.zeros(self.base.sampling.n)
+        self.adc = np.zeros((2, self.sampling.n))
+        self.spectrum = np.zeros((2, self.sampling.n / 2))
+        self.avg_spectrum = np.zeros((2, self.sampling.n / 2))
+        self.ideal_amplitude_waveform = np.zeros(self.sampling.n)
         sigma_freq = 5e6  # Hz
         self.gaussian_filter = 1.0 * np.exp(-1.0 *
-                                            self.base.sampling.f_fft ** 2
+                                            self.sampling.f_fft ** 2
                                             / (2*sigma_freq**2))
 
-        self.amplitude_transfer_function = np.ones(self.base.sampling.n,
+        self.amplitude_transfer_function = np.ones(self.sampling.n,
                                                    dtype=np.dtype('complex128'))
 
         # Calibration
@@ -66,7 +64,7 @@ class OscilloSimu(BaseSimu):
 
     def get_amplitude_transfer_function(self, channel_dac=0, channel_adc=0,
                                         transfer_avg=100):
-        n_freqs = self.base.sampling.n / 2 + 1
+        n_freqs = self.sampling.n / 2 + 1
         self.amplitude_transfer_function *= 0
         for i in range(transfer_avg):
             self.amplitudes = np.ones(n_freqs)
@@ -75,7 +73,7 @@ class OscilloSimu(BaseSimu):
                           np.exp(1j * random_phases))
             white_noise = np.fft.fft(white_noise)
             white_noise[0] = 0.01
-            white_noise[self.base.sampling.n / 2] = 1
+            white_noise[self.sampling.n / 2] = 1
             white_noise = np.real(np.fft.ifft(white_noise))
             white_noise /= 1.7 * np.max(np.abs(white_noise))
             self.dac[channel_dac, :] = white_noise
@@ -87,7 +85,7 @@ class OscilloSimu(BaseSimu):
         self.amplitude_transfer_function = self.amplitude_transfer_function /\
                                            transfer_avg
         self.amplitude_transfer_function[0] = 1
-        self.dac[channel_dac, :] = np.zeros(self.base.sampling.n)
+        self.dac[channel_dac, :] = np.zeros(self.sampling.n)
         self.set_dac()
 
     def get_correction(self):
