@@ -21,7 +21,7 @@ class Base(object):
         self.open_base(wfm_size)
 
         self.n = wfm_size
-        self.max_current = 50  # mA
+        self.max_current = 40  # mA
         self.sampling = Sampling(wfm_size, 125e6)
 
         self.opened = True
@@ -62,7 +62,7 @@ class Base(object):
             print("Can't read laser current")
             self.failed = True
 
-        return current
+        return (0.0001/21.) * current
 
     @command('BASE')
     def get_laser_power(self):
