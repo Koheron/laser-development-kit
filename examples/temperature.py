@@ -5,21 +5,22 @@ import initExample
 import os
 import time
 import numpy as np
-from scipy import signal
 import matplotlib.pyplot as plt
 import csv
 import time
-from lase.core import KClient
+from scipy import signal
+from lase.core import KClient, ZynqSSH
 from lase.drivers import Oscillo
 
-from lase.core import ZynqSSH
+host = os.getenv('HOST','192.168.1.12')
+password = os.getenv('PWD', 'changeme')
 
 # Connect to the board
-host = os.getenv('HOST','192.168.1.12')
 client = KClient(host)
 
-#ssh = ZynqSSH(host, 'changeme')
-#ssh.load_pl('bitstreams/oscillo.bit')
+# Load the bitstream
+ssh = ZynqSSH(host, 'changeme')
+ssh.load_pl('bitstreams/oscillo.bit')
 
 driver = Oscillo(client)
 

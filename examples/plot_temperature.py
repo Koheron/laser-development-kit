@@ -21,9 +21,9 @@ psd = np.abs(np.fft.rfft(window * data[:,1])**2)
 
 # Fit the psd
 c1 = 0.1
-c2 = 60
+c2 = 50
 f0 = 0.4
-psd_fit = c2/f_fft**2 /(1+f_fft**2/f0**2) + c1/f_fft**0.75
+psd_fit = c2/f_fft**2.2 /(1+f_fft**2/f0**2) + c1/f_fft**0.75
 
 plt.figure(1)
 plt.semilogx(f_fft, 10*np.log10(psd))
