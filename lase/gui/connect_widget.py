@@ -7,7 +7,7 @@ from PyQt4.QtGui import QApplication, QCursor
 import json
 import os
 import time
-from lase.core import ZynqSSH, KClient, HTTPInterface
+from lase.core import KClient, HTTPInterface
 
 
 class ConnectWidget(QtGui.QWidget):
