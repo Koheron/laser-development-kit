@@ -52,4 +52,4 @@ if __name__ == "__main__":
 #    http.deploy_local_instrument('oscillo', '06ee48f')
 #    print http.remove_local_instrument('oscillo', '06ee48f')
     print http.get_local_instruments()
-    http.install_instrument("oscillo")
+    http.install_instrument("spectrum")

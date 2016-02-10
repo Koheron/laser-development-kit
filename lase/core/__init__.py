@@ -5,6 +5,7 @@ from .dev_mem import DevMem
 from .gpio import Gpio
 from .xadc import Xadc
 from .zynq_ssh import ZynqSSH
+from .http_interface import HTTPInterface
 
 __all__ = [
   'KClient',
@@ -12,5 +13,6 @@ __all__ = [
   'DevMem',
   'Gpio',
   'Xadc',
-  'ZynqSSH'
+  'ZynqSSH',
+  'HTTPInterface'
 ]

@@ -7,7 +7,7 @@ from PyQt4.QtGui import QApplication, QCursor
 import json
 import os
 import time
-from lase.core import ZynqSSH, KClient
+from lase.core import ZynqSSH, KClient, HTTPInterface
 
 
 class ConnectWidget(QtGui.QWidget):
@@ -16,34 +16,19 @@ class ConnectWidget(QtGui.QWidget):
 
         self.parent = parent
         self.ip_path = ip_path
-        self.password = 'changeme'
         self.is_connected = False
 
         # IP address
         self.create_ip_layout()
 
-        # SSH password
-        self.lay_password = QtGui.QHBoxLayout()
-        self.lay_password.addWidget(QtGui.QLabel('Password:'))
-        self.password_widget = QtGui.QLineEdit()
-        self.password_widget.setEchoMode(QtGui.QLineEdit.Password)
-        self.password_widget.setText('changeme')
-        self.lay_password.addWidget(self.password_widget)
-
         # Connect button and connection information
         self.lay_connection = QtGui.QHBoxLayout()
-        self.connect_button = QtGui.QPushButton()
-        self.connect_button.setStyleSheet('QPushButton {color: green;}')
-        self.connect_button.setText('Connect')
-        self.connect_button.setFixedWidth(80)
         self.connection_info = QtGui.QLabel('')
-        self.lay_connection.addWidget(self.connect_button)
         self.lay_connection.addWidget(self.connection_info)
 
         # Add layouts to main layout
         self.lay = QtGui.QVBoxLayout()
         self.lay.addLayout(self.lay_ip)
-        self.lay.addLayout(self.lay_password)
         self.lay.addLayout(self.lay_connection)
         self.setLayout(self.lay)
 
@@ -52,8 +37,7 @@ class ConnectWidget(QtGui.QWidget):
 
         if os.path.exists(self.ip_path):
             try:
-                with open(os.path.join(self.ip_path,
-                                       'ip_address' + '.json')) as fp:
+                with open(os.path.join(self.ip_path, 'ip_address' + '.json')) as fp:
                     json_data = fp.read()
                     parameters = json.loads(json_data)
                     IP = parameters['TCP_IP']
@@ -62,14 +46,13 @@ class ConnectWidget(QtGui.QWidget):
             self.set_text_from_ip(IP)
 
         self.set_host_from_text()
+        self.http = HTTPInterface(self.host)
 
         self.line[0].textChanged.connect(lambda: self.ip_changed(0))
         self.line[1].textChanged.connect(lambda: self.ip_changed(1))
         self.line[2].textChanged.connect(lambda: self.ip_changed(2))
         self.line[3].textChanged.connect(lambda: self.ip_changed(3))
-
-        self.connect_button.clicked.connect(self.connect)
-
+        
     def create_ip_layout(self):
         self.lay_ip = QtGui.QHBoxLayout()
         self.line = []
@@ -140,25 +123,8 @@ class ConnectWidget(QtGui.QWidget):
             self.connection_info.setText('Connecting to ' + self.host + ' ...')
 
             if self.client.is_connected:
-                self.connection_info.setText('Connected to '+self.host)
-                self.password = str(self.password_widget.text())
-
-                try:
-                    self.ssh = ZynqSSH(self.host, self.password)
-                except:
-                    if not self.password:
-                        self.connection_info.setText('Please enter password')
-                    else:
-                        self.connection_info.setText(
-                            'Cannot open SSH connection\nCheck password')
-
-                    self._set_disconnect()
-                    QApplication.restoreOverrideCursor()
-                    return
-
+                self.connection_info.setText('Connected to ' + self.host)
                 self.is_connected = True
-                self.connect_button.setStyleSheet('QPushButton {color: red;}')
-                self.connect_button.setText('Disconnect')
                 self.parent.connected()
             else:
                 self.connection_info.setText('Failed to connect to '+self.host)
@@ -173,6 +139,4 @@ class ConnectWidget(QtGui.QWidget):
 
     def _set_disconnect(self):
         self.is_connected = False
-        self.connect_button.setStyleSheet('QPushButton {color: green;}')
-        self.connect_button.setText('Connect')
         self.parent.disconnected()

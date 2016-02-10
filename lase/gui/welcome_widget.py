@@ -76,8 +76,8 @@ class WelcomeWidget(QtGui.QWidget):
         self.setLayout(self.lay)
         
         # Connections
-        self.oscillo_button.clicked.connect(self.oscillo_on)
-        self.spectrum_button.clicked.connect(self.spectrum_on)
+        self.oscillo_button.clicked.connect(self.oscillo_onclick)
+        self.spectrum_button.clicked.connect(self.spectrum_onclick)
 
     def update(self):
         pass
@@ -97,21 +97,14 @@ class WelcomeWidget(QtGui.QWidget):
         self.oscillo_button.setText('Oscillo (Simu)')
         self.spectrum_button.setText('Spectrum (Simu)')
 
-    def load_bitstream(self, bitstream_name):
-        bitstream_path = os.path.join(self.parent.bitstreams_path, bitstream_name+'.bit')
-        if not os.path.isfile(bitstream_path):
-            bitstream_url = self.config["bitstreams"][bitstream_name+"_url"]
-            if sys.version_info[0] == 3:
-                urllib.request.urlretrieve(bitstream_url, bitstream_path)
-            else:
-                urllib.urlretrieve(bitstream_url, bitstream_path)
-        self.connect_widget.ssh.load_pl(bitstream_path)
+    def install_instrument(self, instrument_name):
+        self.connect_widget.http.install_instrument(instrument_name)
+        time.sleep(0.5)
+        self.connect_widget.connect()
 
-    def oscillo_on(self):
+    def oscillo_onclick(self):
+        self.install_instrument("oscillo")
         if self.connect_widget.is_connected:
-            time.sleep(0.01)
-            self.load_bitstream("oscillo")
-            time.sleep(0.01)
             driver = Oscillo(self.connect_widget.client)
             driver.set_led(driver.client.host.split('.')[-1])
         else:
@@ -119,11 +112,10 @@ class WelcomeWidget(QtGui.QWidget):
         index = self.parent.stacked_widget.addWidget(OscilloWidget(driver, self.parent))
         self.parent.stacked_widget.setCurrentIndex(index)
 
-    def spectrum_on(self):
+    def spectrum_onclick(self):
+        self.install_instrument("spectrum")
         if self.connect_widget.is_connected:
-            time.sleep(0.01)
-            self.load_bitstream("spectrum")
-            time.sleep(0.01)
+            time.sleep(0.5)
             driver = Spectrum(self.connect_widget.client)
             driver.set_led(driver.client.host.split('.')[-1])
 
