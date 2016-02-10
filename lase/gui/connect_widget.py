@@ -23,7 +23,12 @@ class ConnectWidget(QtGui.QWidget):
 
         # Connect button and connection information
         self.lay_connection = QtGui.QHBoxLayout()
+        self.connect_button = QtGui.QPushButton()
+        self.connect_button.setStyleSheet('QPushButton {color: green;}')
+        self.connect_button.setText('Connect')
+        self.connect_button.setFixedWidth(80)
         self.connection_info = QtGui.QLabel('')
+        self.lay_connection.addWidget(self.connect_button)
         self.lay_connection.addWidget(self.connection_info)
 
         # Add layouts to main layout
@@ -52,6 +57,8 @@ class ConnectWidget(QtGui.QWidget):
         self.line[1].textChanged.connect(lambda: self.ip_changed(1))
         self.line[2].textChanged.connect(lambda: self.ip_changed(2))
         self.line[3].textChanged.connect(lambda: self.ip_changed(3))
+
+        self.connect_button.clicked.connect(self.connect_onclick)
         
     def create_ip_layout(self):
         self.lay_ip = QtGui.QHBoxLayout()
@@ -101,42 +108,65 @@ class ConnectWidget(QtGui.QWidget):
             self.line[index+1].setFocus()
             self.line[index+1].selectAll()
 
-    def connect(self):
-        if not self.is_connected:
-            QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+    def connect_to_tcp_server(self):
+        QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+        self.client = KClient(self.host, verbose=False)
+        n_steps_timeout = 100
+        cnt_timeout = 0
 
-            self.client = KClient(self.host, verbose=False)
+        while not self.client.is_connected:
+            time.sleep(0.015)
+            cnt_timeout += 1
 
-            n_steps_timeout = 100
-            cnt_timeout = 0
-            while not self.client.is_connected:
-                time.sleep(0.015)
-                cnt_timeout += 1
+            if cnt_timeout > n_steps_timeout:
+                self.connection_info.setText(
+                    'Failed to connect to host\nCheck IP address')
+                self._set_disconnect()
+                QApplication.restoreOverrideCursor()
+                return False
+        QApplication.restoreOverrideCursor()
+        return True
 
-                if cnt_timeout > n_steps_timeout:
-                    self.connection_info.setText(
-                        'Failed to connect to host\nCheck IP address')
-                    self._set_disconnect()
-                    QApplication.restoreOverrideCursor()
-                    return
-
+    def _set_disconnect(self):
+        self.is_connected = False
+        self.connect_button.setStyleSheet('QPushButton {color: green;}')
+        self.connect_button.setText('Connect')
+        self.available_instruments = {}
+        self.parent.set_disconnected()
+        
+    def connect_onclick(self):
+        if not self.is_connected: # Connect
+            print self.host
+            self.connection_info.setText('Disconnected')
+            self._set_disconnect()
             self.connection_info.setText('Connecting to ' + self.host + ' ...')
+        
+            try:
+                self.available_instruments = self.http.get_local_instruments()
+            except:
+                self.connection_info.setText('Cannot send requests to host\nCheck IP address')
+                return
 
-            if self.client.is_connected:
-                self.connection_info.setText('Connected to ' + self.host)
-                self.is_connected = True
-                self.parent.connected()
-            else:
-                self.connection_info.setText('Failed to connect to '+self.host)
-
-            QApplication.restoreOverrideCursor()
-
-        else:
+            if not "oscillo" in self.available_instruments:
+                self.connection_info.setText("Instrument oscillo not available on host")
+                return
+                
+            if not "spectrum" in self.available_instruments:
+                self.connection_info.setText("Instrument spectrum not available on host")
+                return
+                
+            # We load by default the oscillo instrument 
+            # and connect with tcp-server to check the connection
+            if not self.parent.install_instrument("oscillo"):
+                return            
+            
+            self.connection_info.setText('Connected to ' + self.host)
+            self.is_connected = True
+            self.connect_button.setStyleSheet('QPushButton {color: red;}')
+            self.connect_button.setText('Disconnect')
+            self.parent.set_connected()
+        else: # Disconnect
             if hasattr(self, 'client'):
                 self.client.__del__()
             self.connection_info.setText('Disconnected')
             self._set_disconnect()
-
-    def _set_disconnect(self):
-        self.is_connected = False
-        self.parent.disconnected()

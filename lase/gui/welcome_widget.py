@@ -89,22 +89,22 @@ class WelcomeWidget(QtGui.QWidget):
         button.setFixedHeight(150)
         return button
 
-    def connected(self):
+    def set_connected(self):
         self.oscillo_button.setText('Oscillo')
         self.spectrum_button.setText('Spectrum')
 
-    def disconnected(self):
+    def set_disconnected(self):
         self.oscillo_button.setText('Oscillo (Simu)')
         self.spectrum_button.setText('Spectrum (Simu)')
 
     def install_instrument(self, instrument_name):
         self.connect_widget.http.install_instrument(instrument_name)
         time.sleep(0.5)
-        self.connect_widget.connect()
+        return self.connect_widget.connect_to_tcp_server()
 
     def oscillo_onclick(self):
-        self.install_instrument("oscillo")
         if self.connect_widget.is_connected:
+            self.install_instrument("oscillo")
             driver = Oscillo(self.connect_widget.client)
             driver.set_led(driver.client.host.split('.')[-1])
         else:
@@ -113,12 +113,10 @@ class WelcomeWidget(QtGui.QWidget):
         self.parent.stacked_widget.setCurrentIndex(index)
 
     def spectrum_onclick(self):
-        self.install_instrument("spectrum")
         if self.connect_widget.is_connected:
-            time.sleep(0.5)
+            self.install_instrument("spectrum")
             driver = Spectrum(self.connect_widget.client)
             driver.set_led(driver.client.host.split('.')[-1])
-
         else:
             driver = SpectrumSimu()
         index = self.parent.stacked_widget.addWidget(
