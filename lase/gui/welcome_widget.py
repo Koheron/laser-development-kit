@@ -2,6 +2,8 @@
 
 from pyqtgraph.Qt import QtGui, QtCore
 from PyQt4.QtWebKit import QWebView
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QApplication, QCursor
 import time
 import os
 import yaml
@@ -104,9 +106,11 @@ class WelcomeWidget(QtGui.QWidget):
 
     def oscillo_onclick(self):
         if self.connect_widget.is_connected:
+            QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
             self.install_instrument("oscillo")
             driver = Oscillo(self.connect_widget.client)
             driver.set_led(driver.client.host.split('.')[-1])
+            QApplication.restoreOverrideCursor()
         else:
             driver = OscilloSimu()
         index = self.parent.stacked_widget.addWidget(OscilloWidget(driver, self.parent))
@@ -114,9 +118,11 @@ class WelcomeWidget(QtGui.QWidget):
 
     def spectrum_onclick(self):
         if self.connect_widget.is_connected:
+            QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
             self.install_instrument("spectrum")
             driver = Spectrum(self.connect_widget.client)
             driver.set_led(driver.client.host.split('.')[-1])
+            QApplication.restoreOverrideCursor()
         else:
             driver = SpectrumSimu()
         index = self.parent.stacked_widget.addWidget(SpectrumWidget(driver, self.parent))
