@@ -119,7 +119,6 @@ class WelcomeWidget(QtGui.QWidget):
             driver.set_led(driver.client.host.split('.')[-1])
         else:
             driver = SpectrumSimu()
-        index = self.parent.stacked_widget.addWidget(
-            SpectrumWidget(driver, self.parent))
+        index = self.parent.stacked_widget.addWidget(SpectrumWidget(driver, self.parent))
         self.parent.stacked_widget.setCurrentIndex(index)
 

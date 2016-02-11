@@ -109,7 +109,6 @@ class ConnectWidget(QtGui.QWidget):
             self.line[index+1].selectAll()
 
     def connect_to_tcp_server(self):
-        QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
         self.client = KClient(self.host, verbose=False)
         n_steps_timeout = 100
         cnt_timeout = 0
@@ -136,7 +135,7 @@ class ConnectWidget(QtGui.QWidget):
         
     def connect_onclick(self):
         if not self.is_connected: # Connect
-            print self.host
+            QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
             self.connection_info.setText('Disconnected')
             self._set_disconnect()
             self.connection_info.setText('Connecting to ' + self.host + ' ...')
@@ -145,14 +144,17 @@ class ConnectWidget(QtGui.QWidget):
                 self.available_instruments = self.http.get_local_instruments()
             except:
                 self.connection_info.setText('Cannot send requests to host\nCheck IP address')
+                QApplication.restoreOverrideCursor()
                 return
 
             if not "oscillo" in self.available_instruments:
                 self.connection_info.setText("Instrument oscillo not available on host")
+                QApplication.restoreOverrideCursor()
                 return
                 
             if not "spectrum" in self.available_instruments:
                 self.connection_info.setText("Instrument spectrum not available on host")
+                QApplication.restoreOverrideCursor()
                 return
                 
             # We load by default the oscillo instrument 
@@ -165,6 +167,7 @@ class ConnectWidget(QtGui.QWidget):
             self.connect_button.setStyleSheet('QPushButton {color: red;}')
             self.connect_button.setText('Disconnect')
             self.parent.set_connected()
+            QApplication.restoreOverrideCursor()
         else: # Disconnect
             if hasattr(self, 'client'):
                 self.client.__del__()
