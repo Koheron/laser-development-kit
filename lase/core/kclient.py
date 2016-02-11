@@ -213,11 +213,11 @@ class KClient:
                     if data_recv[:len(err_msg)] == err_msg:
                         print("kclient-recv_int: No data available")
                         return float('nan')
+						
+                return struct.unpack("I", data_recv)[0]
         except:
             print("kclient-recv_int: Reception error")
             return float('nan')
-
-        return struct.unpack("I", data_recv)[0]
 
     def recv_n_bytes(self, n_bytes):
         """ Receive exactly n bytes
