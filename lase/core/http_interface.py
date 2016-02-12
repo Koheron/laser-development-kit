@@ -28,7 +28,6 @@ class HTTPInterface:
         print('Deploying ' + zip_filename)
         try:
             r = requests.post(self.url + '/deploy/local/' + zip_filename, data={} , timeout=0.5)
-            print r.text
         except:
 			pass
             #print('Timeout occured')
