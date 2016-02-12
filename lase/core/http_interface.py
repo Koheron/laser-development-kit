@@ -27,10 +27,11 @@ class HTTPInterface:
         zip_filename = name + '-' + version + '.zip'
         print('Deploying ' + zip_filename)
         try:
-            r = requests.post(self.url + '/deploy/local/' + zip_filename, data={} , timeout=1)
+            r = requests.post(self.url + '/deploy/local/' + zip_filename, data={} , timeout=0.5)
             print r.text
         except:
-            print('Timeout occured')
+			pass
+            #print('Timeout occured')
         
     def remove_local_instrument(self, name, version):
         zip_filename = name + '-' + version + '.zip'

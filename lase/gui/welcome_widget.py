@@ -101,7 +101,7 @@ class WelcomeWidget(QtGui.QWidget):
 
     def install_instrument(self, instrument_name):
         self.connect_widget.http.install_instrument(instrument_name)
-        time.sleep(0.5)
+        time.sleep(0.2)
         return self.connect_widget.connect_to_tcp_server()
 
     def oscillo_onclick(self):
