@@ -29,7 +29,7 @@ class HTTPInterface:
         try:
             r = requests.post(self.url + '/deploy/local/' + zip_filename, data={} , timeout=0.5)
         except:
-			pass
+            pass
             #print('Timeout occured')
         
     def remove_local_instrument(self, name, version):
