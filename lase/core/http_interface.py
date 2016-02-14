@@ -46,10 +46,11 @@ class HTTPInterface:
 
     def install_instrument(self, instrument_name):
         instruments = self.get_local_instruments()
-        for name, shas in instruments.iteritems():
-            if name == instrument_name and len(shas) > 0:
-                self.deploy_local_instrument(name, shas[0])
-                return
+        if instruments:
+            for name, shas in instruments.items():
+                if name == instrument_name and len(shas) > 0:
+                    self.deploy_local_instrument(name, shas[0])
+                    return
         raise ValueError("Instrument " + instrument_name + " not found")
 
 if __name__ == "__main__":
