@@ -116,11 +116,12 @@ class ZynqSSH:
 
     def install_instrument(self, instrument_name):
         instruments = self.get_local_instruments()
-        for name, shas in instruments.iteritems():
-            if name == instrument_name and len(shas) > 0:
-                zip_filename = '/usr/local/instruments/backup/' + name + '-' + shas[0] + '.zip'
-                self.run('bash /usr/local/flask/stack/install_instrument.sh ' + zip_filename + ' ' + name)
-                return
+        if self.get_local_instruments():
+            for name, shas in instruments.iteritems():
+                if name == instrument_name and len(shas) > 0:
+                    zip_filename = '/usr/local/instruments/backup/' + name + '-' + shas[0] + '.zip'
+                    self.run('bash /usr/local/flask/stack/install_instrument.sh ' + zip_filename + ' ' + name)
+                    return
         print("Instrument " + instrument_name + " not found")
 
     # -----------------------------------------------
