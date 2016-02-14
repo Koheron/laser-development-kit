@@ -40,9 +40,9 @@ class HTTPInterface:
     def get_local_instruments(self):
         try:
             r = requests.get(self.url + '/get_local_instruments')
+            return r.json()
         except:
             return {}
-        return r.json()
 
     def install_instrument(self, instrument_name):
         instruments = self.get_local_instruments()
