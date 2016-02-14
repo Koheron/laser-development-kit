@@ -7,7 +7,7 @@ from PyQt4.QtGui import QApplication, QCursor
 import json
 import os
 import time
-from lase.core import KClient, HTTPInterface
+from lase.core import KClient, HTTPInterface, ZynqSSH
 
 
 class ConnectWidget(QtGui.QWidget):
@@ -52,6 +52,7 @@ class ConnectWidget(QtGui.QWidget):
 
         self.set_host_from_text()
         self.http = HTTPInterface(self.host)
+        self.connect_type = None
 
         self.line[0].textChanged.connect(lambda: self.ip_changed(0))
         self.line[1].textChanged.connect(lambda: self.ip_changed(1))
@@ -110,7 +111,7 @@ class ConnectWidget(QtGui.QWidget):
 
     def connect_to_tcp_server(self):
         self.client = KClient(self.host, verbose=False)
-        n_steps_timeout = 100
+        n_steps_timeout = 50
         cnt_timeout = 0
 
         while not self.client.is_connected:
@@ -133,6 +134,17 @@ class ConnectWidget(QtGui.QWidget):
         self.available_instruments = {}
         self.parent.set_disconnected()
         
+    def install_instrument(self, instrument_name):
+        if self.connect_type == 'HTTP':
+            self.http.install_instrument(instrument_name)
+        elif self.connect_type == 'SSH':
+            self.ssh.install_instrument(instrument_name)
+        else:
+            print('No connection available. Cannot install instrument.')
+            return
+        time.sleep(0.2)
+        return self.connect_to_tcp_server()
+        
     def connect_onclick(self):
         if not self.is_connected: # Connect
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
@@ -140,12 +152,26 @@ class ConnectWidget(QtGui.QWidget):
             self._set_disconnect()
             self.connection_info.setText('Connecting to ' + self.host + ' ...')
         
-            try:
-                self.available_instruments = self.http.get_local_instruments()
-            except:
-                self.connection_info.setText('Cannot send requests to host\nCheck IP address')
-                QApplication.restoreOverrideCursor()
-                return
+            self.available_instruments = self.http.get_local_instruments()
+			
+            if self.available_instruments: # HTTP connection available
+                self.connect_type = 'HTTP'
+            else: # Fallback to SSH
+                print('HTTP not available. Fallback to SSH.')
+                try:
+                    self.ssh = ZynqSSH(self.host, 'changeme')
+                except:
+                    self.connection_info.setText('Cannot open SSH connection\nCheck IP address')
+                    QApplication.restoreOverrideCursor()
+                    return
+				
+                self.connect_type = 'SSH'
+                self.available_instruments = self.ssh.get_local_instruments()
+
+                if not self.available_instruments:			
+                    self.connection_info.setText('Cannot retrieve instruments')
+                    QApplication.restoreOverrideCursor()
+                    return
 
             if not "oscillo" in self.available_instruments:
                 self.connection_info.setText("Instrument oscillo not available on host")
@@ -159,7 +185,7 @@ class ConnectWidget(QtGui.QWidget):
                 
             # We load by default the oscillo instrument 
             # and connect with tcp-server to check the connection
-            if not self.parent.install_instrument("oscillo"):
+            if not self.install_instrument("oscillo"):
                 return            
             
             self.connection_info.setText('Connected to ' + self.host)

@@ -98,6 +98,27 @@ class ZynqSSH:
         local_f = os.path.join(local_dest, os.path.basename(remote_filename))
         self.ftp.get(remote_filename, local_f)
         return
+		
+    # -----------------------------------------------
+    # Instruments
+    # -----------------------------------------------
+
+    def get_local_instruments(self):
+        self.run('ls /usr/local/instruments/backup')
+        instruments = {}
+        for line in self.get_stdout():
+            tokens =line.split('.')[0].split('-')
+            instruments[tokens[0]] = [tokens[1]]
+        return instruments
+
+    def install_instrument(self, instrument_name):
+        instruments = self.get_local_instruments()
+        for name, shas in instruments.iteritems():
+            if name == instrument_name and len(shas) > 0:
+                zip_filename = '/usr/local/instruments/backup/' + name + '-' + shas[0] + '.zip'
+                self.run('bash /usr/local/flask/stack/install_instrument.sh ' + zip_filename + ' ' + name)
+                return
+        print("Instrument " + instrument_name + " not found")
 
     # -----------------------------------------------
     # Load bitstream
@@ -166,73 +187,8 @@ class ZynqSSH:
 
         return
 
-    # -----------------------------------------------
-    # KServer control
-    # -----------------------------------------------
-
-    def kserver_pid(self):
-        """ Get Kserver PID
-        """
-        self.run('ps -A | grep kserver')
-        stdout = self.get_stdout()
-
-        if len(stdout) == 0:
-            return None
-        else:
-            return int(stdout[0].split(' ')[1].strip())
-
-    def kserver_is_started(self):
-        return self.kserver_pid() is not None
-
-    def kserver_start(self):
-        """ Start KServer
-
-            Return: KServer PID
-        """
-        if self.kserver_is_started():
-            print("KServer already running !")
-            return
-
-        self.run('/usr/local/kserver/kserver -c /usr/local/kserver/kserver.conf &')
-
-        pid = self.kserver_pid()
-
-        if pid is None:
-            raise RuntimeError("Cannot start KServer")
-
-        return pid
-
-    def kserver_stop(self):
-        pid = self.kserver_pid()
-
-        if pid is None:
-            return
-
-        self.run("kill -s SIGINT " + str(pid))
-
-        if self.kserver_is_started():
-            raise RuntimeError("Cannot stop KServer")
-
-    def kserver_restart(self):
-        """ Restart KServer
-
-            Return: KServer PID
-        """
-        self.kserver_stop()
-        return self.kserver_start()
-
     def __del__(self):
         if hasattr(self, 'ftp'):
             self.ftp.close()
 
         return
-
-if __name__ == '__main__':
-    TCP_IP = "10.42.0.93"
-
-    ssh = ZynqSSH(TCP_IP, "koheron")
-
-    ssh.kserver_stop()
-    print(str(ssh.kserver_pid()))
-    print(ssh.kserver_start())
-    print(ssh.kserver_restart())

@@ -99,15 +99,10 @@ class WelcomeWidget(QtGui.QWidget):
         self.oscillo_button.setText('Oscillo (Simu)')
         self.spectrum_button.setText('Spectrum (Simu)')
 
-    def install_instrument(self, instrument_name):
-        self.connect_widget.http.install_instrument(instrument_name)
-        time.sleep(0.2)
-        return self.connect_widget.connect_to_tcp_server()
-
     def oscillo_onclick(self):
         if self.connect_widget.is_connected:
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-            self.install_instrument("oscillo")
+            self.connect_widget.install_instrument("oscillo")
             driver = Oscillo(self.connect_widget.client)
             driver.set_led(driver.client.host.split('.')[-1])
             QApplication.restoreOverrideCursor()
@@ -119,7 +114,7 @@ class WelcomeWidget(QtGui.QWidget):
     def spectrum_onclick(self):
         if self.connect_widget.is_connected:
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-            self.install_instrument("spectrum")
+            self.connect_widget.install_instrument("spectrum")
             driver = Spectrum(self.connect_widget.client)
             driver.set_led(driver.client.host.split('.')[-1])
             QApplication.restoreOverrideCursor()
