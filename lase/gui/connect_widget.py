@@ -166,6 +166,7 @@ class ConnectWidget(QtGui.QWidget):
                     return
 				
                 self.connect_type = 'SSH'
+                self.ssh.unzip_app()
                 self.available_instruments = self.ssh.get_local_instruments()
 
                 if not self.available_instruments:			

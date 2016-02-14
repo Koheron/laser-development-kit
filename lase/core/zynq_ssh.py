@@ -103,6 +103,9 @@ class ZynqSSH:
     # Instruments
     # -----------------------------------------------
 
+    def unzip_app(self):
+        self.run('unzip -o /usr/local/flask/app.zip -d /usr/local/flask')
+
     def get_local_instruments(self):
         self.run('ls /usr/local/instruments/backup')
         instruments = {}
