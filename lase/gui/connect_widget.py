@@ -7,7 +7,7 @@ from PyQt4.QtGui import QApplication, QCursor
 import json
 import os
 import time
-from lase.core import ZynqSSH, KClient
+from lase.core import KClient, HTTPInterface, ZynqSSH
 
 
 class ConnectWidget(QtGui.QWidget):
@@ -16,19 +16,10 @@ class ConnectWidget(QtGui.QWidget):
 
         self.parent = parent
         self.ip_path = ip_path
-        self.password = 'changeme'
         self.is_connected = False
 
         # IP address
         self.create_ip_layout()
-
-        # SSH password
-        self.lay_password = QtGui.QHBoxLayout()
-        self.lay_password.addWidget(QtGui.QLabel('Password:'))
-        self.password_widget = QtGui.QLineEdit()
-        self.password_widget.setEchoMode(QtGui.QLineEdit.Password)
-        self.password_widget.setText('changeme')
-        self.lay_password.addWidget(self.password_widget)
 
         # Connect button and connection information
         self.lay_connection = QtGui.QHBoxLayout()
@@ -43,7 +34,6 @@ class ConnectWidget(QtGui.QWidget):
         # Add layouts to main layout
         self.lay = QtGui.QVBoxLayout()
         self.lay.addLayout(self.lay_ip)
-        self.lay.addLayout(self.lay_password)
         self.lay.addLayout(self.lay_connection)
         self.setLayout(self.lay)
 
@@ -52,8 +42,7 @@ class ConnectWidget(QtGui.QWidget):
 
         if os.path.exists(self.ip_path):
             try:
-                with open(os.path.join(self.ip_path,
-                                       'ip_address' + '.json')) as fp:
+                with open(os.path.join(self.ip_path, 'ip_address' + '.json')) as fp:
                     json_data = fp.read()
                     parameters = json.loads(json_data)
                     IP = parameters['TCP_IP']
@@ -62,14 +51,16 @@ class ConnectWidget(QtGui.QWidget):
             self.set_text_from_ip(IP)
 
         self.set_host_from_text()
+        self.http = HTTPInterface(self.host)
+        self.connect_type = None
 
         self.line[0].textChanged.connect(lambda: self.ip_changed(0))
         self.line[1].textChanged.connect(lambda: self.ip_changed(1))
         self.line[2].textChanged.connect(lambda: self.ip_changed(2))
         self.line[3].textChanged.connect(lambda: self.ip_changed(3))
 
-        self.connect_button.clicked.connect(self.connect)
-
+        self.connect_button.clicked.connect(self.connect_onclick)
+        
     def create_ip_layout(self):
         self.lay_ip = QtGui.QHBoxLayout()
         self.line = []
@@ -118,61 +109,94 @@ class ConnectWidget(QtGui.QWidget):
             self.line[index+1].setFocus()
             self.line[index+1].selectAll()
 
-    def connect(self):
-        if not self.is_connected:
-            QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+    def connect_to_tcp_server(self):
+        self.client = KClient(self.host, verbose=False)
+        n_steps_timeout = 50
+        cnt_timeout = 0
 
-            self.client = KClient(self.host, verbose=False)
+        while not self.client.is_connected:
+            time.sleep(0.015)
+            cnt_timeout += 1
 
-            n_steps_timeout = 100
-            cnt_timeout = 0
-            while not self.client.is_connected:
-                time.sleep(0.015)
-                cnt_timeout += 1
-
-                if cnt_timeout > n_steps_timeout:
-                    self.connection_info.setText(
-                        'Failed to connect to host\nCheck IP address')
-                    self._set_disconnect()
-                    QApplication.restoreOverrideCursor()
-                    return
-
-            self.connection_info.setText('Connecting to ' + self.host + ' ...')
-
-            if self.client.is_connected:
-                self.connection_info.setText('Connected to '+self.host)
-                self.password = str(self.password_widget.text())
-
-                try:
-                    self.ssh = ZynqSSH(self.host, self.password)
-                except:
-                    if not self.password:
-                        self.connection_info.setText('Please enter password')
-                    else:
-                        self.connection_info.setText(
-                            'Cannot open SSH connection\nCheck password')
-
-                    self._set_disconnect()
-                    QApplication.restoreOverrideCursor()
-                    return
-
-                self.is_connected = True
-                self.connect_button.setStyleSheet('QPushButton {color: red;}')
-                self.connect_button.setText('Disconnect')
-                self.parent.connected()
-            else:
-                self.connection_info.setText('Failed to connect to '+self.host)
-
-            QApplication.restoreOverrideCursor()
-
-        else:
-            if hasattr(self, 'client'):
-                self.client.__del__()
-            self.connection_info.setText('Disconnected')
-            self._set_disconnect()
+            if cnt_timeout > n_steps_timeout:
+                self.connection_info.setText(
+                    'Failed to connect to host\nCheck IP address')
+                self._set_disconnect()
+                QApplication.restoreOverrideCursor()
+                return False
+        QApplication.restoreOverrideCursor()
+        return True
 
     def _set_disconnect(self):
         self.is_connected = False
         self.connect_button.setStyleSheet('QPushButton {color: green;}')
         self.connect_button.setText('Connect')
-        self.parent.disconnected()
+        self.available_instruments = {}
+        self.parent.set_disconnected()
+        
+    def install_instrument(self, instrument_name):
+        if self.connect_type == 'HTTP':
+            self.http.install_instrument(instrument_name)
+        elif self.connect_type == 'SSH':
+            self.ssh.install_instrument(instrument_name)
+        else:
+            print('No connection available. Cannot install instrument.')
+            return
+        time.sleep(0.2)
+        return self.connect_to_tcp_server()
+        
+    def connect_onclick(self):
+        if not self.is_connected: # Connect
+            QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+            self.connection_info.setText('Disconnected')
+            self._set_disconnect()
+            self.connection_info.setText('Connecting to ' + self.host + ' ...')
+        
+            self.available_instruments = self.http.get_local_instruments()
+			
+            if self.available_instruments: # HTTP connection available
+                self.connect_type = 'HTTP'
+            else: # Fallback to SSH
+                print('HTTP not available. Fallback to SSH.')
+                try:
+                    self.ssh = ZynqSSH(self.host, 'changeme')
+                except:
+                    self.connection_info.setText('Cannot open SSH connection\nCheck IP address')
+                    QApplication.restoreOverrideCursor()
+                    return
+				
+                self.connect_type = 'SSH'
+                self.ssh.unzip_app()
+                self.available_instruments = self.ssh.get_local_instruments()
+
+                if not self.available_instruments:			
+                    self.connection_info.setText('Cannot retrieve instruments')
+                    QApplication.restoreOverrideCursor()
+                    return
+
+            if not "oscillo" in self.available_instruments:
+                self.connection_info.setText("Instrument oscillo not available on host")
+                QApplication.restoreOverrideCursor()
+                return
+                
+            if not "spectrum" in self.available_instruments:
+                self.connection_info.setText("Instrument spectrum not available on host")
+                QApplication.restoreOverrideCursor()
+                return
+                
+            # We load by default the oscillo instrument 
+            # and connect with tcp-server to check the connection
+            if not self.install_instrument("oscillo"):
+                return            
+            
+            self.connection_info.setText('Connected to ' + self.host)
+            self.is_connected = True
+            self.connect_button.setStyleSheet('QPushButton {color: red;}')
+            self.connect_button.setText('Disconnect')
+            self.parent.set_connected()
+            QApplication.restoreOverrideCursor()
+        else: # Disconnect
+            if hasattr(self, 'client'):
+                self.client.__del__()
+            self.connection_info.setText('Disconnected')
+            self._set_disconnect()

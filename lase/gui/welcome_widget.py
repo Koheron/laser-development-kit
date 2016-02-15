@@ -2,6 +2,8 @@
 
 from pyqtgraph.Qt import QtGui, QtCore
 from PyQt4.QtWebKit import QWebView
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QApplication, QCursor
 import time
 import os
 import yaml
@@ -76,8 +78,8 @@ class WelcomeWidget(QtGui.QWidget):
         self.setLayout(self.lay)
         
         # Connections
-        self.oscillo_button.clicked.connect(self.oscillo_on)
-        self.spectrum_button.clicked.connect(self.spectrum_on)
+        self.oscillo_button.clicked.connect(self.oscillo_onclick)
+        self.spectrum_button.clicked.connect(self.spectrum_onclick)
 
     def update(self):
         pass
@@ -89,47 +91,35 @@ class WelcomeWidget(QtGui.QWidget):
         button.setFixedHeight(150)
         return button
 
-    def connected(self):
+    def set_connected(self):
         self.oscillo_button.setText('Oscillo')
         self.spectrum_button.setText('Spectrum')
 
-    def disconnected(self):
+    def set_disconnected(self):
         self.oscillo_button.setText('Oscillo (Simu)')
         self.spectrum_button.setText('Spectrum (Simu)')
 
-    def load_bitstream(self, bitstream_name):
-        bitstream_path = os.path.join(self.parent.bitstreams_path, bitstream_name+'.bit')
-        if not os.path.isfile(bitstream_path):
-            bitstream_url = self.config["bitstreams"][bitstream_name+"_url"]
-            if sys.version_info[0] == 3:
-                urllib.request.urlretrieve(bitstream_url, bitstream_path)
-            else:
-                urllib.urlretrieve(bitstream_url, bitstream_path)
-        self.connect_widget.ssh.load_pl(bitstream_path)
-
-    def oscillo_on(self):
+    def oscillo_onclick(self):
         if self.connect_widget.is_connected:
-            time.sleep(0.01)
-            self.load_bitstream("oscillo")
-            time.sleep(0.01)
+            QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+            self.connect_widget.install_instrument("oscillo")
             driver = Oscillo(self.connect_widget.client)
             driver.set_led(driver.client.host.split('.')[-1])
+            QApplication.restoreOverrideCursor()
         else:
             driver = OscilloSimu()
         index = self.parent.stacked_widget.addWidget(OscilloWidget(driver, self.parent))
         self.parent.stacked_widget.setCurrentIndex(index)
 
-    def spectrum_on(self):
+    def spectrum_onclick(self):
         if self.connect_widget.is_connected:
-            time.sleep(0.01)
-            self.load_bitstream("spectrum")
-            time.sleep(0.01)
+            QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+            self.connect_widget.install_instrument("spectrum")
             driver = Spectrum(self.connect_widget.client)
             driver.set_led(driver.client.host.split('.')[-1])
-
+            QApplication.restoreOverrideCursor()
         else:
             driver = SpectrumSimu()
-        index = self.parent.stacked_widget.addWidget(
-            SpectrumWidget(driver, self.parent))
+        index = self.parent.stacked_widget.addWidget(SpectrumWidget(driver, self.parent))
         self.parent.stacked_widget.setCurrentIndex(index)
 
