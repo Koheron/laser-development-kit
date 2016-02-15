@@ -6,7 +6,6 @@ from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph as pg
 
 from .lase_widget import LaseWidget
-from .save_widget import SaveWidget
 from .cursor_widget import CursorWidget
 from .stats_widget import StatsWidget
 from .select_channel_widget import SelectChannelWidget
@@ -54,17 +53,12 @@ class OscilloWidget(LaseWidget):
         self.math_widget = MathWidget(self.driver, self.plot_widget)
         self.math_box = QtGui.QGroupBox("Math")
         self.math_box.setLayout(self.math_widget.layout)
-        # Save
-        self.save_box = QtGui.QGroupBox("Save")
-        self.save_widget = SaveWidget(self)
-        self.save_box.setLayout(self.save_widget.layout)
 
         # Add widgets to control layout
         self.control_layout.addWidget(self.display_box)
         self.control_layout.addLayout(self.stats_widget.layout)
         self.control_layout.addWidget(self.cursors_box)
         self.control_layout.addWidget(self.math_box)
-        self.control_layout.addWidget(self.save_box)
         self.control_layout.addStretch(1)
         self.control.setLayout(self.control_layout)
 

@@ -9,7 +9,6 @@ from .oscillo_widget import OscilloWidget
 from .laser_widget import LaserWidget
 from .math_widget import MathWidget
 from .monitor_widget import MonitorWidget
-from .save_widget import SaveWidget
 from .select_channel_widget import SelectChannelWidget
 from .welcome_widget import WelcomeWidget
 from .spectrum_widget import SpectrumWidget
@@ -24,7 +23,6 @@ __all__ = ['CalibrationWidget',
            'LaserWidget',
            'MathWidget',
            'MonitorWidget',
-           'SaveWidget',
            'SelectChannelWidget',
            'WelcomeWidget',
            'SpectrumWidget',
