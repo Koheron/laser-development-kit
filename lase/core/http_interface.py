@@ -29,8 +29,8 @@ class HTTPInterface:
         try:
             r = requests.post(self.url + '/deploy/local/' + zip_filename, data={} , timeout=0.5)
         except:
+            print('Timeout occured')
             pass
-            #print('Timeout occured')
 
     def remove_local_instrument(self, name, version):
         zip_filename = name + '-' + version + '.zip'

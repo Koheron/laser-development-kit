@@ -110,6 +110,9 @@ class ConnectWidget(QtGui.QWidget):
             self.line[index+1].selectAll()
 
     def connect_to_tcp_server(self):
+        if hasattr(self, 'client'):
+            self.client.__del__()
+
         self.client = KClient(self.host, verbose=False)
         n_steps_timeout = 50
         cnt_timeout = 0
