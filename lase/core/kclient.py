@@ -138,7 +138,6 @@ class KClient:
             # Connect to Kserver
             self.sock.connect((host, port))
             self.is_connected = True
-
         except socket.error as e:
             print('Failed to connect to {:s}:{:d} : {:s}'
                   .format(host, port, e))

@@ -28,8 +28,9 @@ class HTTPInterface:
         print('Deploying ' + zip_filename)
         try:
             r = requests.post(self.url + '/deploy/local/' + zip_filename, data={} , timeout=0.5)
-        except:
-            print('Timeout occured')
+        except Exception,e: 
+            print("[error] " + str(e))
+            #print('Timeout occured')
             pass
 
     def remove_local_instrument(self, name, version):
@@ -41,7 +42,8 @@ class HTTPInterface:
         try:
             r = requests.get(self.url + '/get_local_instruments')
             return r.json()
-        except:
+        except Exception,e: 
+            print("[error] " + str(e))
             return {}
 
     def install_instrument(self, instrument_name):
