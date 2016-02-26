@@ -9,6 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
+@pytest.mark.real
 def speed_test(host, n_pts=200):
     time_array = np.zeros(n_pts)
     client = KClient(host)
