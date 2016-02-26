@@ -4,7 +4,11 @@ import requests
 
 class HTTPInterface:
     def __init__(self, IP, port=80):
+        self.port = port
         self.url = 'http://' + IP + ':' + str(port)
+
+    def set_ip(self, IP):
+        self.url = 'http://' + IP + ':' + str(self.port)
 
     def get_bistream_id(self):
         r = requests.get(self.url + '/bitstream_id')
@@ -27,7 +31,7 @@ class HTTPInterface:
         zip_filename = name + '-' + version + '.zip'
         print('Deploying ' + zip_filename)
         try:
-            r = requests.post(self.url + '/deploy/local/' + zip_filename, data={} , timeout=0.5)
+            r = requests.post(self.url + '/deploy/local/' + zip_filename, data={} , timeout=1.0)
         except Exception,e: 
             print("[error] " + str(e))
             #print('Timeout occured')
@@ -63,4 +67,4 @@ if __name__ == "__main__":
 #    http.deploy_local_instrument('oscillo', '06ee48f')
 #    print(http.remove_local_instrument('oscillo', '06ee48f'))
     print(http.get_local_instruments())
-    http.install_instrument("spectrum")
+#    http.install_instrument("spectrum")
