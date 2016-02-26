@@ -155,6 +155,7 @@ class ConnectWidget(QtGui.QWidget):
             self._set_disconnect()
             self.connection_info.setText('Connecting to ' + self.host + ' ...')
         
+            self.http.set_ip(self.host)
             self.available_instruments = self.http.get_local_instruments()
 			
             if self.available_instruments: # HTTP connection available
