@@ -17,7 +17,8 @@ class Base(object):
 
     def __init__(self, wfm_size, client):
         self.client = client
-        self.open_base(wfm_size)
+        self.open_dac(wfm_size)
+        self.open_laser()
 
         self.n = wfm_size
         self.max_current = 40  # mA
@@ -28,12 +29,17 @@ class Base(object):
 
         self.failed = False
 
-    def open_base(self, wfm_size):
-        @command('BASE')
-        def open(self, wfm_size):
-            pass
+    def open_dac(self, wfm_size):
+        @command('DAC')
+        def open(self, wfm_size): pass
 
         open(self, wfm_size)
+
+    def open_laser(self):
+        @command('LASER')
+        def open(self): pass
+
+        open(self)
 
     def update(self):
         pass  # Used in BaseSimu
@@ -41,19 +47,29 @@ class Base(object):
     def close(self):
         self.reset()
 
-    @command('BASE')
     def reset(self):
-        pass
+        self.reset_laser()
+        self.reset_dac()
 
-    @command('BASE')
-    def start_laser(self):
-        pass
+    def reset_laser(self):
+        @command('LASER')
+        def reset(self): pass
 
-    @command('BASE')
-    def stop_laser(self):
-        pass
+        reset(self)
 
-    @command('BASE')
+    def reset_dac(self):
+        @command('DAC')
+        def reset(self): pass
+
+        reset(self)
+
+    @command('LASER')
+    def start_laser(self): pass
+
+    @command('LASER')
+    def stop_laser(self): pass
+
+    @command('LASER')
     def get_laser_current(self):
         current = self.client.recv_int(4)
 
@@ -63,7 +79,7 @@ class Base(object):
 
         return (0.0001/21.) * current
 
-    @command('BASE')
+    @command('LASER')
     def get_laser_power(self):
         power = self.client.recv_int(4)
 
@@ -73,18 +89,17 @@ class Base(object):
 
         return power
 
-    @command('BASE')
+    @command('LASER')
     def get_monitoring(self):
         return self.client.recv_tuple()
 
-    @command('BASE')
+    @command('LASER')
     def set_laser_current(self, current):
         """ current: The bias in mA """
         pass
 
-    @write_buffer('BASE')
-    def set_dac_buffer(self, data):
-        pass
+    @write_buffer('DAC')
+    def set_dac_buffer(self, data): pass
 
     def set_dac(self, warning=False, reset=False):
         if warning:
@@ -97,14 +112,11 @@ class Base(object):
         if reset:
             self.reset_acquisition()
 
-    @command('BASE')
-    def get_bitstream_id(self):
-        pass
+    @command('COMMON')
+    def get_bitstream_id(self): pass
 
-    @command('BASE')
-    def set_led(self, value):
-        pass
+    @command('COMMON')
+    def set_led(self, value): pass
 
-    @command('BASE')
-    def reset_acquisition(self):
-        pass
+    @command('DAC')
+    def reset_acquisition(self): pass
