@@ -82,7 +82,7 @@ class Oscillo(Base):
         # TODO Check reception
 
     @command('OSCILLO')
-    def speed_test(self, n_outer_loop, n_inner_loop):
+    def speed_test(self, n_outer_loop, n_inner_loop, size=8192):
         """ Read all the acquired channels """
         return self.client.recv_buffer(n_outer_loop)
 
