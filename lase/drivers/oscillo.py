@@ -81,6 +81,11 @@ class Oscillo(Base):
                                        data_type='float32')
         # TODO Check reception
 
+    @command('OSCILLO')
+    def speed_test(self, n_outer_loop, n_inner_loop):
+        """ Read all the acquired channels """
+        return self.client.recv_buffer(n_outer_loop)
+
     def get_adc(self):
         data = self.read_all_channels()
 

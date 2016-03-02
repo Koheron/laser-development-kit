@@ -123,6 +123,7 @@ class ZynqSSH:
                     self.run('bash /usr/local/flask/stack/install_instrument.sh ' + zip_filename + ' ' + name)
                     time.sleep(0.5)
                     return
+        time.sleep(0.5)
         print("Instrument " + instrument_name + " not found")
 
     # -----------------------------------------------
