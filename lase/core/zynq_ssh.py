@@ -122,6 +122,7 @@ class ZynqSSH:
                     zip_filename = '/usr/local/instruments/backup/' + name + '-' + shas[0] + '.zip'
                     self.run('bash /usr/local/flask/stack/install_instrument.sh ' + zip_filename + ' ' + name)
                     return
+        time.sleep(0.5)
         print("Instrument " + instrument_name + " not found")
 
     # -----------------------------------------------

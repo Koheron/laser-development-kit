@@ -57,6 +57,7 @@ class HTTPInterface:
                 if name == instrument_name and len(shas) > 0:
                     self.deploy_local_instrument(name, shas[0])
                     return
+        time.sleep(0.5)
         raise ValueError("Instrument " + instrument_name + " not found")
 
 if __name__ == "__main__":
