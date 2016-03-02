@@ -5,7 +5,7 @@ SSH control of the Zynq
 # Use the Paramiko package for native Python SSH
 # http://jessenoller.com/blog/2009/02/05/ssh-programming-with-paramiko-completely-different
 import paramiko
-import os
+import os, time
 
 
 class ZynqSSH:
@@ -121,6 +121,7 @@ class ZynqSSH:
                 if name == instrument_name and len(shas) > 0:
                     zip_filename = '/usr/local/instruments/backup/' + name + '-' + shas[0] + '.zip'
                     self.run('bash /usr/local/flask/stack/install_instrument.sh ' + zip_filename + ' ' + name)
+                    time.sleep(0.5)
                     return
         print("Instrument " + instrument_name + " not found")
 

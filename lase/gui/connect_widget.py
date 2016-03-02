@@ -145,7 +145,6 @@ class ConnectWidget(QtGui.QWidget):
         else:
             print('No connection available. Cannot install instrument.')
             return
-        time.sleep(0.5)
         return self.connect_to_tcp_server()
         
     def connect_onclick(self):
