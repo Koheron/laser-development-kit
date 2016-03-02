@@ -1,6 +1,7 @@
 #! /usr/bin/python
 
 import requests
+import time
 
 class HTTPInterface:
     def __init__(self, IP, port=80):
@@ -56,6 +57,7 @@ class HTTPInterface:
             for name, shas in instruments.items():
                 if name == instrument_name and len(shas) > 0:
                     self.deploy_local_instrument(name, shas[0])
+                    time.sleep(0.5)
                     return
         time.sleep(0.5)
         raise ValueError("Instrument " + instrument_name + " not found")
