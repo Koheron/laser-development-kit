@@ -8,7 +8,9 @@ from lase.drivers import Spectrum
 
 # Modules to import
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('GTKAgg')
+from matplotlib import pyplot as plt
 import time
 
 # Load the spectrum instrument
@@ -26,13 +28,23 @@ driver.start_laser()
 current = 30  # mA
 driver.set_laser_current(current)
 
-# Signal on ADC
-driver.get_spectrum()
+# Plot parameters
+fig = plt.figure()
+ax = fig.add_subplot(111)
+x = np.fft.fftshift(driver.sampling.f_fft)
+y = 10*np.log10(np.fft.fftshift(driver.spectrum))
+li, = ax.plot(x, y)
+fig.canvas.draw()
+ax.set_xlim((x[0],x[-1]))
+ax.set_ylim((100,300))
 
-# Plot
-plt.plot(np.fft.fftshift(driver.sampling.f_fft), np.log10(driver.spectrum))
-plt.show()
-
-# Disable laser
-driver.stop_laser()
-driver.close()
+while True:
+    try:
+        driver.get_spectrum()
+        li.set_ydata(10*np.log10(np.fft.fftshift(driver.spectrum)))
+        fig.canvas.draw()
+        plt.pause(0.001)
+    except KeyboardInterrupt:
+        driver.stop_laser()
+        driver.close()
+        break
