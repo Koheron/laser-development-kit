@@ -8,6 +8,7 @@ from lase.drivers import Oscillo
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+import pytest
 
 @pytest.mark.real
 def speed_test(host, n_pts=200):
@@ -15,7 +16,7 @@ def speed_test(host, n_pts=200):
     client = KClient(host)
     driver = Oscillo(client)
     t0 = time.time()
-    t_prev = t0    
+    t_prev = t0
 
     for i in range(n_pts):
         for j in range(1):
