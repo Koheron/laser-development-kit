@@ -9,7 +9,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
-@pytest.mark.real
 def speed_test(host, n_pts=200):
     time_array = np.zeros(n_pts)
     client = KClient(host)
@@ -35,9 +34,10 @@ def speed_test(host, n_pts=200):
     plt.plot(time_array)
     driver.close()
 
-hosts = ['192.168.1.{0}'.format(i) for i in [15,8,2]]
+hosts = ['192.168.1.{0}'.format(i) for i in [2]]
 
 for host in hosts:
-    speed_test(host)
+    speed_test(host,n_pts=1000)
 
+plt.ylabel('Time (s)')
 plt.show()
