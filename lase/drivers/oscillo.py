@@ -167,6 +167,31 @@ class Oscillo(Base):
                                        data_type='float32')
 
     @command('OSCILLO')
+    def read_rambuf(self):
+        return self.client.recv_buffer(2 * self.wfm_size,
+                                       data_type='float32')
+
+    @command('OSCILLO')
+    def read_rambuf_memcpy(self):
+        return self.client.recv_buffer(2 * self.wfm_size,
+                                       data_type='float32')
+
+    @command('OSCILLO')
+    def read_rambuf_mycopy(self):
+        return self.client.recv_buffer(2 * self.wfm_size,
+                                       data_type='float32')
+
+    @command('OSCILLO')
+    def read_mmapbuf_nocopy(self):
+        return self.client.recv_buffer(2 * self.wfm_size,
+                                       data_type='float32')
+
+    @command('OSCILLO')
+    def read_rambuf_mmap_memcpy(self):
+        return self.client.recv_buffer(2 * self.wfm_size,
+                                       data_type='float32')
+
+    @command('OSCILLO')
     def speed_test(self, n_outer_loop, n_inner_loop, size=8192):
         return self.client.recv_buffer(n_outer_loop)
 
