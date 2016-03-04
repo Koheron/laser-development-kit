@@ -1,10 +1,11 @@
 dependencies:
     pre:
         - sudo apt-get install -y python-numpy
-        - sudo apt-get install -y python-scipy        
+        - sudo apt-get install -y python-scipy
+        - sudo pip install matplotlib
         - sudo pip install pyqtgraph
         - sudo pip install pytest
 
 test:
     pre:
-        - py.test -k-real
+        - py.test -k-real --ignore=examples/
