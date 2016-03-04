@@ -16,7 +16,6 @@ from lase.drivers import Oscillo
 host = os.getenv('HOST','192.168.1.100')
 password = os.getenv('PASSWORD','changeme')
 ssh = ZynqSSH(host, password)
-ssh.unzip_app()
 ssh.install_instrument('oscillo')
 
 # Connect to the board
@@ -48,40 +47,40 @@ data = np.zeros((1000,2)) + temperature
 # Hanning FFT Window
 window = 0.5 * (1-np.cos(2 * np.pi * np.arange(4095) / 4095))
 
-f = open('temperature.csv','a')
+with open('temperature.csv','w') as f:
+	for i in range(50000000):
+		driver.get_adc()
+		
+		# Separate positive and negative slopes in the triangle waveform
+		adc_pos = driver.adc[0,0:4095]
+		adc_neg = driver.adc[0,4096:8191]
 
-for i in range(50000000):
-    driver.get_adc()
-    
-    # Separate positive and negative slopes in the triangle waveform
-    adc_pos = driver.adc[0,0:4095]
-    adc_neg = driver.adc[0,4096:8191]
+		fft_pos = np.fft.fft(adc_pos * window)
+		fft_neg = np.fft.fft(adc_neg * window)
 
-    fft_pos = np.fft.fft(adc_pos * window)
-    fft_pos = np.fft.fft(adc_neg * window)
+		phase_adc_pos = np.angle(fft_pos)
+		phase_adc_neg = np.angle(fft_neg)
+		
+		# The phase of the frequency modulation 
+		phase_pos = phase_adc_pos[6]
+		phase_neg = phase_adc_pos[6]
+		
+		plt.clf()
 
-    phase_pos = np.angle(fft_pos)
-    phase_neg = np.angle(fft_neg)
-    
-    # The phase of the frequency modulation 
-    phase_neg = phase_adc1[6]
-    phase_neg = phase_adc2[6]
-    
-    plt.clf()
+		diff_pos = -(phase_pos - phase_previous_neg + np.pi)%(2*np.pi)-np.pi
+		diff_neg = +(phase_neg - phase_previous_neg + np.pi)%(2*np.pi)-np.pi
+	  
+		diff = diff_pos + diff_neg/2
 
-    diff_pos = -(phase_pos - phase_previous_neg + np.pi)%(2*np.pi)-np.pi
-    diff_neg = +(phase_neg - phase_previous_neg + np.pi)%(2*np.pi)-np.pi
-  
-    diff = diff_pos + diff_neg/2
+		data = np.roll(data, -1, axis=0)
+		temperature = temperature + 0.015 * diff / (2*np.pi)
+		data[-1] = temperature
+		string = str(time.time())+','+str(temperature)+'\n'
+		f.write(string)
+		print(string)
+		phase_previous_pos = phase_pos
+		phase_previous_neg = phase_neg
 
-    data = np.roll(data, -1, axis=0)
-    temperature = temperature + 0.015 * diff / (2*np.pi)
-    data[-1] = temp
-    string = str(time.time())+','+str(temperature)+'\n'
-    f.write(string)
-    print(string)
-    phase_previous_pos = phase_pos
-    phase_previous_neg = phase_neg
 f.close()
 
 driver.stop_laser()
