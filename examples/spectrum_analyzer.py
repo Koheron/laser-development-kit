@@ -15,8 +15,10 @@ import time
 
 # Load the spectrum instrument
 host = os.getenv('HOST','192.168.1.100')
-http = HTTPInterface(host)
-http.install_instrument('spectrum')
+password = os.getenv('PASSWORD','changeme')
+ssh = ZynqSSH(host, password)
+ssh.unzip_app()
+ssh.install_instrument('spectrum')
 
 client = KClient(host)
 driver = Spectrum(client)
