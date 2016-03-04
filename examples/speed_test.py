@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import initExample
-from lase.core import KClient
+from lase.core import KClient, ZynqSSH
 from lase.drivers import Oscillo
 
 import os
