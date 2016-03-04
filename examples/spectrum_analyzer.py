@@ -3,7 +3,7 @@
 
 import initExample
 import os
-from lase.core import KClient, HTTPInterface
+from lase.core import KClient, ZynqSSH
 from lase.drivers import Spectrum
 
 # Modules to import
