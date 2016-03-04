@@ -41,7 +41,7 @@ plt.ion()
 plt.show()
 
 phase_previous_pos = 0
-phase_previous_meg = 0
+phase_previous_neg = 0
 
 temperature = 20 # degrees Celsius
 data = np.zeros((1000,2)) + temperature
