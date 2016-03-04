@@ -5,9 +5,10 @@ import initExample
 from lase.core import KClient
 from lase.drivers import Oscillo
 
+import os
+import time
 import numpy as np
 import matplotlib.pyplot as plt
-import time
 
 # Load the oscillo instrument
 host = os.getenv('HOST','192.168.1.100')
