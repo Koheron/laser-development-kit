@@ -13,10 +13,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
-# Connect to Lase
+# Load the oscillo instrument
 host = os.getenv('HOST','192.168.1.100')
+password = os.getenv('PASSWORD','changeme')
+ssh = ZynqSSH(host, password)
+ssh.unzip_app()
+ssh.install_instrument('oscillo')
+
+# Connect to the instrument
 client = KClient(host)
-driver = Oscillo(client)  # Replace with appropriate driver
+driver = Oscillo(client)
 
 # Enable laser
 driver.start_laser()
