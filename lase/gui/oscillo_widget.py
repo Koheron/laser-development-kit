@@ -134,7 +134,7 @@ class OscilloWidget(LaseWidget):
         for item in self.plot_widget.dataItem:
             self.plot_widget.addItem(item)
         
-        for i in range[2]:
+        for i in range(2):
             self.plot_widget.dataItem[i].setVisible(self.plot_widget.show_adc[i])
             self.plot_widget.dataItem[i+2].setVisible(self.plot_widget.show_dac[i])
         self.plot_widget.plotItem.setMouseEnabled(x=False, y=True)
