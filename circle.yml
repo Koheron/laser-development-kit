@@ -8,4 +8,4 @@ dependencies:
 
 test:
     pre:
-        - py.test -k-real
+        - py.test -k-real --ignore=examples/
