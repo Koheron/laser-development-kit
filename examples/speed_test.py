@@ -8,9 +8,14 @@ from lase.drivers import Oscillo
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-import pytest
 
-@pytest.mark.real
+# Load the oscillo instrument
+host = os.getenv('HOST','192.168.1.100')
+password = os.getenv('PASSWORD','changeme')
+ssh = ZynqSSH(host, password)
+ssh.unzip_app()
+ssh.install_instrument('oscillo')
+
 def speed_test(host, n_pts=200):
     time_array = np.zeros(n_pts)
     client = KClient(host)
@@ -30,7 +35,7 @@ def speed_test(host, n_pts=200):
         time_array[i] = t - t_prev
         #print host, i, time_array[i]
         t_prev = t
-
+        
     print np.median(time_array)
 
     plt.plot(time_array)
