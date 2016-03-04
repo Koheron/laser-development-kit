@@ -7,16 +7,17 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
-from lase.core import KClient
+from lase.core import KClient, ZynqSSH
 from lase.drivers import Oscillo
 
-host = '192.168.1.12'
-password = 'changeme' # by default
+host = os.getenv('HOST','192.168.1.100')
+password = os.getenv('PASSWORD','changeme')
+ssh = ZynqSSH(host, password)
+ssh.unzip_app()
+ssh.install_instrument('oscillo')
 
-# Connect to the board
+# Connect to the board and initialize the driver
 client = KClient(host)
-
-# Initialize the driver
 driver = Oscillo(client)
 
 driver.start_laser()
