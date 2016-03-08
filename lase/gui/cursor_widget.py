@@ -41,18 +41,19 @@ class CursorWidget(QtGui.QWidget):
         self.cursor_button = QtGui.QPushButton('ON')
         self.cursor_button.setStyleSheet('QPushButton {color: green;}')
         self.cursor_button.setCheckable(True)
+
         self.cursor_X = QtGui.QLabel('X')
         self.cursor_X.setAlignment(QtCore.Qt.AlignCenter)
-        self.cursor_1_X = QtGui.QLabel('')
-        self.cursor_1_X.setAlignment(QtCore.Qt.AlignCenter)
-        self.cursor_2_X = QtGui.QLabel('')
-        self.cursor_2_X.setAlignment(QtCore.Qt.AlignCenter)
         self.cursor_Y = QtGui.QLabel('Y')
         self.cursor_Y.setAlignment(QtCore.Qt.AlignCenter)
-        self.cursor_1_Y = QtGui.QLabel('')
-        self.cursor_1_Y.setAlignment(QtCore.Qt.AlignCenter)
-        self.cursor_2_Y = QtGui.QLabel('')
-        self.cursor_2_Y.setAlignment(QtCore.Qt.AlignCenter)
+        
+        self.XLabel = []
+        self.YLabel = []
+        for i in range(2):
+            self.XLabel.append(QtGui.QLabel(''))
+            self.XLabel[i].setAlignment(QtCore.Qt.AlignCenter)
+            self.YLabel.append(QtGui.QLabel(''))
+            self.YLabel[i].setAlignment(QtCore.Qt.AlignCenter)
 
         self.delta_X = QtGui.QLabel('X')
         self.delta_X.setAlignment(QtCore.Qt.AlignCenter)
@@ -76,12 +77,10 @@ class CursorWidget(QtGui.QWidget):
 
         self.position_layout.addWidget(self.cursor_X)
         self.position_layout.addWidget(self.cursor_Y)
-
-        self.cursor_layout[0].addWidget(self.cursor_1_X)
-        self.cursor_layout[0].addWidget(self.cursor_1_Y)
-
-        self.cursor_layout[1].addWidget(self.cursor_2_X)
-        self.cursor_layout[1].addWidget(self.cursor_2_Y)
+        
+        for i in range(2):
+            self.cursor_layout[i].addWidget(self.XLabel[i])
+            self.cursor_layout[i].addWidget(self.YLabel[i])
 
         self.position_box.setLayout(self.position_layout)
         self.cursor_1_box.setLayout(self.cursor_layout[0])
@@ -139,13 +138,13 @@ class CursorWidget(QtGui.QWidget):
             self.hLine[0].setPos(self.mousePoint.y())
             if self.cursor[0]:
                 if self.is_inbounds(self.mousePoint.x()):
-                    self.cursor_1_X.setText('{:.2f}'.format(self.mousePoint.x()))
+                    self.XLabel[0].setText('{:.2f}'.format(self.mousePoint.x()))
                 else:
-                    self.cursor_1_X.setText('%.2e' % (self.mousePoint.x()))
+                    self.XLabel[0].setText('%.2e' % (self.mousePoint.x()))
                 if self.is_inbounds(self.mousePoint.y()):
-                    self.cursor_1_Y.setText('{:.2f}'.format(self.mousePoint.y()))
+                    self.YLabel[0].setText('{:.2f}'.format(self.mousePoint.y()))
                 else:
-                    self.cursor_1_Y.setText('%.2e' % (self.mousePoint.y()))
+                    self.YLabel[0].setText('%.2e' % (self.mousePoint.y()))
                 if self.cursor[1] is True:
                     if self.is_inbounds(self.mousePoint.x() - self.cursor_2_x):
                         self.delta_X.setText('X   ' + '{:.2f}'.format(self.mousePoint.x() - self.cursor_2_x))
@@ -172,13 +171,13 @@ class CursorWidget(QtGui.QWidget):
             self.vLine[1].setVisible(self.cursor[1])
             self.hLine[1].setVisible(self.cursor[1])
             if self.is_inbounds(self.mousePoint.x()):
-                self.cursor_2_X.setText('{:.2f}'.format(self.mousePoint.x()))
+                self.XLabel[1].setText('{:.2f}'.format(self.mousePoint.x()))
             else:
-                self.cursor_2_X.setText('%.2e' % (self.mousePoint.x()))
+                self.XLabel[1].setText('%.2e' % (self.mousePoint.x()))
             if self.is_inbounds(self.mousePoint.y()):
-                self.cursor_2_Y.setText('{:.2f}'.format(self.mousePoint.y()))
+                self.YLabel[1].setText('{:.2f}'.format(self.mousePoint.y()))
             else:
-                self.cursor_2_Y.setText('%.2e' % (self.mousePoint.y()))
+                self.YLabel[1].setText('%.2e' % (self.mousePoint.y()))
 
     def set_visible(self):
         for i in range(2):
@@ -186,7 +185,6 @@ class CursorWidget(QtGui.QWidget):
             self.hLine[i].setVisible(self.cursor[i])
 
     def reset_text(self):
-        self.cursor_1_X.setText('')
-        self.cursor_1_Y.setText('')
-        self.cursor_2_X.setText('')
-        self.cursor_2_Y.setText('')
+        for i in range(2):
+            self.XLabel[i].setText('')
+            self.YLabel[i].setText('')
