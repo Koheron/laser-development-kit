@@ -15,8 +15,10 @@ class CursorWidget(QtGui.QWidget):
         self.cursor = [False, False]
 
         self.position_layout = QtGui.QVBoxLayout()
-        self.cursor_1_layout = QtGui.QVBoxLayout()
-        self.cursor_2_layout = QtGui.QVBoxLayout()
+        self.cursor_layout = []
+        for i in range(2):
+            self.cursor_layout.append(QtGui.QVBoxLayout())
+
         self.delta_layout = QtGui.QVBoxLayout()
         self.Delta_layout = QtGui.QHBoxLayout()
         self.cursor_box_layout = QtGui.QHBoxLayout()
@@ -58,20 +60,16 @@ class CursorWidget(QtGui.QWidget):
         self.delta_Y.setAlignment(QtCore.Qt.AlignCenter)
 
         # Cursor
+        self.vLine = []
+        self.hLine = []
+        for i in range(2):
+            self.vLine.append(pg.InfiniteLine(angle=90, movable=False))     
+            self.hLine.append(pg.InfiniteLine(angle=0, movable=False))
+            self.plot_widget.addItem(self.vLine[i], ignoreBounds=True)
+            self.plot_widget.addItem(self.hLine[i], ignoreBounds=True)
+            self.vLine[i].setVisible(self.cursor[0])
+            self.hLine[i].setVisible(self.cursor[0])
 
-        self.vLine_1 = pg.InfiniteLine(angle=90, movable=False)
-        self.hLine_1 = pg.InfiniteLine(angle=0, movable=False)
-        self.plot_widget.addItem(self.vLine_1, ignoreBounds=True)
-        self.plot_widget.addItem(self.hLine_1, ignoreBounds=True)
-        self.vLine_1.setVisible(self.cursor[0])
-        self.hLine_1.setVisible(self.cursor[0])
-
-        self.vLine_2 = pg.InfiniteLine(angle=90, movable=False, pen=(3, 4))
-        self.hLine_2 = pg.InfiniteLine(angle=0, movable=False, pen=(3, 4))
-        self.plot_widget.addItem(self.vLine_2, ignoreBounds=True)
-        self.plot_widget.addItem(self.hLine_2, ignoreBounds=True)
-        self.vLine_2.setVisible(self.cursor[1])
-        self.hLine_2.setVisible(self.cursor[1])
         self.view_box = self.plot_widget.getViewBox()
 
         self.layout.addWidget(self.cursor_button)
@@ -79,15 +77,15 @@ class CursorWidget(QtGui.QWidget):
         self.position_layout.addWidget(self.cursor_X)
         self.position_layout.addWidget(self.cursor_Y)
 
-        self.cursor_1_layout.addWidget(self.cursor_1_X)
-        self.cursor_1_layout.addWidget(self.cursor_1_Y)
+        self.cursor_layout[0].addWidget(self.cursor_1_X)
+        self.cursor_layout[0].addWidget(self.cursor_1_Y)
 
-        self.cursor_2_layout.addWidget(self.cursor_2_X)
-        self.cursor_2_layout.addWidget(self.cursor_2_Y)
+        self.cursor_layout[1].addWidget(self.cursor_2_X)
+        self.cursor_layout[1].addWidget(self.cursor_2_Y)
 
         self.position_box.setLayout(self.position_layout)
-        self.cursor_1_box.setLayout(self.cursor_1_layout)
-        self.cursor_2_box.setLayout(self.cursor_2_layout)
+        self.cursor_1_box.setLayout(self.cursor_layout[0])
+        self.cursor_2_box.setLayout(self.cursor_layout[1])
 
         self.cursor_box_layout.addWidget(self.position_box)
         self.cursor_box_layout.addWidget(self.cursor_1_box)
@@ -137,8 +135,8 @@ class CursorWidget(QtGui.QWidget):
     def mouseMoved(self, pos):
         if self.plot_widget.sceneBoundingRect().contains(pos):
             self.mousePoint = self.view_box.mapSceneToView(pos)
-            self.vLine_1.setPos(self.mousePoint.x())
-            self.hLine_1.setPos(self.mousePoint.y())
+            self.vLine[0].setPos(self.mousePoint.x())
+            self.hLine[0].setPos(self.mousePoint.y())
             if self.cursor[0]:
                 if self.is_inbounds(self.mousePoint.x()):
                     self.cursor_1_X.setText('{:.2f}'.format(self.mousePoint.x()))
@@ -167,12 +165,12 @@ class CursorWidget(QtGui.QWidget):
         if self.cursor[0]:
             self.cursor_2_x = self.mousePoint.x()
             self.cursor_2_y = self.mousePoint.y()
-            self.vLine_2.setPos(self.mousePoint.x())
-            self.hLine_2.setPos(self.mousePoint.y())
+            self.vLine[1].setPos(self.mousePoint.x())
+            self.hLine[1].setPos(self.mousePoint.y())
             self.cursor[1] = True
             self.delta_box.setVisible(True)
-            self.vLine_2.setVisible(self.cursor[1])
-            self.hLine_2.setVisible(self.cursor[1])
+            self.vLine[1].setVisible(self.cursor[1])
+            self.hLine[1].setVisible(self.cursor[1])
             if self.is_inbounds(self.mousePoint.x()):
                 self.cursor_2_X.setText('{:.2f}'.format(self.mousePoint.x()))
             else:
@@ -183,10 +181,9 @@ class CursorWidget(QtGui.QWidget):
                 self.cursor_2_Y.setText('%.2e' % (self.mousePoint.y()))
 
     def set_visible(self):
-        self.vLine_1.setVisible(self.cursor[0])
-        self.hLine_1.setVisible(self.cursor[0])
-        self.vLine_2.setVisible(self.cursor[1])
-        self.hLine_2.setVisible(self.cursor[1])
+        for i in range(2):
+            self.vLine[i].setVisible(self.cursor[i])
+            self.hLine[i].setVisible(self.cursor[i])
 
     def reset_text(self):
         self.cursor_1_X.setText('')

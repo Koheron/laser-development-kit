@@ -23,23 +23,13 @@ class LaseWidget(QtGui.QWidget):
         self.show_right_panel = True
 
         # Icons
-        self.left_arrow_icon = QtGui.QIcon(os.path.join(self.img_path,
-                                                        'left_arrow.png')
-                                          )
-        self.right_arrow_icon = QtGui.QIcon(os.path.join(self.img_path,
-                                                         'right_arrow.png')
-                                           )
+        self.left_arrow_icon = QtGui.QIcon(os.path.join(self.img_path, 'left_arrow.png'))
+        self.right_arrow_icon = QtGui.QIcon(os.path.join(self.img_path, 'right_arrow.png'))
 
-        self.zoom_x_icon = QtGui.QIcon(os.path.join(self.img_path,
-                                                    'zoom_x.png')
-                                      )
-        self.zoom_y_icon = QtGui.QIcon(os.path.join(self.img_path,
-                                                    'zoom_y.png')
-                                      )
+        self.zoom_x_icon = QtGui.QIcon(os.path.join(self.img_path, 'zoom_x.png'))
+        self.zoom_y_icon = QtGui.QIcon(os.path.join(self.img_path, 'zoom_y.png'))
 
-        self.autoscale_icon = QtGui.QIcon(os.path.join(self.img_path,
-                                                       'autoscale.png')
-                                         )
+        self.autoscale_icon = QtGui.QIcon(os.path.join(self.img_path, 'autoscale.png'))
 
         self.driver = driver
 
