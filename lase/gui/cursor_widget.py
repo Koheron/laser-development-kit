@@ -29,10 +29,7 @@ class CursorWidget(QtGui.QWidget):
 
         self.position_box = QtGui.QGroupBox('Position')
         self.position_box.setAlignment(5)
-        self.cursor_1_box = QtGui.QGroupBox('Cursor 1')
-        self.cursor_1_box.setAlignment(5)
-        self.cursor_2_box = QtGui.QGroupBox('Cursor 2')
-        self.cursor_2_box.setAlignment(5)
+
         self.delta_box = QtGui.QGroupBox('Delta')
         self.delta_box.setAlignment(5)
 
@@ -83,12 +80,16 @@ class CursorWidget(QtGui.QWidget):
             self.cursor_layout[i].addWidget(self.YLabel[i])
 
         self.position_box.setLayout(self.position_layout)
-        self.cursor_1_box.setLayout(self.cursor_layout[0])
-        self.cursor_2_box.setLayout(self.cursor_layout[1])
-
         self.cursor_box_layout.addWidget(self.position_box)
-        self.cursor_box_layout.addWidget(self.cursor_1_box)
-        self.cursor_box_layout.addWidget(self.cursor_2_box)
+
+        self.cursor_box = []
+        for i in range(2):
+            self.cursor_box.append(QtGui.QGroupBox('Cursor '+str(i+1)))
+            self.cursor_box[i].setLayout(self.cursor_layout[i])
+            self.cursor_box[i].setAlignment(5)
+
+        for box in self.cursor_box:
+            self.cursor_box_layout.addWidget(box)
 
         self.delta_layout.addWidget(self.delta_X)
         self.delta_layout.addWidget(self.delta_Y)
