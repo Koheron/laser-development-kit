@@ -63,6 +63,7 @@ class SpectrumWidget(LaseWidget):
         self.spectrum_plot_widget.getPlotItem().getAxis('bottom').setLabel('Frequency', units='MHz')
         self.spectrum_plot_widget.getPlotItem().getAxis('left').setLabel('PSD')
         self.spectrum_plot_widget.plotItem.setMouseEnabled(x=False, y=True)
+        self.spectrum_plot_widget.plotItem.setLogMode(x=False, y=True)
 
     def set_plot_widget(self, new_plot_widget):
         self.plot_widget.setParent(None)
