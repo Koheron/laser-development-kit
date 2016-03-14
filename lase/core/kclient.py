@@ -6,7 +6,7 @@ import math
 import numpy as np
 import functools
 
-from .rcv_send import recv_timeout, recv_n_bytes, send_handshaking
+from .rcv_send import recv_timeout, recv_n_bytes
 
 # --------------------------------------------
 # Decorators
@@ -35,7 +35,7 @@ def command(device_name):
         return wrapper
     return real_command
 
-def write_buffer(device_name):
+def write_buffer(device_name, format_char='I'):
     def command_wrap(func):
         def wrapper(self, *args, **kwargs):
             params = self.client.cmds.get_device(device_name)
@@ -45,7 +45,7 @@ def write_buffer(device_name):
             args_ = args[1:] + tuple(kwargs.values()) + (len(args[0]),)
             self.client.send_command(device_id, cmd_id, *args_)
 
-            if self.client.send_handshaking(args[0]) < 0:
+            if self.client.send_handshaking(args[0], format_char) < 0:
                 print(func.__name__ + ": Can't send buffer")
                 self.is_failed = True
 
@@ -274,7 +274,7 @@ class KClient:
 
         return tuple(res_tuple)
 
-    def send_handshaking(self, data, format_char='I'):
+    def send_handshaking(self, data, format_char='I', dtype=np.uint32):
         """ Send data with handshaking protocol
 
         1) The size of the buffer must have been send as a
@@ -297,7 +297,7 @@ class KClient:
 
         if num == n_pts:
             format_ = ('%s'+format_char) % n_pts
-            buff = struct.pack(format_, *data.astype(np.int32))
+            buff = struct.pack(format_, *data.astype(dtype))
             sent = self.sock.send(buff)
 
             if sent == 0:
