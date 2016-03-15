@@ -62,7 +62,7 @@ class HTTPInterface:
         raise ValueError("Instrument " + instrument_name + " not found")
 
 if __name__ == "__main__":
-    http = HTTPInterface('192.168.1.15')
+    http = HTTPInterface('192.168.1.21')
     print(http.get_bistream_id())
 #    http.ping()
 #    http.deploy_remote_instrument('spectrum', '06ee48f')
