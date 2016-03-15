@@ -16,7 +16,7 @@ class Spectrum(Base):
         self.wfm_size = 4096
         super(Spectrum, self).__init__(self.wfm_size, client)
         
-        if self.open(self.wfm_size) < 0:
+        if self.open() < 0:
             print('Cannot open device SPECTRUM')
 
         self.dvm = DevMem(self.client)
@@ -36,7 +36,7 @@ class Spectrum(Base):
         self.reset()
 
     @command('SPECTRUM')
-    def open(self, wfm_size):
+    def open(self):
         return self.client.recv_int(4)
 
     @command('SPECTRUM')
