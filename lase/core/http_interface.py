@@ -12,11 +12,11 @@ class HTTPInterface:
         self.url = 'http://' + IP + ':' + str(self.port)
 
     def get_bistream_id(self):
-        r = requests.get(self.url + '/bitstream_id')
+        r = requests.get(self.url + '/api/bitstream_id')
         return r.text
 
     def ping(self):
-        r = requests.post(self.url + '/ping', data={})
+        r = requests.post(self.url + '/api/ping', data={})
         
     def deploy_remote_instrument(self, name, version):
         """ Deploy a remotely available instrument
@@ -26,13 +26,13 @@ class HTTPInterface:
                 - version: Instrument version
         """
         zip_filename = name + '-' + version + '.zip'
-        r = requests.post(self.url + '/deploy/remote/' + zip_filename, data={})
+        r = requests.post(self.url + '/api/deploy/remote/' + zip_filename, data={})
 
     def deploy_local_instrument(self, name, version):
         zip_filename = name + '-' + version + '.zip'
         print('Deploying ' + zip_filename)
         try:
-            r = requests.post(self.url + '/deploy/local/' + zip_filename, data={} , timeout=1.0)
+            r = requests.post(self.url + '/api/deploy/local/' + zip_filename, data={} , timeout=1.0)
         except Exception,e: 
             print("[error] " + str(e))
             #print('Timeout occured')
@@ -40,12 +40,12 @@ class HTTPInterface:
 
     def remove_local_instrument(self, name, version):
         zip_filename = name + '-' + version + '.zip'
-        r = requests.get(self.url + '/remove/local/' + zip_filename)
+        r = requests.get(self.url + '/api/remove/local/' + zip_filename)
         return r.text
 
     def get_local_instruments(self):
         try:
-            r = requests.get(self.url + '/get_local_instruments')
+            r = requests.get(self.url + '/api/get_local_instruments')
             return r.json()
         except Exception,e: 
             print("[error] " + str(e))
