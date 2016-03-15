@@ -16,8 +16,9 @@ class Oscillo(Base):
         self.wfm_size = 8192
         super(Oscillo, self).__init__(self.wfm_size, client)
 
-        self.open(self.wfm_size)
-       
+        if self.open() < 0:
+            print('Cannot open device OSCILLO')
+    
         self.avg_on = False
 
         self.adc = np.zeros((2, self.wfm_size))

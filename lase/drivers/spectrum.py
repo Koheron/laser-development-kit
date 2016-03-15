@@ -15,7 +15,9 @@ class Spectrum(Base):
     def __init__(self, client, verbose=False):
         self.wfm_size = 4096
         super(Spectrum, self).__init__(self.wfm_size, client)
-        self.open(self.wfm_size)
+        
+        if self.open() < 0:
+            print('Cannot open device OSCILLO')
 
         self.dvm = DevMem(self.client)
         self._noise_addr = int('0x86000000',0)
