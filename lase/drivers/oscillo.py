@@ -16,7 +16,7 @@ class Oscillo(Base):
         self.wfm_size = 8192
         super(Oscillo, self).__init__(self.wfm_size, client)
 
-        if self.open() < 0:
+        if self.open(self.wfm_size) < 0:
             print('Cannot open device OSCILLO')
     
         self.avg_on = False
@@ -41,7 +41,7 @@ class Oscillo(Base):
 
     @command('OSCILLO')
     def open(self, wfm_size):
-        pass
+        return self.client.recv_int(4)
 
     def reset(self):
         super(Oscillo, self).reset()

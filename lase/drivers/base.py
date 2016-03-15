@@ -31,13 +31,15 @@ class Base(object):
 
     def open_dac(self, wfm_size):
         @command('DAC')
-        def open(self, wfm_size): pass
+        def open(self, wfm_size):
+            return self.client.recv_int(4)
 
         open(self, wfm_size)
 
     def open_laser(self):
         @command('LASER')
-        def open(self): pass
+        def open(self):
+            return self.client.recv_int(4)
 
         open(self)
 
