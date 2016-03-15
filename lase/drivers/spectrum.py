@@ -7,6 +7,8 @@ import numpy as np
 from .base import Base
 from ..core import command, write_buffer
 
+from ..core import DevMem
+
 class Spectrum(Base):
     """ Driver for the spectrum bitstream """
 
@@ -14,8 +16,12 @@ class Spectrum(Base):
         self.wfm_size = 4096
         super(Spectrum, self).__init__(self.wfm_size, client)
         
-        if self.open(self.wfm_size) < 0:
+        if self.open() < 0:
             print('Cannot open device SPECTRUM')
+
+        self.dvm = DevMem(self.client)
+        self._noise_addr = int('0x86000000',0)
+        self._noise = self.dvm.add_memory_map(self._noise_addr, 16384)
 
         self.spectrum = np.zeros(self.wfm_size, dtype=np.float32)
         self.demod = np.zeros((2, self.wfm_size))
@@ -30,7 +36,7 @@ class Spectrum(Base):
         self.reset()
 
     @command('SPECTRUM')
-    def open(self, wfm_size):
+    def open(self):
         return self.client.recv_int(4)
 
     @command('SPECTRUM')
@@ -54,6 +60,9 @@ class Spectrum(Base):
         demod_data_2 = np.mod(np.floor(8192 * self.demod[1, :]) +
                               8192, 16384) + 8192
         self.set_demod_buffer(demod_data_1 + 65536 * demod_data_2)
+
+    def set_noise(self):
+        self.dvm.write_buffer(self._noise, 0, self.spectrum, format_char='f', dtype=np.float32)
 
     @command('SPECTRUM')
     def get_spectrum(self):
