@@ -13,7 +13,9 @@ class Spectrum(Base):
     def __init__(self, client, verbose=False):
         self.wfm_size = 4096
         super(Spectrum, self).__init__(self.wfm_size, client)
-        self.open(self.wfm_size)
+        
+        if self.open() < 0:
+            print('Cannot open device OSCILLO')
 
         self.spectrum = np.zeros(self.wfm_size, dtype=np.float32)
         self.demod = np.zeros((2, self.wfm_size))
