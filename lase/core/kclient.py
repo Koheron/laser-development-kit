@@ -35,7 +35,7 @@ def command(device_name):
         return wrapper
     return real_command
 
-def write_buffer(device_name, format_char='I'):
+def write_buffer(device_name, format_char='I', dtype=np.uint32):
     def command_wrap(func):
         def wrapper(self, *args, **kwargs):
             params = self.client.cmds.get_device(device_name)
@@ -45,7 +45,7 @@ def write_buffer(device_name, format_char='I'):
             args_ = args[1:] + tuple(kwargs.values()) + (len(args[0]),)
             self.client.send_command(device_id, cmd_id, *args_)
 
-            if self.client.send_handshaking(args[0], format_char) < 0:
+            if self.client.send_handshaking(args[0], format_char=format_char, dtype=dtype) < 0:
                 print(func.__name__ + ": Can't send buffer")
                 self.is_failed = True
 
@@ -184,7 +184,7 @@ class KClient:
     def send_command(self, device_id, operation_ref, *args):
         self.send(make_command(device_id, operation_ref, *args))
 
-    def recv_int(self, buff_size, err_msg=None):
+    def recv_int(self, buff_size, err_msg=None, fmt="I"):
         """ Receive an integer
 
         Args:
@@ -213,7 +213,7 @@ class KClient:
                         print("kclient-recv_int: No data available")
                         return float('nan')
 						
-                return struct.unpack("I", data_recv)[0]
+                return struct.unpack(fmt, data_recv)[0]
         except:
             print("kclient-recv_int: Reception error")
             return float('nan')

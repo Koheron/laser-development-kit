@@ -42,7 +42,7 @@ class SpectrumWidget(LaseWidget):
         super(SpectrumWidget, self).update()
         self.driver.get_spectrum()
 
-        self.spectrum = self.driver.spectrum - self.calibration_widget.noise_floor
+        self.spectrum = self.driver.spectrum - 0*self.calibration_widget.noise_floor
         self.lidar_widget.update(self.spectrum)
         
         if not self.lidar_widget.is_velocity_plot:

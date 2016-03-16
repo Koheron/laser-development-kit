@@ -19,19 +19,18 @@ class Spectrum(Base):
         if self.open() < 0:
             print('Cannot open device SPECTRUM')
 
-        self.dvm = DevMem(self.client)
-        self._noise_addr = int('0x86000000',0)
-        self._noise = self.dvm.add_memory_map(self._noise_addr, 16384)
-
         self.spectrum = np.zeros(self.wfm_size, dtype=np.float32)
         self.demod = np.zeros((2, self.wfm_size))
 
         self.demod[0, :] = 0.49 * (1 - np.cos(2 * np.pi * np.arange(self.wfm_size) / self.wfm_size))
         self.demod[1, :] = 0
 
+        self.noise_floor = np.zeros(self.wfm_size)
+
         # self.set_offset(0, 0)
 
         self.set_demod()
+        self.set_scale_sch(0)
 
         self.reset()
 
@@ -51,6 +50,10 @@ class Spectrum(Base):
     def set_demod_buffer(self, data):
         pass
 
+    @write_buffer('SPECTRUM', format_char='f', dtype=np.float32)
+    def set_noise_floor_buffer(self, data):
+        pass
+
     def set_demod(self, warning=False):
         if warning:
             if np.max(np.abs(self.demod)) >= 1:
@@ -60,15 +63,27 @@ class Spectrum(Base):
         demod_data_2 = np.mod(np.floor(8192 * self.demod[1, :]) +
                               8192, 16384) + 8192
         self.set_demod_buffer(demod_data_1 + 65536 * demod_data_2)
-
-    def set_noise(self):
-        self.dvm.write_buffer(self._noise, 0, self.spectrum, format_char='f', dtype=np.float32)
+        
+    def calibrate(self, noise_floor):
+        self.noise_floor = noise_floor
+        self.set_noise_floor_buffer(self.noise_floor)
 
     @command('SPECTRUM')
     def get_spectrum(self):
         self.spectrum = self.client.recv_buffer(self.wfm_size,
                                                 data_type='float32')
         # self.spectrum[1] = 1
+        print self.get_peak_address()
+        print self.get_peak_maximum()
 
+    @command('SPECTRUM')
     def get_num_average(self):
         return self.client.recv_int(4)
+
+    @command('SPECTRUM')
+    def get_peak_address(self):
+        return self.client.recv_int(4)
+
+    @command('SPECTRUM')
+    def get_peak_maximum(self):
+        return self.client.recv_int(4, fmt='f')

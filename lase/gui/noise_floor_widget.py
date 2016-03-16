@@ -48,6 +48,7 @@ class NoiseFloorWidget(QtGui.QWidget):
             self.driver.get_spectrum()
             self.noise_floor += self.driver.spectrum
         self.noise_floor /= 100
+        self.driver.calibrate(self.noise_floor + self.driver.noise_floor)
 
     def change_window(self, window):
         n = self.driver.sampling.n # Number of points in the waveform
