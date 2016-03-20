@@ -82,7 +82,10 @@ class Spectrum(Base):
         self.spectrum = self.client.recv_buffer(self.wfm_size,
                                                 data_type='float32')
         # self.spectrum[1] = 1
-        print self.get_peak_address()*self.sampling.df, self.get_peak_maximum()
+        #print self.get_peak_address()*self.sampling.df, self.get_peak_maximum()
+        fifo_length = self.get_peak_fifo_occupancy()
+        print fifo_length
+        print self.get_peak_fifo_data(fifo_length)
 
     @command('SPECTRUM')
     def get_num_average(self):
@@ -112,4 +115,14 @@ class Spectrum(Base):
 
         set_averaging(self, status)
 
+    @command('SPECTRUM')
+    def get_peak_fifo_occupancy(self):
+        return self.client.recv_int(4)
 
+    @command('SPECTRUM')
+    def get_peak_fifo_length(self):
+        return self.client.recv_int(4)
+
+    @command('SPECTRUM')
+    def get_peak_fifo_data(self, n_pts):
+        return self.client.recv_buffer(n_pts, data_type='uint32')
