@@ -31,10 +31,19 @@ class SpectrumWidget(LaseWidget):
         self.calibration_widget = NoiseFloorWidget(self.driver)
         self.lidar_widget = LidarWidget(self)
 
+        # Average on 
+        self.avg_on_button = QtGui.QPushButton()
+        self.avg_on_button.setStyleSheet('QPushButton {color: green;}')
+        self.avg_on_button.setText('Start averaging')
+        self.avg_on_button.setCheckable(True)
+
         self.control_layout.addWidget(self.cursor_widget)
         self.control_layout.addWidget(self.calibration_widget)
+        self.control_layout.addWidget(self.avg_on_button)
         self.control_layout.addWidget(self.lidar_widget)
         self.control_layout.addStretch(1)
+
+        self.avg_on_button.clicked.connect(self.change_averaging)
 
         self.right_panel_widget.setLayout(self.control_layout)
         
@@ -69,4 +78,14 @@ class SpectrumWidget(LaseWidget):
         self.plot_widget.setParent(None)
         self.plot_widget = new_plot_widget
         self.left_panel_layout.insertWidget(1, self.plot_widget, 1)
+
+    def change_averaging(self):
+        self.driver.avg_on = not self.driver.avg_on
+        if self.driver.avg_on:
+            self.avg_on_button.setStyleSheet('QPushButton {color: red;}')
+            self.avg_on_button.setText('Stop averaging')
+        else:
+            self.avg_on_button.setStyleSheet('QPushButton {color: green;}')
+            self.avg_on_button.setText('Start averaging')
+        self.driver.set_averaging(self.driver.avg_on)
 

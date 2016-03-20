@@ -19,6 +19,8 @@ class Spectrum(Base):
         if self.open() < 0:
             print('Cannot open device SPECTRUM')
 
+        self.avg_on = True
+
         self.spectrum = np.zeros(self.wfm_size, dtype=np.float32)
         self.demod = np.zeros((2, self.wfm_size))
 
@@ -28,6 +30,8 @@ class Spectrum(Base):
         self.noise_floor = np.zeros(self.wfm_size)
 
         # self.set_offset(0, 0)
+ 
+        self.set_address_range(10, 50)
 
         self.set_demod()
         self.set_scale_sch(0)
@@ -37,6 +41,11 @@ class Spectrum(Base):
     @command('SPECTRUM')
     def open(self):
         return self.client.recv_int(4)
+
+    def reset(self):
+        super(Spectrum, self).reset()
+        self.avg_on = True
+        self.set_averaging(self.avg_on)
 
     @command('SPECTRUM')
     def set_scale_sch(self, scale_sch):
@@ -73,8 +82,7 @@ class Spectrum(Base):
         self.spectrum = self.client.recv_buffer(self.wfm_size,
                                                 data_type='float32')
         # self.spectrum[1] = 1
-        print self.get_peak_address()
-        print self.get_peak_maximum()
+        print self.get_peak_address()*self.sampling.df, self.get_peak_maximum()
 
     @command('SPECTRUM')
     def get_num_average(self):
@@ -87,3 +95,21 @@ class Spectrum(Base):
     @command('SPECTRUM')
     def get_peak_maximum(self):
         return self.client.recv_int(4, fmt='f')
+
+    @command('SPECTRUM')
+    def set_address_range(self, address_low, address_high):
+        pass
+
+    def set_averaging(self, avg_status):
+        if avg_status:
+            status = 1;
+        else:
+            status = 0;
+
+        @command('SPECTRUM')
+        def set_averaging(self, status):
+            pass
+
+        set_averaging(self, status)
+
+
