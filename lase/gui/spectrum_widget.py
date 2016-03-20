@@ -33,8 +33,8 @@ class SpectrumWidget(LaseWidget):
 
         # Average on 
         self.avg_on_button = QtGui.QPushButton()
-        self.avg_on_button.setStyleSheet('QPushButton {color: green;}')
-        self.avg_on_button.setText('Start averaging')
+        self.avg_on_button.setStyleSheet('QPushButton {color: red;}')
+        self.avg_on_button.setText('Stop averaging')
         self.avg_on_button.setCheckable(True)
 
         self.control_layout.addWidget(self.cursor_widget)
