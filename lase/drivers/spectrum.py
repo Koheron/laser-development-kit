@@ -46,6 +46,7 @@ class Spectrum(Base):
         super(Spectrum, self).reset()
         self.avg_on = True
         self.set_averaging(self.avg_on)
+        self.reset_peak_fifo()
 
     @command('SPECTRUM')
     def set_scale_sch(self, scale_sch):
@@ -83,9 +84,9 @@ class Spectrum(Base):
                                                 data_type='float32')
         # self.spectrum[1] = 1
         #print self.get_peak_address()*self.sampling.df, self.get_peak_maximum()
-        fifo_length = self.get_peak_fifo_occupancy()
-        print fifo_length
-        print self.get_peak_fifo_data(fifo_length)
+        fifo_length = self.get_peak_fifo_length()
+        fifo_data = self.get_peak_fifo_data(fifo_length)
+        print "fifo length = ", fifo_length, "min = ", np.min(fifo_data), "max = ", np.max(fifo_data), "median = ", np.median(fifo_data)
 
     @command('SPECTRUM')
     def get_num_average(self):
@@ -121,8 +122,12 @@ class Spectrum(Base):
 
     @command('SPECTRUM')
     def get_peak_fifo_length(self):
-        return self.client.recv_int(4)
+        return (self.client.recv_int(4)-2**31)/4
 
     @command('SPECTRUM')
     def get_peak_fifo_data(self, n_pts):
         return self.client.recv_buffer(n_pts, data_type='uint32')
+
+    @command('SPECTRUM')
+    def reset_peak_fifo(self):
+        pass
