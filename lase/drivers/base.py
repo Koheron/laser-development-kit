@@ -21,7 +21,7 @@ class Base(object):
         self.open_laser()
 
         self.n = wfm_size
-        self.max_current = 40  # mA
+        self.max_current = 100  # mA
         self.sampling = Sampling(wfm_size, 125e6)
 
         self.opened = True
