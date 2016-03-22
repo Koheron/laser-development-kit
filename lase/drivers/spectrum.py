@@ -9,6 +9,17 @@ from ..core import command, write_buffer
 
 from ..core import DevMem
 
+# Lorentzian fit
+from scipy.optimize import leastsq
+
+def lorentzian(f, p):
+    return p[0]/(1+f**2/p[1]**2)
+
+def residuals(p, y, f):
+    return y - lorentzian(f, p)
+
+
+
 class Spectrum(Base):
     """ Driver for the spectrum bitstream """
 
@@ -37,6 +48,9 @@ class Spectrum(Base):
         self.set_scale_sch(0)
 
         self.reset()
+
+        self.fit = np.zeros((2,100))
+        self.i = 0
 
     @command('SPECTRUM')
     def open(self):
@@ -82,11 +96,16 @@ class Spectrum(Base):
     def get_spectrum(self):
         self.spectrum = self.client.recv_buffer(self.wfm_size,
                                                 data_type='float32')
-        # self.spectrum[1] = 1
-        #print self.get_peak_address()*self.sampling.df, self.get_peak_maximum()
-        fifo_length = self.get_peak_fifo_length()
-        fifo_data = self.get_peak_fifo_data(fifo_length)
-        print "fifo length = ", fifo_length, "min = ", np.min(fifo_data), "max = ", np.max(fifo_data), "median = ", np.median(fifo_data)
+        #print self.get_peak_values()
+
+        idx = np.arange(2,200)
+        f = self.sampling.f_fft[idx]
+        y = self.spectrum[idx]
+        params_init = [2e17, 4e6]
+        best_params = leastsq(residuals, params_init, args=(y,f), full_output=1)
+        self.fit[:, self.i % 100] = best_params[0]
+        self.i += 1
+        print np.mean(self.fit, axis=1)
 
     @command('SPECTRUM')
     def get_num_average(self):
@@ -131,3 +150,7 @@ class Spectrum(Base):
     @command('SPECTRUM')
     def reset_peak_fifo(self):
         pass
+
+    def get_peak_values(self):
+        fifo_length = self.get_peak_fifo_length()
+        return self.get_peak_fifo_data(fifo_length)
