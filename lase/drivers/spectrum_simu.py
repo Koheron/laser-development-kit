@@ -51,3 +51,10 @@ class SpectrumSimu(BaseSimu):
 
     def set_demod(self):
         pass
+
+    def get_peak_values(self):
+        return 0
+
+    def set_address_range(self, address_low, address_high):
+        pass
+
