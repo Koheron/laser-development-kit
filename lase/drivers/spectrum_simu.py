@@ -53,7 +53,7 @@ class SpectrumSimu(BaseSimu):
         pass
 
     def get_peak_values(self):
-        return 0
+        return np.zeros(1)
 
     def set_address_range(self, address_low, address_high):
         pass

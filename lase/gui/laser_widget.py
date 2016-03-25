@@ -50,7 +50,7 @@ class LaserWidget(QtGui.QWidget):
     def change_current(self, value):
         self.laser_current = value
         self.driver.set_laser_current(self.laser_current)
-        dac_value = np.uint32(0.001 * self.laser_current * 20 / 2.5 * 65535)
+        dac_value = np.uint32(0.001 * self.laser_current * 10 / 2.5 * 65535)
         print dac_value
         self.driver.set_dac_16bit(dac_value)
 

@@ -106,7 +106,7 @@ class Spectrum(Base):
         best_params = leastsq(residuals, params_init, args=(y,f), full_output=1)
         self.fit[:, self.i % 100] = best_params[0]
         self.i += 1
-        print np.sqrt(np.mean(self.fit, axis=1))
+        #print np.sqrt(np.mean(self.fit, axis=1))
 
     @command('SPECTRUM')
     def get_num_average(self):
@@ -161,6 +161,7 @@ class Spectrum(Base):
         pass
 
     def set_dac_16bit(self, value):
+        print value
         self.set_ad5683r(value, 3)
         #time.sleep(0.001)
         #self.set_ad5683r(0, 2)

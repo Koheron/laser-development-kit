@@ -58,9 +58,9 @@ class LidarWidget(QtGui.QWidget):
     def update(self, spectrum):
         #self.velocity = self.lidar.get_velocity(self.driver.sampling.f_fft,
         #                                        spectrum)
-        self.velocity = np.mean(self.driver.get_peak_values()) * self.driver.sampling.df * 1e-6 * 1.29
+        self.velocity = self.driver.get_peak_values() * self.driver.sampling.df * 1e-6 * 1.29
         self.velocity_label.setText('Velocity (m/s) : '+"{:.2f}".
-                                    format(self.velocity)
+                                    format(np.mean(self.velocity))
                                    )
         self.rolling_time_plot.update(self.velocity)
 
@@ -81,7 +81,6 @@ class LidarWidget(QtGui.QWidget):
     def change_fmin(self, value):
         self.driver.set_address_range(np.uint32(value*1e6/self.driver.sampling.df), 
                                       np.uint32(self.slider_fmax.value*1e6/self.driver.sampling.df))
-        print np.uint32(value*1e6/self.driver.sampling.df)
         
     def change_fmax(self, value):
         self.driver.set_address_range(np.uint32(self.slider_fmin.value*1e6/self.driver.sampling.df), 
