@@ -13,7 +13,7 @@ from ..core import DevMem
 from scipy.optimize import leastsq
 
 def lorentzian(f, p):
-    return p[0]/(1+f**2/p[1]**2)
+    return p[0]/(1+f**2/p[1])
 
 def residuals(p, y, f):
     return y - lorentzian(f, p)
@@ -49,6 +49,7 @@ class Spectrum(Base):
 
         self.reset()
 
+        self.fit_linewidth = False
         self.fit = np.zeros((2,100))
         self.i = 0
 
@@ -98,14 +99,15 @@ class Spectrum(Base):
                                                 data_type='float32')
         #print self.get_peak_values()
 
-        idx = np.arange(2,200)
-        f = self.sampling.f_fft[idx]
-        y = self.spectrum[idx]
-        params_init = [2e17, 4e6]
-        best_params = leastsq(residuals, params_init, args=(y,f), full_output=1)
-        self.fit[:, self.i % 100] = best_params[0]
-        self.i += 1
-        print np.mean(self.fit, axis=1)
+        if self.fit_linewidth:
+            idx = np.arange(2,200)
+            f = self.sampling.f_fft[idx]
+            y = self.spectrum[idx]
+            params_init = [2e17, 3e6**2]
+            best_params = leastsq(residuals, params_init, args=(y,f), full_output=1)
+            self.fit[:, self.i % 100] = best_params[0]
+            self.i += 1
+            print np.sqrt(np.mean(self.fit, axis=1))
 
     @command('SPECTRUM')
     def get_num_average(self):

@@ -5,7 +5,9 @@ from pyqtgraph.Qt import QtGui
 from .plot_widget import PlotWidget
 from .plot_widget import TimeRollingPlot
 from ..signal import CoherentVelocimeter
-
+from .slider_widget import SliderWidget
+from PyQt4.QtCore import SIGNAL, pyqtSignal
+import numpy as np
 
 class LidarWidget(QtGui.QWidget):
     def __init__(self, spectrum_widget):
@@ -16,6 +18,11 @@ class LidarWidget(QtGui.QWidget):
         self.layout = QtGui.QVBoxLayout()
         self.lidar_layout = QtGui.QVBoxLayout()
 
+        self.slider_fmin = SliderWidget(name='Minimum frequency (MHz) : ',
+                                   max_slider=self.driver.sampling.fs/2*1e-6)
+        self.slider_fmax = SliderWidget(name='Maximum frequency (MHz) : ',
+                                   max_slider=self.driver.sampling.fs/2*1e-6)
+
         self.velocity_label = QtGui.QLabel()
         self.velocity_label.setText('Velocity (m/s) : '+"{:.2f}".format(0))
 
@@ -23,6 +30,8 @@ class LidarWidget(QtGui.QWidget):
         self.velocity_plot_button.setStyleSheet('QPushButton {color: blue;}')
         self.velocity_plot_button.setCheckable(True)
 
+        self.lidar_layout.addWidget(self.slider_fmin)
+        self.lidar_layout.addWidget(self.slider_fmax)
         self.lidar_layout.addWidget(self.velocity_label)
         self.lidar_layout.addWidget(self.velocity_plot_button)
 
@@ -43,11 +52,15 @@ class LidarWidget(QtGui.QWidget):
         self.lidar = CoherentVelocimeter()
         self.velocity = 0
 
+        self.connect(self.slider_fmin, SIGNAL("value(float)"), self.change_fmin)
+        self.connect(self.slider_fmax, SIGNAL("value(float)"), self.change_fmax)
+
     def update(self, spectrum):
-        self.velocity = self.lidar.get_velocity(self.driver.sampling.f_fft,
-                                                spectrum)
+        #self.velocity = self.lidar.get_velocity(self.driver.sampling.f_fft,
+        #                                        spectrum)
+        self.velocity = self.driver.get_peak_values() * self.driver.sampling.df * 1e-6 * 1.29
         self.velocity_label.setText('Velocity (m/s) : '+"{:.2f}".
-                                    format(self.velocity)
+                                    format(np.mean(self.velocity))
                                    )
         self.rolling_time_plot.update(self.velocity)
 
@@ -64,3 +77,11 @@ class LidarWidget(QtGui.QWidget):
 
         self.spectrum_widget.plot_widget.getPlotItem().enableAutoRange()
         self.spectrum_widget.plot_widget.set_axis()
+
+    def change_fmin(self, value):
+        self.driver.set_address_range(np.uint32(value*1e6/self.driver.sampling.df), 
+                                      np.uint32(self.slider_fmax.value*1e6/self.driver.sampling.df))
+        
+    def change_fmax(self, value):
+        self.driver.set_address_range(np.uint32(self.slider_fmin.value*1e6/self.driver.sampling.df), 
+                                      np.uint32(value*1e6/self.driver.sampling.df)) 

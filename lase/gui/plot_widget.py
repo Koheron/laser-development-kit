@@ -19,7 +19,7 @@ class PlotWidget(pg.PlotWidget):
 
 class TimeRollingPlot(pg.PlotWidget):
     """ Time rolling plot """
-    def __init__(self, n_pts=1000, *args, **kwargs):
+    def __init__(self, n_pts=30000, *args, **kwargs):
         super(TimeRollingPlot, self).__init__(
                       *args,
                       axisItems={'bottom': TimeAxisItem(orientation='bottom')},
@@ -36,11 +36,12 @@ class TimeRollingPlot(pg.PlotWidget):
         self.getPlotItem().enableAutoRange()
 
     def update(self, value):
-        self.values = np.roll(self.values, -1)
-        self.values[-1] = value
-        
-        self.times = np.roll(self.times, -1)
+        self.values = np.roll(self.values, -value.size)
+        self.times = np.roll(self.times, -value.size)
         self.times[-1] = time.time()
+        for i in range(value.size):
+            self.values[-1-i] = value[i]
+            self.times[-value.size+i] = self.times[-value.size-1] + i / (self.times[-1] - self.times[-value.size]) / value.size
         
         self.dataItem.setData(self.times, self.values, clear=True)
         self.getViewBox().setXRange(self.times[0], self.times[-1])

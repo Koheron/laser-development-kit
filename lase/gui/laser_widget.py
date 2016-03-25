@@ -3,6 +3,7 @@
 from pyqtgraph.Qt import QtGui
 from .slider_widget import SliderWidget
 from PyQt4.QtCore import SIGNAL, pyqtSignal
+import numpy as np
 
 class LaserWidget(QtGui.QWidget):
 
