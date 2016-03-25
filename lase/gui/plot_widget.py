@@ -40,7 +40,7 @@ class TimeRollingPlot(pg.PlotWidget):
         self.times = np.roll(self.times, -value.size)
         self.times[-1] = time.time()
         for i in range(value.size):
-            self.values[-1-i] = value[i]        
+            self.values[-1-i] = value[i]
             self.times[-value.size+i] = self.times[-value.size-1] + i / (self.times[-1] - self.times[-value.size]) / value.size
         
         self.dataItem.setData(self.times, self.values, clear=True)
