@@ -60,10 +60,6 @@ class SpectrumWidget(LaseWidget):
                         np.fft.fftshift(self.spectrum),
                         pen=(0,4), clear=True, _callSync='off')
 
-        if self.driver.failed:
-            print("An error occured during update\nLeave Spectrum")
-            self.monitor_widget.close_session()
-
     def refresh_dac(self):
         pass
 

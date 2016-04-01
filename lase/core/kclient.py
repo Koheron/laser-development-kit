@@ -29,7 +29,6 @@ def command(device_name):
             params = self.client.cmds.get_device(device_name)
             device_id = str(params.id)
             cmd_id = params.get_op_ref(func.__name__.upper())
-
             self.client.send_command(device_id, cmd_id, *(args + tuple(kwargs.values())))
             return func(self, *args, **kwargs)
         return wrapper
@@ -41,14 +40,9 @@ def write_buffer(device_name, format_char='I', dtype=np.uint32):
             params = self.client.cmds.get_device(device_name)
             device_id = str(params.id)
             cmd_id = params.get_op_ref(func.__name__.upper())
-
             args_ = args[1:] + tuple(kwargs.values()) + (len(args[0]),)
             self.client.send_command(device_id, cmd_id, *args_)
-
-            if self.client.send_handshaking(args[0], format_char=format_char, dtype=dtype) < 0:
-                print(func.__name__ + ": Can't send buffer")
-                self.is_failed = True
-
+            self.client.send_handshaking(args[0], format_char=format_char, dtype=dtype)
             func(self, *args, **kwargs)
         return wrapper
     return command_wrap
@@ -167,19 +161,12 @@ class KClient:
         Args:
             cmd: The command to be send
 
-        Return 0 on success, -1 else.
+        Raise RuntimeError if broken connection.
         """
-        try:
-            sent = self.sock.send(cmd.encode('utf-8'))
+        sent = self.sock.send(cmd.encode('utf-8'))
 
-            if sent == 0:
-                print("kclient-send: Socket connection broken")
-                return -1
-        except:
-            print("kclient-send: Can't send command")
-            return -1
-
-        return 0
+        if sent == 0:
+            raise RuntimeError("kclient-send: Socket connection broken")
 
     def send_command(self, device_id, operation_ref, *args):
         self.send(make_command(device_id, operation_ref, *args))
@@ -193,7 +180,7 @@ class KClient:
                      send an message signaling an error occured and
                      that no data can be retrieve.
 
-        Return: The integer on success, NaN on failure
+        Raise RuntimeError on error.
         """
         try:
             ready = select.select([self.sock], [], [], self.timeout)
@@ -201,22 +188,18 @@ class KClient:
             if ready[0]:
                 data_recv = self.sock.recv(buff_size)
                 if data_recv == '':
-                    print("kclient-recv_int: Socket connection broken")
-                    return float('nan')
+                    raise RuntimeError("kclient-recv_int: Socket connection broken")
 
                 if len(data_recv) != buff_size:
-                    print("kclient-recv_int: Invalid size received")
-                    return float('nan')
+                    raise RuntimeError("kclient-recv_int: Invalid size received")
 
                 if err_msg is not None:
                     if data_recv[:len(err_msg)] == err_msg:
-                        print("kclient-recv_int: No data available")
-                        return float('nan')
+                        raise RuntimeError("kclient-recv_int: No data available")
 						
                 return struct.unpack(fmt, data_recv)[0]
         except:
-            print("kclient-recv_int: Reception error")
-            return float('nan')
+            raise RuntimeError("kclient-recv_int: Reception error")
 
     def recv_n_bytes(self, n_bytes):
         """ Receive exactly n bytes
@@ -239,8 +222,7 @@ class KClient:
         buff = recv_n_bytes(self.sock, np_dtype.itemsize * buff_size)
 
         if buff == '':
-            print("recv_buffer: reception failed")
-            return np.empty(buff_size) * np.nan
+            raise RuntimeError("recv_buffer: reception failed")
 
         np_dtype = np_dtype.newbyteorder('<')
         data = np.frombuffer(buff, dtype=np_dtype)
@@ -288,7 +270,7 @@ class KClient:
             format_char: format character, unsigned int by default
             (https://docs.python.org/2/library/struct.html#format-characters)
 
-        Return 0 on success, -1 otherwise.
+        Raise RuntimeError if invalid handshaking or broken connection.
         """
         data_recv = self.sock.recv(4)
 
@@ -301,11 +283,9 @@ class KClient:
             sent = self.sock.send(buff)
 
             if sent == 0:
-                return -1
+                raise RuntimeError('Failed to send buffer. Socket connection broken.')
         else:
-            return -1
-
-        return 0
+            raise RuntimeError('Invalid handshaking')
 
     # -------------------------------------------------------
     # Current session information
@@ -344,12 +324,7 @@ class Commands:
         self.success = True
 
         try:
-            sent = client.send(make_command(1, 1))
-
-            if sent < 0:
-                print("Socket connection broken")
-                self.success = False
-                return
+            client.send(make_command(1, 1))
         except:
             print("Socket connection broken")
             self.success = False
@@ -425,8 +400,7 @@ class DevParam:
             return -1
 
     def show(self):
-        """ Display the device parameters
-        """
+        """ Display the device parameters """
         print('\n> ' + self.name)
         print('ID: ' + str(self.id))
         print('Operations:')

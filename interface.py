@@ -66,9 +66,16 @@ class KWindow(QtGui.QMainWindow):
             widget = self.stacked_widget.currentWidget()
             if widget.driver.opened:
                 widget.frame_rate = self.frame_rate
-                widget.update()
+
+                try:
+                    widget.update()
+                except:
+                    widget.driver.opened = False
             else:
-                widget.driver.close()
+                try:
+                    widget.driver.close()
+                except:
+                    print("Cannot gently close the driver")
 
                 self.stacked_widget.removeWidget(widget)
                 self.stacked_widget.currentWidget().setFocus()
