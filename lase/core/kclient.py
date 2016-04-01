@@ -6,8 +6,6 @@ import math
 import numpy as np
 import functools
 
-from .rcv_send import recv_timeout, recv_n_bytes
-
 # --------------------------------------------
 # Decorators
 # --------------------------------------------
@@ -207,7 +205,62 @@ class KClient:
         Args:
             n_bytes: Number of bytes to receive
         """
-        return recv_n_bytes(self.sock, n_bytes)
+        data = []
+        n_rcv = 0
+
+        while n_rcv < n_bytes:
+            try:
+                chunk = self.sock.recv(n_bytes - n_rcv)
+
+                if chunk == '':
+                    break
+
+                n_rcv = n_rcv + len(chunk)
+                data.append(chunk)
+            except:
+                print("recv_n_bytes: sock.recv failed")
+                return ''
+
+        return b''.join(data)
+
+    def recv_timeout(self, escape_seq, timeout=5):
+        """
+        Receive data until either an escape sequence
+        is found or a timeout is exceeded
+
+        Args:
+            socket: The socket used for communication
+            escape_seq: String containing the escape sequence. Ex. 'EOF'.
+            timeout: Reception timeout in seconds
+        """
+
+        # total data partwise in an array
+        total_data = [];
+        data = '';
+
+        begin = time.time()
+
+        while 1:
+            if time.time()-begin > timeout:
+                print("Error in recv_timeout Timeout exceeded")
+                return "RECV_ERR_TIMEOUT"
+
+            try:
+                data = self.sock.recv(2048).decode('utf-8')
+
+                if data:
+                    total_data.append(data)
+                    begin = time.time()
+
+                    if data.find(escape_seq) > 0:
+                        break
+            except:
+                pass
+
+            # To avoid the program to freeze at connection sometimes
+            time.sleep(0.005)
+
+        return ''.join(total_data)
 
     def recv_buffer(self, buff_size, data_type='uint32'):
         """ Receive a buffer of uint32
@@ -216,10 +269,11 @@ class KClient:
             buff_size Number of samples to receive
 
         Return: A Numpy array with the data on success.
-                A Numpy array of NaN on failure.
+
+        Raise a RuntimeError on reception failure
         """
         np_dtype = np.dtype(data_type)
-        buff = recv_n_bytes(self.sock, np_dtype.itemsize * buff_size)
+        buff = self.recv_n_bytes(np_dtype.itemsize * buff_size)
 
         if buff == '':
             raise RuntimeError("recv_buffer: reception failed")
@@ -233,7 +287,7 @@ class KClient:
         res_tuple = []
 
         while tmp_buffer[-1] != '\n':
-            char = recv_n_bytes(self.sock, 1)
+            char = self.recv_n_bytes(1)
 
             if char == ':':
                 toks = ''.join(tmp_buffer[1:]).split('@')
@@ -330,7 +384,7 @@ class Commands:
             self.success = False
             return
 
-        msg = recv_timeout(client.sock, 'EOC')
+        msg = client.recv_timeout('EOC')
 
         if msg == "RECV_ERR_TIMEOUT":
             print("Timeout at message reception")

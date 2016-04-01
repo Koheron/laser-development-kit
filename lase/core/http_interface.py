@@ -26,13 +26,13 @@ class HTTPInterface:
                 - version: Instrument version
         """
         zip_filename = name + '-' + version + '.zip'
-        r = requests.post(self.url + '/api/deploy/remote/' + zip_filename, data={})
+        r = requests.get(self.url + '/api/deploy/remote/' + zip_filename, data={})
 
     def deploy_local_instrument(self, name, version):
         zip_filename = name + '-' + version + '.zip'
         print('Deploying ' + zip_filename)
         try:
-            r = requests.post(self.url + '/api/deploy/local/' + zip_filename, data={} , timeout=1.0)
+            r = requests.get(self.url + '/api/deploy/local/' + zip_filename, data={} , timeout=1.0)
         except Exception,e: 
             print("[error] " + str(e))
             #print('Timeout occured')
