@@ -7,8 +7,6 @@ import numpy as np
 from .base import Base
 from ..core import command, write_buffer
 
-from ..core import DevMem
-
 # Lorentzian fit
 from scipy.optimize import leastsq
 
