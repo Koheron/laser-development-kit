@@ -126,7 +126,7 @@ class ConnectWidget(QtGui.QWidget):
             if cnt_timeout > n_steps_timeout:
                 self.connection_info.setText(
                     'Failed to connect to host\nCheck IP address')
-                self._set_disconnect()
+                self.disconnect()
                 QApplication.restoreOverrideCursor()
                 return False
         QApplication.restoreOverrideCursor()
@@ -137,7 +137,7 @@ class ConnectWidget(QtGui.QWidget):
         self.connect_button.setStyleSheet('QPushButton {color: green;}')
         self.connect_button.setText('Connect')
         self.local_instruments = {}
-        self.parent.instrument_ok = [False] * len(self.parent.instrument_ok)
+        self.parent.instrument_list = [''] * len(self.app_list)
         self.parent.update_buttons()
         
     def install_instrument(self, instrument_name):
@@ -186,7 +186,7 @@ class ConnectWidget(QtGui.QWidget):
                     QApplication.restoreOverrideCursor()
                     return
                 else:
-                    self.parent.instrument_ok[i] = True
+                    self.parent.instrument_list[i] = 'abc'
                 
             # We load by default the first instrument
             # and connect with tcp-server to check the connection

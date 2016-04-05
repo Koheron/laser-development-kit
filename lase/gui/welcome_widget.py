@@ -29,7 +29,7 @@ class WelcomeWidget(QtGui.QWidget):
 
         self.parent = parent
         self.app_list = self.parent.app_list
-        self.instrument_ok = [False] * len(self.app_list)
+        self.instrument_list = [''] * len(self.app_list)
 
         self.ip_path = ip_path
         self.opened = True
@@ -87,11 +87,11 @@ class WelcomeWidget(QtGui.QWidget):
     def update_buttons(self):
         for i, button in enumerate(self.app_buttons):
             button.setText(self.parent.app_list[i].capitalize() + 
-                           ('' if self.instrument_ok[i] else ' (Simu)'))
+                           (' (Simu)' if (self.instrument_list[i] == '') else ''))
 
     def app_onclick(self, app_idx):
         app = self.app_list[app_idx]
-        if self.instrument_ok[app_idx]:
+        if self.instrument_list[app_idx] != '':
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
             self.connect_widget.install_instrument(app)
             driver = globals()[app.capitalize()](self.connect_widget.client)
