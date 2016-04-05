@@ -2,7 +2,7 @@
 
 import os
 import pytest
-from lase.core import KClient
+from koheron_tcp_client import KClient
 from lase.core import ZynqSSH
 from lase.drivers import Oscillo
 
