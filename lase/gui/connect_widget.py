@@ -181,12 +181,12 @@ class ConnectWidget(QtGui.QWidget):
                     return
 
             for i, app in enumerate(self.app_list):
-                if not any(app in instr for instr in self.local_instruments):
+                try:
+                   instrument = next(instr for instr in self.local_instruments if app in instr)
+                   self.parent.instrument_list[i] = instrument
+                except StopIteration:
                     self.connection_info.setText("Application " + app + " not available on host")
                     QApplication.restoreOverrideCursor()
-                    return
-                else:
-                    self.parent.instrument_list[i] = 'abc'
                 
             # We load by default the first instrument
             # and connect with tcp-server to check the connection
