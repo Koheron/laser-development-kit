@@ -5,7 +5,7 @@ import time
 from pyqtgraph.Qt import QtGui
 from lase.gui import WelcomeWidget
 import pyqtgraph as pg
-from PyQt4.QtCore import SIGNAL 
+from PyQt4.QtCore import SIGNAL
 import os
 import ctypes
 import platform
@@ -25,6 +25,9 @@ class KWindow(QtGui.QMainWindow):
         self.img_path = os.path.join(self.current_path, 'static', 'img')
         self.static_path = os.path.join(self.current_path, 'static')
         self.tmp_path = os.path.join(self.current_path,'tmp')
+
+        self.instrument_list = ['oscillo', 'spectrum']
+
         if not os.path.exists(self.tmp_path):
             os.makedirs(self.tmp_path)
 
@@ -66,9 +69,18 @@ class KWindow(QtGui.QMainWindow):
             widget = self.stacked_widget.currentWidget()
             if widget.driver.opened:
                 widget.frame_rate = self.frame_rate
-                widget.update()
+
+                try:
+                    widget.update()
+                except Exception, e:
+                    print("An error occured:\n%s" % e)
+                    print("Closing instrument ...")
+                    widget.driver.opened = False
             else:
-                widget.driver.close()
+                # Gently close the instrument if possible
+                try:
+                    widget.driver.close()
+                except: pass
 
                 self.stacked_widget.removeWidget(widget)
                 self.stacked_widget.currentWidget().setFocus()

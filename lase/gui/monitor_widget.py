@@ -65,12 +65,8 @@ class MonitorWidget(QtGui.QWidget):
                                       "{:.2f}".format(frame_rate))
 
     def close_session(self):
-        # Ramp down smoothly laser power
-        current_ramp = np.linspace(self.laser_widget.laser_current, 0, 20)
-
-        for current in current_ramp:
-            self.driver.set_laser_current(current)
-            time.sleep(0.01)
-
-        self.laser_widget.stop_laser()
-        self.driver.opened = False
+        try:
+            self.laser_widget.stop_laser()
+            self.driver.opened = False
+        except:
+            self.driver.opened = False

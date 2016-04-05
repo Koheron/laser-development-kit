@@ -6,33 +6,6 @@ import numpy as np
 # Receive
 # ----------------------------------
 
-def recv_n_bytes(sock, n_bytes):
-    """ Receive exactly n bytes
-
-    Args:
-        sock: The socket used for communication
-        n_bytes: Number of bytes to receive
-    """
-
-    data = []
-    n_rcv = 0
-
-    while n_rcv < n_bytes:
-        try:
-            chunk = sock.recv(n_bytes - n_rcv)
-
-            if chunk == '':
-                break
-
-            n_rcv = n_rcv + len(chunk)
-            data.append(chunk)
-        except:
-            print("recv_n_bytes: sock.recv failed")
-            return ''
-
-    return b''.join(data)
-
-
 def recv_timeout(socket, escape_seq, timeout=5):
     """
     Receive data until either an escape sequence
@@ -72,7 +45,4 @@ def recv_timeout(socket, escape_seq, timeout=5):
 
     return ''.join(total_data)
 
-# ----------------------------------
-# Send
-# ----------------------------------
 

@@ -15,6 +15,7 @@ class ConnectWidget(QtGui.QWidget):
         super(ConnectWidget, self).__init__()
 
         self.parent = parent
+        self.instrument_list = self.parent.instrument_list
         self.ip_path = ip_path
         self.is_connected = False
 
@@ -54,10 +55,10 @@ class ConnectWidget(QtGui.QWidget):
         self.http = HTTPInterface(self.host)
         self.connect_type = None
 
-        self.line[0].textChanged.connect(lambda: self.ip_changed(0))
-        self.line[1].textChanged.connect(lambda: self.ip_changed(1))
-        self.line[2].textChanged.connect(lambda: self.ip_changed(2))
-        self.line[3].textChanged.connect(lambda: self.ip_changed(3))
+        for i in range(4):
+            def make_callback(idx):
+                return lambda : self.ip_changed(idx)
+            self.line[i].textChanged.connect(make_callback(i))
 
         self.connect_button.clicked.connect(self.connect_onclick)
         
@@ -177,20 +178,16 @@ class ConnectWidget(QtGui.QWidget):
                     QApplication.restoreOverrideCursor()
                     return
 
-            if not "oscillo" in self.available_instruments:
-                self.connection_info.setText("Instrument oscillo not available on host")
-                QApplication.restoreOverrideCursor()
-                return
-                
-            if not "spectrum" in self.available_instruments:
-                self.connection_info.setText("Instrument spectrum not available on host")
-                QApplication.restoreOverrideCursor()
-                return
+            for instrument in self.instrument_list:
+                if not any(instrument in instr for instr in self.available_instruments):
+                    self.connection_info.setText("Instrument "+ instrument + " not available on host")
+                    QApplication.restoreOverrideCursor()
+                    return
                 
             # We load by default the oscillo instrument 
             # and connect with tcp-server to check the connection
-            if not self.install_instrument("oscillo"):
-                return            
+            if not self.install_instrument(self.instrument_list[0]):
+                return
             
             self.connection_info.setText('Connected to ' + self.host)
             self.is_connected = True
