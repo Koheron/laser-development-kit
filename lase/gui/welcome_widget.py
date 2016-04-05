@@ -31,6 +31,7 @@ class WelcomeWidget(QtGui.QWidget):
             self.config = yaml.load(config_file)
 
         self.parent = parent
+        self.instrument_list = self.parent.instrument_list
         self.ip_path = ip_path
         self.opened = True
         self.select_opened = True
@@ -49,7 +50,7 @@ class WelcomeWidget(QtGui.QWidget):
         self.drivers_layout = QtGui.QVBoxLayout()
 
         self.instrument_buttons = []
-        for i, instrument in enumerate(self.parent.instrument_list):
+        for i, instrument in enumerate(self.instrument_list):
             self.instrument_buttons.append(self.set_button(instrument.capitalize() +' (Simu)'))
             self.drivers_layout.addWidget(self.instrument_buttons[i], 1, QtCore.Qt.AlignCenter)
             def make_callback(instrument):
