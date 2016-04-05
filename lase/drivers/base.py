@@ -5,7 +5,7 @@ import numpy as np
 import math
 
 from ..signal import Sampling
-from ..core import command, write_buffer
+from koheron_tcp_client import command, write_buffer
 
 class Base(object):
     """ This class is used as a base class for `Oscillo` and `Spectrum`
