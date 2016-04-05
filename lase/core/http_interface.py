@@ -32,7 +32,7 @@ class HTTPInterface:
         zip_filename = name + '-' + version + '.zip'
         print('Deploying ' + zip_filename)
         try:
-            r = requests.post(self.url + '/api/deploy/local/' + zip_filename, data={} , timeout=1.0)
+            r = requests.get(self.url + '/api/deploy/local/' + zip_filename, data={} , timeout=1.0)
         except Exception as e: 
             print("[error] " + str(e))
             #print('Timeout occured')

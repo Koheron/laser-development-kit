@@ -91,9 +91,10 @@ class WelcomeWidget(QtGui.QWidget):
 
     def app_onclick(self, app_idx):
         app = self.app_list[app_idx]
-        if self.instrument_list[app_idx] != '':
+        instrument = self.instrument_list[app_idx]
+        if instrument != '':
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-            self.connect_widget.install_instrument(app)
+            self.connect_widget.install_instrument(instrument)
             driver = globals()[app.capitalize()](self.connect_widget.client)
             driver.set_led(driver.client.host.split('.')[-1])
             QApplication.restoreOverrideCursor()
