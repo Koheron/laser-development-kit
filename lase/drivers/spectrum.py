@@ -19,7 +19,6 @@ def residuals(p, y, f):
     return y - lorentzian(f, p)
 
 
-
 class Spectrum(Base):
     """ Driver for the spectrum bitstream """
 
@@ -42,13 +41,15 @@ class Spectrum(Base):
 
         # self.set_offset(0, 0)
  
-        self.set_address_range(10, 50)
+        self.set_address_range(0, 0)
 
         self.set_demod()
         self.set_scale_sch(0)
 
         self.reset()
 
+        # Laser linewidth estimation
+        self.fit_linewidth = False
         self.fit = np.zeros((2,100))
         self.i = 0
 
@@ -98,15 +99,15 @@ class Spectrum(Base):
                                                 data_type='float32')
         #print self.get_peak_values()
 
-        # Lorentzian fit
-        idx = np.arange(2,200)
-        f = self.sampling.f_fft[idx]
-        y = self.spectrum[idx]
-        params_init = [2e17, 3e6**2]
-        best_params = leastsq(residuals, params_init, args=(y,f), full_output=1)
-        self.fit[:, self.i % 100] = best_params[0]
-        self.i += 1
-        print np.sqrt(np.mean(self.fit, axis=1))
+        if self.fit_linewidth:
+            idx = np.arange(2,200)
+            f = self.sampling.f_fft[idx]
+            y = self.spectrum[idx]
+            params_init = [2e17, 3e6**2]
+            best_params = leastsq(residuals, params_init, args=(y,f), full_output=1)
+            self.fit[:, self.i % 100] = best_params[0]
+            self.i += 1
+            print("Linewidth = {0:2f} kHz".format(1e-3 * np.sqrt(np.mean(self.fit[1,:]))))
 
     @command('SPECTRUM')
     def get_num_average(self):
@@ -155,13 +156,3 @@ class Spectrum(Base):
     def get_peak_values(self):
         fifo_length = self.get_peak_fifo_length()
         return self.get_peak_fifo_data(fifo_length)
-
-    @command('SPECTRUM')
-    def set_ad5683r(self, dac_value, cmd):
-        pass
-
-    def set_dac_16bit(self, value):
-        self.set_ad5683r(value, 3)
-        #time.sleep(0.001)
-        #self.set_ad5683r(0, 2)
-

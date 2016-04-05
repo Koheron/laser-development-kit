@@ -21,7 +21,7 @@ class Base(object):
         self.open_laser()
 
         self.n = wfm_size
-        self.max_current = 100  # mA
+        self.max_current = 200  # mA
         self.sampling = Sampling(wfm_size, 125e6)
 
         self.opened = True
@@ -47,6 +47,7 @@ class Base(object):
         pass  # Used in BaseSimu
 
     def close(self):
+        self.stop_laser()
         self.reset()
 
     def reset(self):
@@ -73,23 +74,11 @@ class Base(object):
 
     @command('LASER')
     def get_laser_current(self):
-        current = self.client.recv_int(4)
-
-        if math.isnan(current):
-            print("Can't read laser current")
-            self.failed = True
-
-        return (0.0001/21.) * current
+            return (0.0001/21.) * self.client.recv_int(4)
 
     @command('LASER')
     def get_laser_power(self):
-        power = self.client.recv_int(4)
-
-        if math.isnan(power):
-            print("Can't read laser power")
-            self.failed = True
-
-        return power
+            return self.client.recv_int(4)
 
     @command('LASER')
     def get_monitoring(self):

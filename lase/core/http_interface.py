@@ -26,7 +26,7 @@ class HTTPInterface:
                 - version: Instrument version
         """
         zip_filename = name + '-' + version + '.zip'
-        r = requests.post(self.url + '/api/deploy/remote/' + zip_filename, data={})
+        r = requests.get(self.url + '/api/deploy/remote/' + zip_filename, data={})
 
     def deploy_local_instrument(self, name, version):
         zip_filename = name + '-' + version + '.zip'
