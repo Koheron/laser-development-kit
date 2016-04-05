@@ -33,7 +33,7 @@ class HTTPInterface:
         print('Deploying ' + zip_filename)
         try:
             r = requests.post(self.url + '/api/deploy/local/' + zip_filename, data={} , timeout=1.0)
-        except Exception,e: 
+        except Exception as e: 
             print("[error] " + str(e))
             #print('Timeout occured')
             pass
@@ -47,7 +47,7 @@ class HTTPInterface:
         try:
             r = requests.get(self.url + '/api/get_local_instruments')
             return r.json()
-        except Exception,e: 
+        except Exception as e: 
             print("[error] " + str(e))
             return {}
 
