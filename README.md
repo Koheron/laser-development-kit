@@ -6,7 +6,7 @@
 
 ## Installation
 
-1) Get [latest release](https://github.com/Koheron/zynq-sdk/releases/download/v0.4.0-beta.4/oscillo-6ea06b3.img) of SD card image.
+1) Get [latest release](https://github.com/Koheron/zynq-sdk/releases/) of SD card image.
 On Windows, you can use [win32diskimager](http://sourceforge.net/projects/win32diskimager/) to burn the SD card.
 
 2) Insert the SD card on the Red Pitaya, then plug ethernet and power cables. 
@@ -16,6 +16,7 @@ The last number of the board IP address is displayed on binary format on the 8 R
 * Python (2.7+ or 3.5+) with Numpy and Scipy
 * PyQtGraph (`pip install pyqtgraph`)
 * paramiko (`pip install paramiko`)
+* koheron-tcp-client (`pip install --upgrade koheron-tcp-client`)
 
 4) Run demo:
 
