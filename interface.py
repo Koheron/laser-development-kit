@@ -25,6 +25,9 @@ class KWindow(QtGui.QMainWindow):
         self.img_path = os.path.join(self.current_path, 'static', 'img')
         self.static_path = os.path.join(self.current_path, 'static')
         self.tmp_path = os.path.join(self.current_path,'tmp')
+
+        self.instrument_list = ['oscillo', 'spectrum']
+
         if not os.path.exists(self.tmp_path):
             os.makedirs(self.tmp_path)
 

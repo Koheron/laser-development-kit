@@ -54,10 +54,8 @@ class ConnectWidget(QtGui.QWidget):
         self.http = HTTPInterface(self.host)
         self.connect_type = None
 
-        self.line[0].textChanged.connect(lambda: self.ip_changed(0))
-        self.line[1].textChanged.connect(lambda: self.ip_changed(1))
-        self.line[2].textChanged.connect(lambda: self.ip_changed(2))
-        self.line[3].textChanged.connect(lambda: self.ip_changed(3))
+        for i in range(4):
+            self.line[i].textChanged.connect(lambda: self.ip_changed(i))
 
         self.connect_button.clicked.connect(self.connect_onclick)
         
@@ -177,12 +175,12 @@ class ConnectWidget(QtGui.QWidget):
                     QApplication.restoreOverrideCursor()
                     return
 
-            if not "oscillo" in self.available_instruments:
+            if not any("oscillo" in instr for instr in self.available_instruments):
                 self.connection_info.setText("Instrument oscillo not available on host")
                 QApplication.restoreOverrideCursor()
                 return
                 
-            if not "spectrum" in self.available_instruments:
+            if not any("spectrum" in instr for instr in self.available_instruments):
                 self.connection_info.setText("Instrument spectrum not available on host")
                 QApplication.restoreOverrideCursor()
                 return

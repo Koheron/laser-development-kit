@@ -53,10 +53,18 @@ class WelcomeWidget(QtGui.QWidget):
 
         # Select between drivers
         self.drivers_layout = QtGui.QVBoxLayout()
-        self.oscillo_button = self.set_button('Oscillo (Simu)')
-        self.spectrum_button = self.set_button('Spectrum (Simu)')
-        self.drivers_layout.addWidget(self.oscillo_button,1,QtCore.Qt.AlignCenter)
-        self.drivers_layout.addWidget(self.spectrum_button,1,QtCore.Qt.AlignCenter)
+
+        self.instrument_buttons = []
+        for i, instrument in enumerate(self.parent.instrument_list):
+            self.instrument_buttons.append(self.set_button(instrument.capitalize() +' (Simu)'))
+            self.drivers_layout.addWidget(self.instrument_buttons[i], 1, QtCore.Qt.AlignCenter)
+            def make_callback(instrument):
+                return lambda : self.instrument_onclick(instrument)
+            self.instrument_buttons[i].clicked.connect(make_callback(instrument))
+        #self.oscillo_button = self.set_button('Oscillo (Simu)')
+        #self.spectrum_button = self.set_button('Spectrum (Simu)')
+        #self.drivers_layout.addWidget(self.oscillo_button,1,QtCore.Qt.AlignCenter)
+        #self.drivers_layout.addWidget(self.spectrum_button,1,QtCore.Qt.AlignCenter)
 
         # Left Layout
         self.view = QWebView()
@@ -78,8 +86,8 @@ class WelcomeWidget(QtGui.QWidget):
         self.setLayout(self.lay)
         
         # Connections
-        self.oscillo_button.clicked.connect(self.oscillo_onclick)
-        self.spectrum_button.clicked.connect(self.spectrum_onclick)
+        #self.oscillo_button.clicked.connect(self.oscillo_onclick)
+        #self.spectrum_button.clicked.connect(self.spectrum_onclick)
 
     def update(self):
         pass
@@ -92,34 +100,47 @@ class WelcomeWidget(QtGui.QWidget):
         return button
 
     def set_connected(self):
-        self.oscillo_button.setText('Oscillo')
-        self.spectrum_button.setText('Spectrum')
+        for i, button in enumerate(self.instrument_buttons):
+            button.setText(self.parent.instrument_list[i].capitalize())
 
     def set_disconnected(self):
-        self.oscillo_button.setText('Oscillo (Simu)')
-        self.spectrum_button.setText('Spectrum (Simu)')
+        for i, button in enumerate(self.instrument_buttons):
+            button.setText(self.parent.instrument_list[i].capitalize()+' (Simu)')
 
-    def oscillo_onclick(self):
+    def instrument_onclick(self, instrument):
+        print 'Instrument = ', instrument
         if self.connect_widget.is_connected:
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-            self.connect_widget.install_instrument("oscillo")
-            driver = Oscillo(self.connect_widget.client)
+            self.connect_widget.install_instrument(instrument)
+            driver = globals()[instrument.capitalize()](self.connect_widget.client)
             driver.set_led(driver.client.host.split('.')[-1])
             QApplication.restoreOverrideCursor()
         else:
-            driver = OscilloSimu()
-        index = self.parent.stacked_widget.addWidget(OscilloWidget(driver, self.parent))
+            driver = globals()[instrument.capitalize()+'Simu']()
+        index = self.parent.stacked_widget.addWidget(globals()[instrument.capitalize()+'Widget'](driver, self.parent))
         self.parent.stacked_widget.setCurrentIndex(index)
 
-    def spectrum_onclick(self):
-        if self.connect_widget.is_connected:
-            QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-            self.connect_widget.install_instrument("spectrum")
-            driver = Spectrum(self.connect_widget.client)
-            driver.set_led(driver.client.host.split('.')[-1])
-            QApplication.restoreOverrideCursor()
-        else:
-            driver = SpectrumSimu()
-        index = self.parent.stacked_widget.addWidget(SpectrumWidget(driver, self.parent))
-        self.parent.stacked_widget.setCurrentIndex(index)
+    # def oscillo_onclick(self):
+    #     if self.connect_widget.is_connected:
+    #         QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+    #         self.connect_widget.install_instrument("oscillo")
+    #         driver = Oscillo(self.connect_widget.client)
+    #         driver.set_led(driver.client.host.split('.')[-1])
+    #         QApplication.restoreOverrideCursor()
+    #     else:
+    #         driver = OscilloSimu()
+    #     index = self.parent.stacked_widget.addWidget(OscilloWidget(driver, self.parent))
+    #     self.parent.stacked_widget.setCurrentIndex(index)
+
+    # def spectrum_onclick(self):
+    #     if self.connect_widget.is_connected:
+    #         QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+    #         self.connect_widget.install_instrument("spectrum")
+    #         driver = Spectrum(self.connect_widget.client)
+    #         driver.set_led(driver.client.host.split('.')[-1])
+    #         QApplication.restoreOverrideCursor()
+    #     else:
+    #         driver = SpectrumSimu()
+    #     index = self.parent.stacked_widget.addWidget(SpectrumWidget(driver, self.parent))
+    #     self.parent.stacked_widget.setCurrentIndex(index)
 
