@@ -16,7 +16,7 @@ class ConnectWidget(QtGui.QWidget):
         super(ConnectWidget, self).__init__()
 
         self.parent = parent
-        self.instrument_list = self.parent.instrument_list
+        self.app_list = self.parent.app_list
         self.ip_path = ip_path
         self.is_connected = False
 
@@ -126,18 +126,19 @@ class ConnectWidget(QtGui.QWidget):
             if cnt_timeout > n_steps_timeout:
                 self.connection_info.setText(
                     'Failed to connect to host\nCheck IP address')
-                self._set_disconnect()
+                self.disconnect()
                 QApplication.restoreOverrideCursor()
                 return False
         QApplication.restoreOverrideCursor()
         return True
 
-    def _set_disconnect(self):
+    def disconnect(self):
         self.is_connected = False
         self.connect_button.setStyleSheet('QPushButton {color: green;}')
         self.connect_button.setText('Connect')
-        self.available_instruments = {}
-        self.parent.set_disconnected()
+        self.local_instruments = {}
+        self.parent.instrument_list = [''] * len(self.app_list)
+        self.parent.update_buttons()
         
     def install_instrument(self, instrument_name):
         if self.connect_type == 'HTTP':
@@ -153,13 +154,13 @@ class ConnectWidget(QtGui.QWidget):
         if not self.is_connected: # Connect
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
             self.connection_info.setText('Disconnected')
-            self._set_disconnect()
+            self.disconnect()
             self.connection_info.setText('Connecting to ' + self.host + ' ...')
         
             self.http.set_ip(self.host)
-            self.available_instruments = self.http.get_local_instruments()
+            self.local_instruments = self.http.get_local_instruments()
 			
-            if self.available_instruments: # HTTP connection available
+            if self.local_instruments: # HTTP connection available
                 self.connect_type = 'HTTP'
             else: # Fallback to SSH
                 print('HTTP not available. Fallback to SSH.')
@@ -172,32 +173,33 @@ class ConnectWidget(QtGui.QWidget):
 				
                 self.connect_type = 'SSH'
                 self.ssh.unzip_app()
-                self.available_instruments = self.ssh.get_local_instruments()
+                self.local_instruments = self.ssh.get_local_instruments()
 
-                if not self.available_instruments:			
+                if not self.local_instruments:			
                     self.connection_info.setText('Cannot retrieve instruments')
                     QApplication.restoreOverrideCursor()
                     return
 
-            for instrument in self.instrument_list:
-                if not any(instrument in instr for instr in self.available_instruments):
-                    self.connection_info.setText("Instrument "+ instrument + " not available on host")
-                    QApplication.restoreOverrideCursor()
-                    return
-                
-            # We load by default the oscillo instrument 
+            for i, app in enumerate(self.app_list):
+                try:
+                   instrument = next(instr for instr in self.local_instruments if app in instr)
+                   self.parent.instrument_list[i] = instrument
+                except StopIteration:
+                   self.parent.instrument_list[i] = ''
+
+            # We load by default the first instrument
             # and connect with tcp-server to check the connection
-            if not self.install_instrument(self.instrument_list[0]):
+            if not self.install_instrument(self.app_list[0]):
                 return
             
             self.connection_info.setText('Connected to ' + self.host)
             self.is_connected = True
             self.connect_button.setStyleSheet('QPushButton {color: red;}')
             self.connect_button.setText('Disconnect')
-            self.parent.set_connected()
+            self.parent.update_buttons()
             QApplication.restoreOverrideCursor()
         else: # Disconnect
             if hasattr(self, 'client'):
                 self.client.__del__()
             self.connection_info.setText('Disconnected')
-            self._set_disconnect()
+            self.disconnect()

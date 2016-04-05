@@ -26,12 +26,11 @@ class WelcomeWidget(QtGui.QWidget):
     """
     def __init__(self, parent, ip_path):
         super(WelcomeWidget, self).__init__()
-        
-        with open('config.yaml') as config_file:
-            self.config = yaml.load(config_file)
 
         self.parent = parent
-        self.instrument_list = self.parent.instrument_list
+        self.app_list = self.parent.app_list
+        self.instrument_list = [''] * len(self.app_list)
+
         self.ip_path = ip_path
         self.opened = True
         self.select_opened = True
@@ -49,18 +48,17 @@ class WelcomeWidget(QtGui.QWidget):
         # Select between drivers
         self.drivers_layout = QtGui.QVBoxLayout()
 
-        self.instrument_buttons = []
-        for i, instrument in enumerate(self.instrument_list):
-            self.instrument_buttons.append(self.set_button(instrument.capitalize() +' (Simu)'))
-            self.drivers_layout.addWidget(self.instrument_buttons[i], 1, QtCore.Qt.AlignCenter)
-            def make_callback(instrument):
-                return lambda : self.instrument_onclick(instrument)
-            self.instrument_buttons[i].clicked.connect(make_callback(instrument))
+        self.app_buttons = []
+        for i, app in enumerate(self.app_list):
+            self.app_buttons.append(self.set_button(app.capitalize() +' (Simu)'))
+            self.drivers_layout.addWidget(self.app_buttons[i], 1, QtCore.Qt.AlignCenter)
+            def make_callback(i):
+                return lambda : self.app_onclick(i)
+            self.app_buttons[i].clicked.connect(make_callback(i))
 
         # Left Layout
         self.view = QWebView()
-        self.view.load(QtCore.QUrl.fromLocalFile(
-                       os.path.join(self.parent.static_path, 'welcome.html')))       
+        self.view.load(QtCore.QUrl.fromLocalFile(os.path.join(self.parent.static_path, 'welcome.html')))       
         self.left_layout.addWidget(self.view)
 
         # Right layout
@@ -86,23 +84,21 @@ class WelcomeWidget(QtGui.QWidget):
         button.setFixedHeight(150)
         return button
 
-    def set_connected(self):
-        for i, button in enumerate(self.instrument_buttons):
-            button.setText(self.parent.instrument_list[i].capitalize())
+    def update_buttons(self):
+        for i, button in enumerate(self.app_buttons):
+            button.setText(self.parent.app_list[i].capitalize() + 
+                           (' (Simu)' if (self.instrument_list[i] == '') else ''))
 
-    def set_disconnected(self):
-        for i, button in enumerate(self.instrument_buttons):
-            button.setText(self.parent.instrument_list[i].capitalize()+' (Simu)')
-
-    def instrument_onclick(self, instrument):
-        print 'Instrument = ', instrument
-        if self.connect_widget.is_connected:
+    def app_onclick(self, app_idx):
+        app = self.app_list[app_idx]
+        instrument = self.instrument_list[app_idx]
+        if instrument != '':
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
             self.connect_widget.install_instrument(instrument)
-            driver = globals()[instrument.capitalize()](self.connect_widget.client)
+            driver = globals()[app.capitalize()](self.connect_widget.client)
             driver.set_led(driver.client.host.split('.')[-1])
             QApplication.restoreOverrideCursor()
         else:
-            driver = globals()[instrument.capitalize()+'Simu']()
-        index = self.parent.stacked_widget.addWidget(globals()[instrument.capitalize()+'Widget'](driver, self.parent))
+            driver = globals()[app.capitalize()+'Simu']()
+        index = self.parent.stacked_widget.addWidget(globals()[app.capitalize()+'Widget'](driver, self.parent))
         self.parent.stacked_widget.setCurrentIndex(index)
