@@ -187,9 +187,9 @@ class ConnectWidget(QtGui.QWidget):
                 except StopIteration:
                    self.parent.instrument_list[i] = ''
 
-            # We load by default the first instrument
+            # We load by default the first instrument available
             # and connect with tcp-server to check the connection
-            if not self.install_instrument(self.app_list[0]):
+            if not self.install_instrument(next(instr for instr in self.parent.instrument_list if instr)):
                 return
             
             self.connection_info.setText('Connected to ' + self.host)

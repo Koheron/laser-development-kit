@@ -9,6 +9,7 @@ from PyQt4.QtCore import SIGNAL
 import os
 import ctypes
 import platform
+import traceback
 
 class KWindow(QtGui.QMainWindow):
     """
@@ -72,7 +73,8 @@ class KWindow(QtGui.QMainWindow):
 
                 try:
                     widget.update()
-                except Exception, e:
+                except Exception as e:
+                    traceback.print_exc()
                     print("An error occured:\n%s" % e)
                     print("Closing instrument ...")
                     widget.driver.opened = False
