@@ -6,7 +6,7 @@ import math
 import numpy as np
 
 from .base import Base
-from ..core import command
+from koheron_tcp_client import command
 
 class Oscillo(Base):
     """ Driver for the oscillo bitstream
