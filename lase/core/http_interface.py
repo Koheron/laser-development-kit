@@ -16,7 +16,7 @@ class HTTPInterface:
         return r.text
 
     def ping(self):
-        r = requests.post(self.url + '/api/ping', data={})
+        r = requests.get(self.url + '/api/ping')
         
     def deploy_remote_instrument(self, name, version):
         """ Deploy a remotely available instrument
@@ -26,17 +26,25 @@ class HTTPInterface:
                 - version: Instrument version
         """
         zip_filename = name + '-' + version + '.zip'
-        r = requests.get(self.url + '/api/deploy/remote/' + zip_filename, data={})
+        r = requests.get(self.url + '/api/deploy/remote/' + zip_filename)
 
     def deploy_local_instrument(self, name, version):
+        """ Deploy an instrument locally available
+
+            Args:
+                - name: Instrument name
+                - version: Instrument version
+
+            Return the deployement status: 0 on success, -1 else
+        """
         zip_filename = name + '-' + version + '.zip'
         print('Deploying ' + zip_filename)
         try:
-            r = requests.get(self.url + '/api/deploy/local/' + zip_filename, data={} , timeout=1.0)
+            r = requests.get(self.url + '/api/deploy/local/' + zip_filename)
+            return int(r.text.split('status:')[1].strip())
         except Exception as e: 
             print("[error] " + str(e))
-            #print('Timeout occured')
-            pass
+            return -1
 
     def remove_local_instrument(self, name, version):
         zip_filename = name + '-' + version + '.zip'
@@ -56,8 +64,8 @@ class HTTPInterface:
         if instruments:
             for name, shas in instruments.items():
                 if name == instrument_name and len(shas) > 0:
-                    self.deploy_local_instrument(name, shas[0])
-                    time.sleep(0.5)
+                    if self.deploy_local_instrument(name, shas[0]) < 0:
+                        raise RunTimeError("Instrument " + instrument_name + " launch failed.")
                     return
         raise ValueError("Instrument " + instrument_name + " not found")
 
