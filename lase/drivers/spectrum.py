@@ -143,10 +143,6 @@ class Spectrum(Base):
 
     # === Peak data stream
 
-    @command('SPECTRUM')
-    def get_peak_fifo_data(self, n_pts):
-        return self.client.recv_buffer(n_pts, data_type='uint32')
-
     def get_peak_values(self):
         @command('SPECTRUM')
         def store_peak_fifo_data(self):
