@@ -27,9 +27,6 @@ class Spectrum(Base):
         if self.open() < 0:
             print('Cannot open device SPECTRUM')
 
-        print "status = " + str(self.fifo_get_acquire_status())
-        self.fifo_start_acquisition(1000)
-
         self.avg_on = True
 
         self.spectrum = np.zeros(self.wfm_size, dtype=np.float32)
@@ -62,6 +59,7 @@ class Spectrum(Base):
         super(Spectrum, self).reset()
         self.avg_on = True
         self.set_averaging(self.avg_on)
+        self.reset_peak_fifo()
 
     @command('SPECTRUM')
     def set_scale_sch(self, scale_sch):
@@ -98,10 +96,6 @@ class Spectrum(Base):
         self.spectrum = self.client.recv_buffer(self.wfm_size,
                                                 data_type='float32')
         #print self.get_peak_values()
-        # print self.get_peak_values()
-        # print "status = " + str(self.fifo_get_acquire_status())
-        print "length = " + str(self.get_peak_fifo_length())
-        # self.fifo_stop_acquisition()
 
         if self.fit_linewidth:
             idx = np.arange(2,200)
@@ -141,36 +135,22 @@ class Spectrum(Base):
 
         set_averaging(self, status)
 
-    # === Peak data stream
+    @command('SPECTRUM')
+    def get_peak_fifo_occupancy(self):
+        return self.client.recv_int(4)
+
+    @command('SPECTRUM')
+    def get_peak_fifo_length(self):
+        return (self.client.recv_int(4)-2**31)/4
 
     @command('SPECTRUM')
     def get_peak_fifo_data(self, n_pts):
         return self.client.recv_buffer(n_pts, data_type='uint32')
 
+    @command('SPECTRUM')
+    def reset_peak_fifo(self):
+        pass
+
     def get_peak_values(self):
-        @command('SPECTRUM')
-        def store_peak_fifo_data(self):
-            return self.client.recv_int(4)
-
-        self.peak_stream_length = store_peak_fifo_data(self)
-
-        @command('SPECTRUM')
-        def get_peak_fifo_data(self):
-            print "peak_stream_length = " + str(self.peak_stream_length)
-            return self.client.recv_buffer(self.peak_stream_length, data_type='uint32')
-
-        return get_peak_fifo_data(self)
-
-    @command('SPECTRUM')
-    def fifo_start_acquisition(self, acq_period): pass
-
-    @command('SPECTRUM')
-    def fifo_stop_acquisition(self): pass
-
-    @command('SPECTRUM')
-    def fifo_get_acquire_status(self):
-        return self.client.recv_int(4)
-
-    @command('SPECTRUM')
-    def get_peak_fifo_length(self):
-        return self.client.recv_int(4)
+        fifo_length = self.get_peak_fifo_length()
+        return self.get_peak_fifo_data(fifo_length)
