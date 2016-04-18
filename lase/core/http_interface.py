@@ -65,7 +65,7 @@ class HTTPInterface:
             for name, shas in instruments.items():
                 if name == instrument_name and len(shas) > 0:
                     if self.deploy_local_instrument(name, shas[0]) < 0:
-                        raise RunTimeError("Instrument " + instrument_name + " launch failed.")
+                        raise RuntimeError("Instrument " + instrument_name + " launch failed.")
                     return
         raise ValueError("Instrument " + instrument_name + " not found")
 
