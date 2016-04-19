@@ -96,7 +96,7 @@ class WelcomeWidget(QtGui.QWidget):
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
             self.connect_widget.install_instrument(instrument)
             driver = globals()[app.capitalize()](self.connect_widget.client)
-            driver.set_led(driver.client.host.split('.')[-1])
+            driver.init()
             QApplication.restoreOverrideCursor()
         else:
             driver = globals()[app.capitalize()+'Simu']()

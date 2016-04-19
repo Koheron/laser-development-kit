@@ -109,5 +109,8 @@ class Base(object):
     @command('COMMON')
     def set_led(self, value): pass
 
+    @command('COMMON')
+    def init(self): pass
+
     @command('DAC')
     def reset_acquisition(self): pass
