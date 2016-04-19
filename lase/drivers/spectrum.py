@@ -27,6 +27,8 @@ class Spectrum(Base):
         if self.open() < 0:
             print('Cannot open device SPECTRUM')
 
+        self.fifo_start_acquisition(1000)
+
         self.avg_on = True
 
         self.spectrum = np.zeros(self.wfm_size, dtype=np.float32)
@@ -59,7 +61,6 @@ class Spectrum(Base):
         super(Spectrum, self).reset()
         self.avg_on = True
         self.set_averaging(self.avg_on)
-        self.reset_peak_fifo()
 
     @command('SPECTRUM')
     def set_scale_sch(self, scale_sch):
@@ -146,23 +147,20 @@ class Spectrum(Base):
 
         @command('SPECTRUM')
         def get_peak_fifo_data(self):
-            print "peak_stream_length = " + str(self.peak_stream_length)
             return self.client.recv_buffer(self.peak_stream_length, data_type='uint32')
 
         return get_peak_fifo_data(self)
 
     @command('SPECTRUM')
     def get_peak_fifo_length(self):
-        return (self.client.recv_int(4)-2**31)/4
+        return self.client.recv_int(4)
+
 
     @command('SPECTRUM')
-    def get_peak_fifo_data(self, n_pts):
-        return self.client.recv_buffer(n_pts, data_type='uint32')
+    def fifo_start_acquisition(self, acq_period): pass
 
     @command('SPECTRUM')
-    def reset_peak_fifo(self):
-        pass
+    def fifo_stop_acquisition(self): pass
 
-    def get_peak_values(self):
-        fifo_length = self.get_peak_fifo_length()
-        return self.get_peak_fifo_data(fifo_length)
+    def __del__(self):
+        self.fifo_stop_acquisition()

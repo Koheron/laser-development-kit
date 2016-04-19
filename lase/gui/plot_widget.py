@@ -30,12 +30,15 @@ class TimeRollingPlot(pg.PlotWidget):
 
         self.values = np.zeros(n_pts)
         self.times = np.zeros(n_pts) + time.time()
+        self.idx = 0
 
     def set_axis(self):
         self.getPlotItem().setMouseEnabled(x=False, y=False)
         self.getPlotItem().enableAutoRange()
 
     def update(self, value):
+        x_index = (self.idx + np.arange(value.size)) % self.values.size
+
         self.values = np.roll(self.values, -value.size)
         self.times = np.roll(self.times, -value.size)
         self.times[-1] = time.time()
