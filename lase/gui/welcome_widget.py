@@ -6,7 +6,6 @@ from PyQt4.QtCore import Qt
 from PyQt4.QtGui import QApplication, QCursor
 import time
 import os
-import yaml
 import sys
 
 if sys.version_info[0] == 3:
