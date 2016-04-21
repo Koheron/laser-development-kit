@@ -17,12 +17,12 @@ class SliderWidget(QtGui.QWidget):
         self.label = QtGui.QLabel()
         self.label.setText(self.name)
         self.slider = QtGui.QSlider()
-        self.slider.setMinimum(self.min_slider)
+        self.slider.setMinimum(self.min_slider/self.step)
         self.slider.setMaximum(self.max_slider/self.step)
         self.slider.setOrientation(QtCore.Qt.Horizontal)
         
         self.spin = QtGui.QDoubleSpinBox()
-        self.spin.setRange(0,self.max_slider)
+        self.spin.setRange(self.min_slider,self.max_slider)
         self.spin.setSingleStep(self.step)
         self.spin.setFixedSize(QtCore.QSize(59, 26))
         

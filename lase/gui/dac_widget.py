@@ -38,6 +38,7 @@ class DacWidget(QtGui.QWidget):
         self.enable = False
         self.freq = 0
         self.mod_amp = 0
+        self.offset = 0
         self.waveform = 'Sine'
         self.waveform_index = 0
         self.data = np.zeros(self.n)
@@ -53,15 +54,18 @@ class DacWidget(QtGui.QWidget):
         # Waveform list
         self.waveform_list = WaveformList()
         # Sliders
-        self.freq_slider = SliderWidget(name='Modulation frequency (MHz)           ',
+        self.freq_slider = SliderWidget(name='Frequency           (MHz) ',
                                         max_slider=1e-6 * self.fs / 2,
                                         step=1e-6 * self.fs / self.n, alpha=1)
-        self.mod_amp_slider = SliderWidget(name='Modulation amplitude (arb. units.) ',
+        self.mod_amp_slider = SliderWidget(name='Amplitude (arb. units.) ',
                                            max_slider=1)
+        self.offset_slider = SliderWidget(name='Offset         (arb. units.) ',
+                                          min_slider = -1.0, max_slider=1)
         # Add Widgets to Layout
         self.layout.addWidget(self.button)
         self.slider_layout.addWidget(self.mod_amp_slider)
         self.slider_layout.addWidget(self.freq_slider)
+        self.slider_layout.addWidget(self.offset_slider)
         self.layout.addWidget(self.waveform_list)
         self.layout.addLayout(self.slider_layout)
         self.setLayout(self.layout)
@@ -69,6 +73,8 @@ class DacWidget(QtGui.QWidget):
         self.button.clicked.connect(self.button_clicked)
         self.connect(self.freq_slider, SIGNAL("value(float)"), self.change_freq)
         self.connect(self.mod_amp_slider, SIGNAL("value(float)"), self.change_mod_amp)
+        self.connect(self.offset_slider, SIGNAL("value(float)"), self.change_offset)
+
         for i in range(len(self.waveform_list.list)):
             self.waveform_list.list[i].toggled.connect(self.update_data)
 
@@ -79,6 +85,10 @@ class DacWidget(QtGui.QWidget):
 
     def change_mod_amp(self, value):
         self.mod_amp = value
+        self.update_data()
+
+    def change_offset(self, value):
+        self.offset = value
         self.update_data()
 
     def button_clicked(self):
@@ -97,13 +107,15 @@ class DacWidget(QtGui.QWidget):
     def update_data(self):
         if self.waveform_list.list[0].isChecked():
             self.waveform_index = 0
-            self.data = self.mod_amp * np.cos(2 * np.pi * self.freq / self.n * np.arange(self.n))
+            self.data = self.offset + self.mod_amp * np.cos(2 * np.pi * self.freq / self.n * np.arange(self.n))
         elif self.waveform_list.list[1].isChecked():
             self.waveform_index = 1
-            self.data = self.mod_amp * signal.sawtooth(2 * np.pi * self.freq /
+            self.data = self.offset + self.mod_amp * signal.sawtooth(2 * np.pi * self.freq /
                                                        self.n * np.arange(self.n),
                                                        width=0.5)
         elif self.waveform_list.list[2].isChecked():
             self.waveform_index = 2
-            self.data = self.mod_amp * signal.square(2 * np.pi * self.freq / self.n * np.arange(self.n), duty=0.5)
+            self.data = self.offset + self.mod_amp * signal.square(2 * np.pi * self.freq / self.n * np.arange(self.n), duty=0.5)
+        self.data[self.data >= +0.999] = +0.999
+        self.data[self.data <= -0.999] = -0.999
         self.data_updated_signal.emit(self.index)
