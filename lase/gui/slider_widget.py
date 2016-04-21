@@ -4,13 +4,12 @@ from PyQt4.QtCore import SIGNAL
 
 
 class SliderWidget(QtGui.QWidget):    
-    def __init__(self, name ='Value : ', step = 0.01, min_slider = 0, max_slider = None, alpha=1):
+    def __init__(self, name ='Value : ', step = 0.01, min_slider = 0, max_slider = None):
         self.name = name
         super(SliderWidget, self).__init__() 
         self.value = 0
         self.step = step
         self.flag = True
-        self.alpha = alpha # Label value = alpha * spin value
         self.min_slider = min_slider
         self.max_slider = max_slider
         self.layout = QtGui.QHBoxLayout() 

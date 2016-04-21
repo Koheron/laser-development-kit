@@ -20,7 +20,6 @@ class WaveformList(QtGui.QWidget):
         self.list[0].setChecked(True)
         self.setLayout(layout)
 
-
 class DacWidget(QtGui.QWidget):
     """
     This widget is used to control the DACs of a driver.
@@ -56,7 +55,7 @@ class DacWidget(QtGui.QWidget):
         # Sliders
         self.freq_slider = SliderWidget(name='Frequency           (MHz) ',
                                         max_slider=1e-6 * self.fs / 2,
-                                        step=1e-6 * self.fs / self.n, alpha=1)
+                                        step=1e-6 * self.fs / self.n)
         self.mod_amp_slider = SliderWidget(name='Amplitude (arb. units.) ',
                                            max_slider=1)
         self.offset_slider = SliderWidget(name='Offset         (arb. units.) ',
@@ -105,17 +104,20 @@ class DacWidget(QtGui.QWidget):
         self.data_updated_signal.emit(self.index)
 
     def update_data(self):
+        # Compute waveform
         if self.waveform_list.list[0].isChecked():
+            # Sine
             self.waveform_index = 0
             self.data = self.offset + self.mod_amp * np.cos(2 * np.pi * self.freq / self.n * np.arange(self.n))
         elif self.waveform_list.list[1].isChecked():
+            # Triangle
             self.waveform_index = 1
-            self.data = self.offset + self.mod_amp * signal.sawtooth(2 * np.pi * self.freq /
-                                                       self.n * np.arange(self.n),
-                                                       width=0.5)
+            self.data = self.offset + self.mod_amp * signal.sawtooth(2 * np.pi * self.freq / self.n * np.arange(self.n), width=0.5)
         elif self.waveform_list.list[2].isChecked():
+            # Square
             self.waveform_index = 2
             self.data = self.offset + self.mod_amp * signal.square(2 * np.pi * self.freq / self.n * np.arange(self.n), duty=0.5)
+        # Prevent overflow
         self.data[self.data >= +0.999] = +0.999
         self.data[self.data <= -0.999] = -0.999
         self.data_updated_signal.emit(self.index)
