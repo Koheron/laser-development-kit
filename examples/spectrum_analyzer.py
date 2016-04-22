@@ -9,8 +9,8 @@ import matplotlib
 matplotlib.use('GTKAgg')
 from matplotlib import pyplot as plt
 
-from lase.core import KClient, ZynqSSH
-from lase.drivers import Spectrum
+from ldk.core import KClient, ZynqSSH
+from ldk.drivers import Spectrum
 
 # Load the spectrum instrument
 host = os.getenv('HOST','192.168.1.100')

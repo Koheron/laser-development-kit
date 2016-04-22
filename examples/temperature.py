@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 import csv
 import time
 from scipy import signal
-from lase.core import KClient, ZynqSSH
-from lase.drivers import Oscillo
+from ldk.core import KClient, ZynqSSH
+from ldk.drivers import Oscillo
 
 # Load the oscillo instrument
 host = os.getenv('HOST','192.168.1.100')

@@ -3,7 +3,7 @@
 
 import time
 from pyqtgraph.Qt import QtGui
-from lase.gui import WelcomeWidget
+from ldk.gui import WelcomeWidget
 import pyqtgraph as pg
 from PyQt4.QtCore import SIGNAL
 import os
@@ -104,7 +104,7 @@ def main():
 
     # Icon to show in task bar for Windows
     if platform.system() == 'Windows':
-        myappid = 'koheron.lase'
+        myappid = 'koheron.ldk'
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
     window = KWindow(app)
