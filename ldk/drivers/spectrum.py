@@ -162,5 +162,5 @@ class Spectrum(Base):
     @command('SPECTRUM')
     def fifo_stop_acquisition(self): pass
 
-    def __del__(self):
-        self.fifo_stop_acquisition()
+    #def __del__(self):
+    #    self.fifo_stop_acquisition()
