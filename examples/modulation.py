@@ -7,8 +7,8 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
-from lase.core import KClient, ZynqSSH
-from lase.drivers import Oscillo
+from ldk.core import KClient, ZynqSSH
+from ldk.drivers import Oscillo
 
 # Load the oscillo instrument
 host = os.getenv('HOST','192.168.1.100')

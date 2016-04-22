@@ -7,7 +7,7 @@ from PyQt4.QtGui import QApplication, QCursor
 import json
 import os
 import time
-from lase.core import HTTPInterface, ZynqSSH
+from ..core import HTTPInterface, ZynqSSH
 from koheron_tcp_client import KClient
 
 

@@ -3,8 +3,8 @@
 import os
 import pytest
 from koheron_tcp_client import KClient
-from lase.core import ZynqSSH
-from lase.drivers import Oscillo
+from ..core import ZynqSSH
+from ..drivers import Oscillo
 
 @pytest.mark.real
 class TestConnection:
