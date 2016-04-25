@@ -113,7 +113,7 @@ class CursorWidget(QtGui.QWidget):
         self.plot_widget.scene().sigMouseClicked.connect(self.mouseClicked)
 
     def auto_scale(self):
-            self.plot_widget.enableAutoRange()
+        self.plot_widget.enableAutoRange()
 
     def cursor_on(self):
         self.cursor[0] = not self.cursor[0]
@@ -135,26 +135,18 @@ class CursorWidget(QtGui.QWidget):
     def mouseMoved(self, pos):
         if self.plot_widget.sceneBoundingRect().contains(pos):
             self.mousePoint = self.view_box.mapSceneToView(pos)
-            self.vLine[0].setPos(self.mousePoint.x())
-            self.hLine[0].setPos(self.mousePoint.y())
+            x = self.mousePoint.x()
+            y = self.mousePoint.y()
+            self.vLine[0].setPos(x)
+            self.hLine[0].setPos(y)
             if self.cursor[0]:
-                if self.is_inbounds(self.mousePoint.x()):
-                    self.XLabel[0].setText('{:.2f}'.format(self.mousePoint.x()))
-                else:
-                    self.XLabel[0].setText('%.2e' % (self.mousePoint.x()))
-                if self.is_inbounds(self.mousePoint.y()):
-                    self.YLabel[0].setText('{:.2f}'.format(self.mousePoint.y()))
-                else:
-                    self.YLabel[0].setText('%.2e' % (self.mousePoint.y()))
-                if self.cursor[1] is True:
-                    if self.is_inbounds(self.mousePoint.x() - self.cursor_2_x):
-                        self.delta_X.setText('X   ' + '{:.2f}'.format(self.mousePoint.x() - self.cursor_2_x))
-                    else:
-                        self.delta_X.setText('X   ' + '%.2e' % (self.mousePoint.x() - self.cursor_2_x))
-                    if self.is_inbounds(self.mousePoint.x() - self.cursor_2_y):
-                        self.delta_Y.setText('Y   ' + '{:.2f}'.format(self.mousePoint.y() - self.cursor_2_y))
-                    else:
-                        self.delta_Y.setText('Y   ' + '%.2e' % (self.mousePoint.y() - self.cursor_2_y))
+                self.XLabel[0].setText('{:.2f}'.format(x) if self.is_inbounds(x) else '%.2e' % x)
+                self.YLabel[0].setText('{:.2f}'.format(y) if self.is_inbounds(y) else '%.2e' % y)
+                if self.cursor[1]:
+                    delta_x = x - self.cursor_2_x
+                    delta_y = y - self.cursor_2_y
+                    self.delta_X.setText('X   ' + ('{:.2f}'.format(delta_x) if self.is_inbounds(delta_x) else '%.2e' % delta_x))
+                    self.delta_Y.setText('Y   ' + ('{:.2f}'.format(delta_y) if self.is_inbounds(delta_y) else '%.2e' % delta_y))
         else:
             self.reset_text()
             self.delta_X.setText('X')
