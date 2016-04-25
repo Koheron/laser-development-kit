@@ -78,9 +78,7 @@ class Oscillo(Base):
     @command('OSCILLO')
     def read_all_channels(self):
         """ Read all the acquired channels """
-        return self.client.recv_buffer(2 * self.wfm_size,
-                                       data_type='float32')
-        # TODO Check reception
+        return self.client.recv_buffer(2 * self.wfm_size, data_type='float32')
 
     @command('OSCILLO')
     def speed_test(self, n_outer_loop, n_inner_loop):

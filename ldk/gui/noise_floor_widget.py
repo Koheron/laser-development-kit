@@ -17,13 +17,11 @@ class NoiseFloorWidget(QtGui.QWidget):
         self.calibrate_button = QtGui.QPushButton('Calibrate')
         self.calibrate_button.setStyleSheet('QPushButton {color: orange;}')
 
+        self.window_names = ['Rectangular','Hanning', 'Hamming', 'Blackman']
         self.window = []
-        self.window.append(QtGui.QRadioButton('Rectangular'))
-        self.window.append(QtGui.QRadioButton('Hanning'))
-        self.window.append(QtGui.QRadioButton('Hamming'))
-        self.window.append(QtGui.QRadioButton('Blackman'))
-        for item in self.window:
-            self.window_layout.addWidget(item)
+        for i, name in enumerate(self.window_names):
+            self.window.append(QtGui.QRadioButton(name))
+            self.window_layout.addWidget(self.window[i])
 
         self.window_box = QtGui.QGroupBox("Window")
         self.window_box.setLayout(self.window_layout)
@@ -33,7 +31,6 @@ class NoiseFloorWidget(QtGui.QWidget):
         self.setLayout(self.layout)
 
         # Connections
-
         self.calibrate_button.clicked.connect(self.calibrate)
         self.window[0].toggled.connect(lambda: self.change_window('Rectangular'))
         self.window[1].toggled.connect(lambda: self.change_window('Hanning'))
