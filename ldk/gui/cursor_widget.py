@@ -132,6 +132,9 @@ class CursorWidget(QtGui.QWidget):
     def is_inbounds(self, coord):
         return 1e-2 < np.abs(coord) < 1e3
 
+    def format_coord(self, coord):
+        return '{:.2f}'.format(coord) if self.is_inbounds(coord) else '%.2e' % coord
+
     def mouseMoved(self, pos):
         if self.plot_widget.sceneBoundingRect().contains(pos):
             self.mousePoint = self.view_box.mapSceneToView(pos)
@@ -140,13 +143,13 @@ class CursorWidget(QtGui.QWidget):
             self.vLine[0].setPos(x)
             self.hLine[0].setPos(y)
             if self.cursor[0]:
-                self.XLabel[0].setText('{:.2f}'.format(x) if self.is_inbounds(x) else '%.2e' % x)
-                self.YLabel[0].setText('{:.2f}'.format(y) if self.is_inbounds(y) else '%.2e' % y)
-                if self.cursor[1]:
-                    delta_x = x - self.cursor_2_x
-                    delta_y = y - self.cursor_2_y
-                    self.delta_X.setText('X   ' + ('{:.2f}'.format(delta_x) if self.is_inbounds(delta_x) else '%.2e' % delta_x))
-                    self.delta_Y.setText('Y   ' + ('{:.2f}'.format(delta_y) if self.is_inbounds(delta_y) else '%.2e' % delta_y))
+                self.XLabel[0].setText(self.format_coord(x))
+                self.YLabel[0].setText(self.format_coord(y))
+            if self.cursor[0] and self.cursor[1]:
+                delta_x = x - self.cursor_2_x
+                delta_y = y - self.cursor_2_y
+                self.delta_X.setText('X   ' + self.format_coord(delta_x))
+                self.delta_Y.setText('Y   ' + self.format_coord(delta_y))
         else:
             self.reset_text()
             self.delta_X.setText('X')
@@ -161,19 +164,12 @@ class CursorWidget(QtGui.QWidget):
             self.hLine[1].setPos(self.mousePoint.y())
             self.cursor[1] = True
             self.delta_box.setVisible(True)
-            self.vLine[1].setVisible(self.cursor[1])
-            self.hLine[1].setVisible(self.cursor[1])
-            if self.is_inbounds(self.mousePoint.x()):
-                self.XLabel[1].setText('{:.2f}'.format(self.mousePoint.x()))
-            else:
-                self.XLabel[1].setText('%.2e' % (self.mousePoint.x()))
-            if self.is_inbounds(self.mousePoint.y()):
-                self.YLabel[1].setText('{:.2f}'.format(self.mousePoint.y()))
-            else:
-                self.YLabel[1].setText('%.2e' % (self.mousePoint.y()))
+            self.set_visible(idx_list=[1])
+            self.XLabel[1].setText(self.format_coord(self.mousePoint.x()))
+            self.YLabel[1].setText(self.format_coord(self.mousePoint.y()))
 
-    def set_visible(self):
-        for i in range(2):
+    def set_visible(self, idx_list=range(2)):
+        for i in idx_list:
             self.vLine[i].setVisible(self.cursor[i])
             self.hLine[i].setVisible(self.cursor[i])
 
