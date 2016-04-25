@@ -4,7 +4,7 @@
 
 #### `Python API for Koheron Laser Development Kit`
 
-## Installation
+## [Get started](https://www.koheron.com/products/laser-development-kit/getting-started/) 
 
 1) Get [latest release](https://github.com/Koheron/zynq-sdk/releases/) of SD card image.
 On Windows, you can use [win32diskimager](http://sourceforge.net/projects/win32diskimager/) to burn the SD card.
