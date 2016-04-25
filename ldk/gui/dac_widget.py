@@ -108,7 +108,7 @@ class DacWidget(QtGui.QWidget):
         if self.waveform_list.list[0].isChecked():
             # Sine
             self.waveform_index = 0
-            self.data = self.offset + self.mod_amp * np.cos(2 * np.pi * self.freq / self.n * np.arange(self.n))
+            self.data = self.offset + self.mod_amp * np.sin(2 * np.pi * self.freq / self.n * np.arange(self.n))
         elif self.waveform_list.list[1].isChecked():
             # Triangle
             self.waveform_index = 1
