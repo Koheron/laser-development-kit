@@ -92,13 +92,16 @@ class Base(object):
     @write_buffer('DAC')
     def set_dac_buffer(self, data): pass
 
+    def twoint14_to_uint32(self, data):
+        data1 = np.mod(np.floor(8192 * data[0, :]) + 8192,16384) + 8192
+        data2 = np.mod(np.floor(8192 * data[1, :]) + 8192,16384) + 8192
+        return data1 + 65536 * data2
+
     def set_dac(self, warning=False, reset=False):
         if warning:
             if np.max(np.abs(self.dac)) >= 1:
                 print('WARNING : dac out of bounds')
-        dac_data_1 = np.mod(np.floor(8192 * self.dac[0, :]) + 8192,16384) + 8192
-        dac_data_2 = np.mod(np.floor(8192 * self.dac[1, :]) + 8192,16384) + 8192
-        self.set_dac_buffer(dac_data_1 + 65536 * dac_data_2)
+        self.set_dac_buffer(self.twoint14_to_uint32(self.dac))
 
         if reset:
             self.reset_acquisition()
