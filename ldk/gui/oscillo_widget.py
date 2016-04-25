@@ -79,21 +79,20 @@ class OscilloWidget(LaseWidget):
             self.counter = 0
         self.counter += 1
 
-        # This should be in the PlotWidget class
         if self.math_widget.fourier:
-            self.driver.get_avg_spectrum(self.math_widget.n_avg_spectrum)
-            for i in range(2):
-                self.plot_widget.dataItem[i].setData(
-                    1e-6 * self.driver.sampling.f_fft[1: self.driver.sampling.n / 2],
-                    10 * np.log10((self.driver.avg_spectrum[i, 1:]) ** 2)
-                )
+            self.update_fourier()
         else:
-            for i in range(2):
-                self.plot_widget.dataItem[i].setData(1e6 * self.driver.sampling.t,
-                                                    self.driver.adc[i, :])
+            self.refresh_adc()
         if self.driver.failed:
             print("An error occured during update\nLeave Oscillo")
             self.monitor_widget.close_session()
+
+    def update_fourier(self):
+        self.driver.get_avg_spectrum(self.math_widget.n_avg_spectrum)
+        for i in range(2):
+            self.plot_widget.dataItem[i].setData(
+                    1e-6 * self.driver.sampling.f_fft[1: self.driver.sampling.n / 2],
+                    10 * np.log10((self.driver.avg_spectrum[i, 1:]) ** 2))
 
     def update_dac(self, index):
         if self.dac_wid[index].button.text() == 'OFF':
@@ -106,6 +105,11 @@ class OscilloWidget(LaseWidget):
                 self.driver.dac[1, :] = self.driver.get_correction()
             self.driver.set_dac()
             self.refresh_dac()
+
+    def refresh_adc(self):
+        for i in range(2):
+            self.plot_widget.dataItem[i].setData(1e6 * self.driver.sampling.t,
+                                                 self.driver.adc[i, :])
 
     def refresh_dac(self):
         for i in range(2):
@@ -131,12 +135,14 @@ class OscilloWidget(LaseWidget):
         for i in range(2):
             self.plot_widget.dataItem.append(pg.PlotDataItem(1e6*self.driver.sampling.t,
                                              self.driver.dac[i, :], pen=(i, 4)))
+
         for item in self.plot_widget.dataItem:
             self.plot_widget.addItem(item)
         
         for i in range(2):
             self.plot_widget.dataItem[i].setVisible(self.plot_widget.show_adc[i])
             self.plot_widget.dataItem[i+2].setVisible(self.plot_widget.show_dac[i])
+
         self.plot_widget.plotItem.setMouseEnabled(x=False, y=True)
 
         self.plot_widget.plotItem = self.plot_widget.getPlotItem()

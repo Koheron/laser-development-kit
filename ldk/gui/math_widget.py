@@ -46,8 +46,6 @@ class MathWidget(QtGui.QWidget):
         self.checkbox_layout.addStretch(1)
         self.checkbox_layout.addWidget(self.fourier_checkbox)
         self.checkbox_layout.addStretch(1)
-        self.checkbox_layout.addWidget(self.correction_checkbox)
-        self.checkbox_layout.addStretch(1)
         self.layout.addLayout(self.checkbox_layout)
 
         self.avg_widget = QtGui.QWidget()
@@ -61,7 +59,6 @@ class MathWidget(QtGui.QWidget):
         self.setLayout(self.layout)
 
         self.avg_on_button.clicked.connect(self.change_averaging)
-        self.correction_checkbox.stateChanged.connect(self.correction_connect)
         self.fourier_checkbox.stateChanged.connect(self.fourier_connect)
         self.avg_spin.valueChanged.connect(self.avg_connect)
 
@@ -75,16 +72,6 @@ class MathWidget(QtGui.QWidget):
             self.avg_on_button.setStyleSheet('QPushButton {color: green;}')
             self.avg_on_button.setText('Start averaging')
         self.driver.set_averaging(self.driver.avg_on)
-
-    def correction_connect(self, state):
-        if state == QtCore.Qt.Checked:
-            self.correction = True
-            self.driver.ideal_amplitude_waveform = 1167 * self.driver.optical_power[0] /\
-                                                   self.driver.power[0] * self.driver.base.dac[1]
-            self.driver.amplitude_error = self.driver.ideal_amplitude_waveform
-            self.driver.base.dac[1, :] = self.driver.get_correction()
-        else:
-            self.correction = False
 
     def fourier_connect(self, state):
         if state == QtCore.Qt.Checked:

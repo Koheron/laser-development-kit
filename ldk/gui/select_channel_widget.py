@@ -15,12 +15,12 @@ class SelectChannelWidget(QtGui.QWidget):
 
         self.dac_checkbox = []
         self.add_checkbox(self.dac_checkbox, 1, 'DAC')
-            
-        # Connections
-        for i in range(2):
-            self.adc_checkbox[i].stateChanged.connect(lambda: self.show_adc(i))
-            self.dac_checkbox[i].stateChanged.connect(lambda: self.show_dac(i))
-    
+        
+        self.adc_checkbox[0].stateChanged.connect(lambda: self.show_adc(0))
+        self.adc_checkbox[1].stateChanged.connect(lambda: self.show_adc(1))
+        self.dac_checkbox[0].stateChanged.connect(lambda: self.show_dac(0))
+        self.dac_checkbox[1].stateChanged.connect(lambda: self.show_dac(1))
+
     def add_checkbox(self, checkbox, y_pos, text):
         for i in range(2):
             checkbox.append(QtGui.QCheckBox(text +' '+str(i+1), self))
