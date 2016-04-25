@@ -79,6 +79,9 @@ class StatsWidget(QtGui.QWidget):
     def get_amplitude_rms(self, channel):
         return np.std(self.driver.adc[channel,:])
 
+    def format_value(self, value):
+        return '{:.2f}'.format(value) if 1e-2 < abs(value) < 1e4 else '%.4e' % value
+
     def update(self):
         self.average_vec = np.roll(self.average_vec, 1, axis=1)
         self.amplitude_vec = np.roll(self.amplitude_vec, 1, axis=1)
@@ -90,23 +93,14 @@ class StatsWidget(QtGui.QWidget):
             self.amplitude_rms_vec[i,0] = self.get_amplitude_rms(i)
 
             self.average[i] = np.mean(self.average_vec[i,:])
-            if 1e-2 < abs(self.average[i]) < 1e4:
-                mean_text = '{:.2f}'.format(self.average[i])
-            else:
-                mean_text = '%.4e'%(self.average[i])
+            mean_text = self.format_value(self.average[i])
             self.mean_labels[i+1].setText(mean_text)
 
             self.amplitude[i] = np.mean(self.amplitude_vec[i,:])
-            if 1e-2 < self.amplitude[i] < 1e4:
-                ampl_text = '{:.2f}'.format(self.amplitude[i])
-            else:
-                ampl_text = '%.4e'%(self.amplitude[i])
+            ampl_text = self.format_value(self.amplitude[i])
             self.ampl_labels[i+1].setText(ampl_text)
 
             self.amplitude_rms[i] = np.mean(self.amplitude_rms_vec[i,:])
-            if 1e-2 < self.amplitude_rms[i] < 1e4:
-                ampl_rms_text = '{:.2f}'.format(self.amplitude_rms[i])
-            else:
-                ampl_rms_text = '%.4e'%(self.amplitude_rms[i])
+            ampl_rms_text = self.format_value(self.amplitude_rms[i])
             self.ampl_rms_labels[i+1].setText(ampl_rms_text)
 
