@@ -95,7 +95,7 @@ class OscilloWidget(LaseWidget):
                     10 * np.log10((self.driver.avg_spectrum[i, 1:]) ** 2))
 
     def update_dac(self, index):
-        if self.dac_wid[index].button.text() == 'OFF':
+        if self.dac_wid[index].dac_on_off_button.text() == 'OFF':
             if not self.math_widget.correction:
                 self.driver.dac[index, :] = self.dac_wid[index].data
             else:
