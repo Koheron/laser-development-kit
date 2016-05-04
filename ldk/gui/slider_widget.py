@@ -4,7 +4,7 @@ from PyQt4.QtCore import SIGNAL
 
 
 class SliderWidget(QtGui.QWidget):    
-    def __init__(self, name ='Value : ', step = 0.01, min_slider = 0, max_slider = None):
+    def __init__(self, name ='Value : ', step = 0.01, min_slider = 0, max_slider = None, layout=True):
         self.name = name
         super(SliderWidget, self).__init__() 
         self.value = 0
@@ -12,7 +12,7 @@ class SliderWidget(QtGui.QWidget):
         self.flag = True
         self.min_slider = min_slider
         self.max_slider = max_slider
-        self.layout = QtGui.QHBoxLayout() 
+
         self.label = QtGui.QLabel()
         self.label.setText(self.name)
         self.slider = QtGui.QSlider()
@@ -25,11 +25,12 @@ class SliderWidget(QtGui.QWidget):
         self.spin.setSingleStep(self.step)
         self.spin.setFixedSize(QtCore.QSize(59, 26))
         
-        self.layout.addWidget(self.label)
-        self.layout.addWidget(self.spin)
-        self.layout.addWidget(self.slider)
-        
-        self.setLayout(self.layout)
+        if layout:
+            self.layout = QtGui.QHBoxLayout() 
+            self.layout.addWidget(self.label)
+            self.layout.addWidget(self.spin)
+            self.layout.addWidget(self.slider)        
+            self.setLayout(self.layout)
         
         self.slider.valueChanged.connect(self.sliderChanged)
         self.spin.valueChanged.connect(self.spinChanged)

@@ -5,20 +5,21 @@ from .slider_widget import SliderWidget
 from PyQt4.QtCore import SIGNAL, pyqtSignal
 import numpy as np
 from scipy import signal
+import collections
 
 
 class WaveformList(QtGui.QWidget):
     def __init__(self, items=['Sine', 'Triangle', 'Square']):
         super(WaveformList, self).__init__()
-        layout = QtGui.QVBoxLayout()
+        self.layout = QtGui.QVBoxLayout()
         self.items = items
         self.list = []
         for item in self.items:
             self.list.append(QtGui.QRadioButton(item))
         for item in self.list:
-            layout.addWidget(item)
+            self.layout.addWidget(item)
         self.list[0].setChecked(True)
-        self.setLayout(layout)
+        self.setLayout(self.layout)
 
 class DacWidget(QtGui.QWidget):
     """
@@ -44,35 +45,37 @@ class DacWidget(QtGui.QWidget):
 
         # Layout
         self.layout = QtGui.QHBoxLayout()
-        self.slider_layout = QtGui.QVBoxLayout()
+        self.slider_layout = QtGui.QGridLayout()
         # DAC ON/OFF button
-        self.button = QtGui.QPushButton('ON')
-        self.button.setStyleSheet('QPushButton {color: green;}')
-        self.button.setFixedWidth(80)
-        self.button.setCheckable(True)
+        self.dac_on_off_button = QtGui.QPushButton('ON')
+        self.dac_on_off_button.setStyleSheet('QPushButton {color: green;}')
+        self.dac_on_off_button.setFixedWidth(80)
+        self.dac_on_off_button.setCheckable(True)
+
         # Waveform list
         self.waveform_list = WaveformList()
+
+        self.slider_dict = collections.OrderedDict()
         # Sliders
-        self.freq_slider = SliderWidget(name='Frequency           (MHz) ',
-                                        max_slider=1e-6 * self.fs / 2,
-                                        step=1e-6 * self.fs / self.n)
-        self.mod_amp_slider = SliderWidget(name='Amplitude (arb. units.) ',
-                                           max_slider=1)
-        self.offset_slider = SliderWidget(name='Offset         (arb. units.) ',
-                                          min_slider = -1.0, max_slider=1)
+        self.slider_dict['mod_amp'] = SliderWidget(name='Amplitude (arb. units)', max_slider=1, layout=False)
+        self.slider_dict['freq'] = SliderWidget(name='Frequency (MHz)', max_slider=1e-6 * self.fs / 2, step=1e-6 * self.fs / self.n, layout=False)
+        self.slider_dict['offset'] = SliderWidget(name='Offset (arb. units)', min_slider = -1.0, max_slider=1, layout=False)
+
+        for i, (name, slider) in enumerate(self.slider_dict.items()):
+            self.slider_layout.addWidget(slider.label, i, 0)
+            self.slider_layout.addWidget(slider.spin, i, 1)
+            self.slider_layout.addWidget(slider.slider, i, 2)
+
         # Add Widgets to Layout
-        self.layout.addWidget(self.button)
-        self.slider_layout.addWidget(self.mod_amp_slider)
-        self.slider_layout.addWidget(self.freq_slider)
-        self.slider_layout.addWidget(self.offset_slider)
+        self.waveform_list.layout.addWidget(self.dac_on_off_button)
         self.layout.addWidget(self.waveform_list)
         self.layout.addLayout(self.slider_layout)
         self.setLayout(self.layout)
 
-        self.button.clicked.connect(self.button_clicked)
-        self.connect(self.freq_slider, SIGNAL("value(float)"), self.change_freq)
-        self.connect(self.mod_amp_slider, SIGNAL("value(float)"), self.change_mod_amp)
-        self.connect(self.offset_slider, SIGNAL("value(float)"), self.change_offset)
+        self.dac_on_off_button.clicked.connect(self.dac_on_off_button_clicked)
+        self.connect(self.slider_dict['mod_amp'], SIGNAL("value(float)"), self.change_mod_amp)
+        self.connect(self.slider_dict['freq'], SIGNAL("value(float)"), self.change_freq)
+        self.connect(self.slider_dict['offset'], SIGNAL("value(float)"), self.change_offset)
 
         for i in range(len(self.waveform_list.list)):
             self.waveform_list.list[i].toggled.connect(self.update_data)
@@ -90,17 +93,17 @@ class DacWidget(QtGui.QWidget):
         self.offset = value
         self.update_data()
 
-    def button_clicked(self):
+    def dac_on_off_button_clicked(self):
         self.enable = not self.enable
         if self.enable:
             self.update_data()
-            self.button.setStyleSheet('QPushButton {color: red;}')
-            self.button.setText('OFF')
+            self.dac_on_off_button.setStyleSheet('QPushButton {color: red;}')
+            self.dac_on_off_button.setText('OFF')
         else:
             self.data = np.zeros(self.n)
             self.data_updated_signal.emit(self.index)
-            self.button.setStyleSheet('QPushButton {color: green;}')
-            self.button.setText('ON')
+            self.dac_on_off_button.setStyleSheet('QPushButton {color: green;}')
+            self.dac_on_off_button.setText('ON')
         self.data_updated_signal.emit(self.index)
 
     def update_data(self):
