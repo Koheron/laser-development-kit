@@ -54,11 +54,6 @@ class Oscillo(Base):
         def reset(self): pass
         reset(self)
 
-    def twoint14_to_uint32(self, data):
-        data1 = np.mod(np.floor(8192 * data[0, :]) + 8192,16384) + 8192
-        data2 = np.mod(np.floor(8192 * data[1, :]) + 8192,16384) + 8192
-        return data1 + 65536 * data2
-
     def set_dac(self, warning=False, reset=False):
         if warning:
             if np.max(np.abs(self.dac)) >= 1:
