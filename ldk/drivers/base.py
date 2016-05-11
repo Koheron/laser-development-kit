@@ -32,14 +32,14 @@ class Base(object):
     def open_dac(self, wfm_size):
         @command('DAC', 'u')
         def open(self, wfm_size):
-            return self.client.recv_int(4)
+            return self.client.recv_int32()
 
         open(self, wfm_size)
 
     def open_laser(self):
         @command('LASER')
         def open(self):
-            return self.client.recv_int(4)
+            return self.client.recv_int32()
 
         open(self)
 
@@ -74,7 +74,7 @@ class Base(object):
 
     @command('LASER')
     def get_laser_current(self):
-            return (0.0001/21.) * self.client.recv_int(4)
+            return (0.0001/21.) * self.client.recv_uint32()
 
     @command('LASER')
     def get_laser_power(self):
