@@ -30,16 +30,16 @@ class Base(object):
         self.failed = False
 
     def open_dac(self, wfm_size):
-        @command('DAC')
+        @command('DAC', 'u')
         def open(self, wfm_size):
-            return self.client.recv_int(4)
+            return self.client.recv_int32()
 
         open(self, wfm_size)
 
     def open_laser(self):
         @command('LASER')
         def open(self):
-            return self.client.recv_int(4)
+            return self.client.recv_int32()
 
         open(self)
 
@@ -74,7 +74,7 @@ class Base(object):
 
     @command('LASER')
     def get_laser_current(self):
-            return (0.0001/21.) * self.client.recv_int(4)
+            return (0.0001/21.) * self.client.recv_uint32()
 
     @command('LASER')
     def get_laser_power(self):
@@ -84,7 +84,7 @@ class Base(object):
     def get_monitoring(self):
         return self.client.recv_tuple()
 
-    @command('LASER')
+    @command('LASER', 'f')
     def set_laser_current(self, current):
         """ current: The bias in mA """
         pass
@@ -109,7 +109,7 @@ class Base(object):
     @command('COMMON')
     def get_bitstream_id(self): pass
 
-    @command('COMMON')
+    @command('COMMON', 'u')
     def set_led(self, value): pass
 
     @command('COMMON')
