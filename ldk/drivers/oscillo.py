@@ -6,7 +6,7 @@ import math
 import numpy as np
 
 from .base import Base
-from koheron_tcp_client import command
+from koheron_tcp_client import command, write_buffer
 
 class Oscillo(Base):
     """ Driver for the oscillo bitstream
@@ -43,8 +43,29 @@ class Oscillo(Base):
     def open(self):
         return self.client.recv_int(4)
 
+    @command('OSCILLO')
+    def reset_acquisition(self): pass
+
+    @write_buffer('OSCILLO')
+    def set_dac_buffer(self, data): pass
+
+    def reset_dac(self):
+        @command('OSCILLO')
+        def reset(self): pass
+        reset(self)
+
+    def set_dac(self, warning=False, reset=False):
+        if warning:
+            if np.max(np.abs(self.dac)) >= 1:
+                print('WARNING : dac out of bounds')
+        self.set_dac_buffer(self.twoint14_to_uint32(self.dac))
+
+        if reset:
+            self.reset_acquisition()
+
     def reset(self):
         super(Oscillo, self).reset()
+        self.reset_dac()
         self.avg_on = False
         self.set_averaging(self.avg_on)
 

@@ -54,11 +54,32 @@ class Spectrum(Base):
         self.i = 0
 
     @command('SPECTRUM')
+    def reset_acquisition(self): pass
+
+    @write_buffer('SPECTRUM')
+    def set_dac_buffer(self, data): pass
+
+    def reset_dac(self):
+        @command('SPECTRUM')
+        def reset(self): pass
+        reset(self)
+
+    def set_dac(self, warning=False, reset=False):
+        if warning:
+            if np.max(np.abs(self.dac)) >= 1:
+                print('WARNING : dac out of bounds')
+        self.set_dac_buffer(self.twoint14_to_uint32(self.dac))
+
+        if reset:
+            self.reset_acquisition()
+
+    @command('SPECTRUM')
     def open(self):
         return self.client.recv_int32()
 
     def reset(self):
         super(Spectrum, self).reset()
+        self.reset_dac()
         self.avg_on = True
         self.set_averaging(self.avg_on)
 
