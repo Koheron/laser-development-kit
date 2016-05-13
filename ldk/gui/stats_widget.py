@@ -33,7 +33,7 @@ class StatsWidget(QtGui.QWidget):
             self.amplitude_rms_vec[i,:] = self.get_amplitude_rms(i)
 
         for i in range(self.n_channels+1):
-            self.header_labels.append(QtGui.QLabel('DAC '+str(i) if i != 0 else ''))
+            self.header_labels.append(QtGui.QLabel('ADC '+str(i) if i != 0 else ''))
             self.header_labels[i].setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
             self.mean_labels.append(QtGui.QLabel(''))
             self.mean_labels[i].setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
