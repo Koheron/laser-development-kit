@@ -12,6 +12,7 @@ class StatsWidget(QtGui.QWidget):
 
         self.layout = QtGui.QGridLayout()
 
+        self.header_labels = []
         self.mean_labels = []
         self.ampl_labels = []
         self.ampl_rms_labels = []
@@ -32,16 +33,21 @@ class StatsWidget(QtGui.QWidget):
             self.amplitude_rms_vec[i,:] = self.get_amplitude_rms(i)
 
         for i in range(self.n_channels+1):
+            self.header_labels.append(QtGui.QLabel('DAC '+str(i) if i != 0 else ''))
+            self.header_labels[i].setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
             self.mean_labels.append(QtGui.QLabel(''))
+            self.mean_labels[i].setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
             self.ampl_labels.append(QtGui.QLabel(''))
+            self.ampl_labels[i].setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
             self.ampl_rms_labels.append(QtGui.QLabel(''))
+            self.ampl_rms_labels[i].setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
 
         self.mean_labels[0].setText('Average')
         self.ampl_labels[0].setText('Peak-Peak')
         self.ampl_rms_labels[0].setText('RMS')
 
         for i in range(self.n_channels+1):
-            self.layout.addWidget(QtGui.QLabel('DAC '+str(i) if i != 0 else ''), 0, i)
+            self.layout.addWidget(self.header_labels[i], 0, i)
             self.layout.addWidget(self.mean_labels[i], 1, i)
             self.layout.addWidget(self.ampl_labels[i], 2, i)
             self.layout.addWidget(self.ampl_rms_labels[i], 3, i)
