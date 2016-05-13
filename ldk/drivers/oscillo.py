@@ -69,7 +69,7 @@ class Oscillo(Base):
         self.avg_on = False
         self.set_averaging(self.avg_on)
 
-    @command('OSCILLO', 'b')
+    @command('OSCILLO', '?')
     def set_averaging(self, avg_status):
         """ Enable/disable averaging
 
@@ -94,7 +94,7 @@ class Oscillo(Base):
         """ Read all the acquired channels """
         return self.client.recv_buffer(2 * self.wfm_size, data_type='float32')
 
-    @command('OSCILLO', 'uu')
+    @command('OSCILLO', 'II')
     def speed_test(self, n_outer_loop, n_inner_loop):
         """ Read all the acquired channels """
         return self.client.recv_buffer(n_outer_loop)

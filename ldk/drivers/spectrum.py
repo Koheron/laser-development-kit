@@ -83,11 +83,11 @@ class Spectrum(Base):
         self.avg_on = True
         self.set_averaging(self.avg_on)
 
-    @command('SPECTRUM', 'u')
+    @command('SPECTRUM', 'I')
     def set_scale_sch(self, scale_sch):
         pass
 
-    @command('SPECTRUM', 'uu')
+    @command('SPECTRUM', 'II')
     def set_offset(self, offset_real, offset_imag):
         pass
 
@@ -113,7 +113,6 @@ class Spectrum(Base):
     def get_spectrum(self):
         self.spectrum = self.client.recv_buffer(self.wfm_size,
                                                 data_type='float32')
-        #print self.get_peak_values()
 
         if self.fit_linewidth:
             idx = np.arange(2,200)
@@ -137,11 +136,11 @@ class Spectrum(Base):
     def get_peak_maximum(self):
         return self.client.recv_int(4, fmt='f')
 
-    @command('SPECTRUM', 'uu')
+    @command('SPECTRUM', 'II')
     def set_address_range(self, address_low, address_high):
         pass
 
-    @command('SPECTRUM', 'b')
+    @command('SPECTRUM', '?')
     def set_averaging(self, avg_status): pass
 
     # === Peak data stream
@@ -164,11 +163,8 @@ class Spectrum(Base):
         return self.client.recv_int(4)
 
 
-    @command('SPECTRUM', 'u')
+    @command('SPECTRUM', 'I')
     def fifo_start_acquisition(self, acq_period): pass
 
     @command('SPECTRUM')
     def fifo_stop_acquisition(self): pass
-
-    #def __del__(self):
-    #    self.fifo_stop_acquisition()

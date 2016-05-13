@@ -77,7 +77,7 @@ class Base(object):
     @command('COMMON')
     def get_bitstream_id(self): pass
 
-    @command('COMMON', 'u')
+    @command('COMMON', 'I')
     def set_led(self, value): pass
 
     @command('COMMON')
