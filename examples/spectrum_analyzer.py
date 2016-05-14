@@ -3,21 +3,19 @@
 
 import initExample
 import os
-from lase.core import KClient, ZynqSSH
-from lase.drivers import Spectrum
-
-# Modules to import
+import time
 import numpy as np
 import matplotlib
 matplotlib.use('GTKAgg')
 from matplotlib import pyplot as plt
-import time
+
+from ldk.core import KClient, ZynqSSH
+from ldk.drivers import Spectrum
 
 # Load the spectrum instrument
 host = os.getenv('HOST','192.168.1.100')
 password = os.getenv('PASSWORD','changeme')
 ssh = ZynqSSH(host, password)
-ssh.unzip_app()
 ssh.install_instrument('spectrum')
 
 client = KClient(host)

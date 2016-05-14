@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import initExample
-from lase.core import KClient, ZynqSSH
-from lase.drivers import Oscillo
-
 import os
 import time
 import numpy as np
 import matplotlib.pyplot as plt
+
+from ldk.core import KClient, ZynqSSH
+from ldk.drivers import Oscillo
 
 # Load the oscillo instrument
 host = os.getenv('HOST','192.168.1.100')
@@ -19,6 +19,10 @@ ssh.install_instrument('oscillo')
 
 def speed_test(host, n_pts=200):
     time_array = np.zeros(n_pts)
+    host = os.getenv('HOST','192.168.1.100')
+    password = os.getenv('PASSWORD','changeme')
+    ssh = ZynqSSH(host, password)
+    ssh.install_instrument('oscillo')
     client = KClient(host)
     driver = Oscillo(client)
     t0 = time.time()

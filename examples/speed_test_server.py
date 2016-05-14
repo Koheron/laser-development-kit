@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import initExample
-from lase.core import KClient
-from lase.drivers import Oscillo
+from ldk.core import KClient
+from ldk.drivers import Oscillo
 
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+
+# TODO
 
 def read(host, n_pts=1000, decim_factor = 1):
     data = np.zeros(2*8192/decim_factor)

@@ -11,7 +11,7 @@ if not hasattr(sys, 'frozen'):
     else:
         path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     path.rstrip(os.path.sep)
-    if 'lase' in os.listdir(path):
+    if 'ldk' in os.listdir(path):
         sys.path.insert(0, path)
         # Examples adjacent to lase (as in source tree)
     else:
