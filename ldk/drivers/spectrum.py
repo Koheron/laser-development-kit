@@ -126,11 +126,11 @@ class Spectrum(Base):
 
     @command('SPECTRUM')
     def get_num_average(self):
-        return self.client.recv_int(4)
+        return self.client.recv_uint32()
 
     @command('SPECTRUM')
     def get_peak_address(self):
-        return self.client.recv_int(4)
+        return self.client.recv_uint32()
 
     @command('SPECTRUM')
     def get_peak_maximum(self):
@@ -148,7 +148,7 @@ class Spectrum(Base):
     def get_peak_values(self):
         @command('SPECTRUM')
         def store_peak_fifo_data(self):
-            return self.client.recv_int(4)
+            return self.client.recv_uint32()
 
         self.peak_stream_length = store_peak_fifo_data(self)
 
@@ -160,7 +160,7 @@ class Spectrum(Base):
 
     @command('SPECTRUM')
     def get_peak_fifo_length(self):
-        return self.client.recv_int(4)
+        return self.client.recv_uint32()
 
 
     @command('SPECTRUM', 'I')

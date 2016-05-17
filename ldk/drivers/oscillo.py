@@ -41,7 +41,11 @@ class Oscillo(Base):
 
     @command('OSCILLO')
     def open(self):
-        return self.client.recv_int(4)
+        return self.client.recv_int32()
+
+
+    @command('OSCILLO','I')
+    def set_period(self, period): pass
 
     @command('OSCILLO')
     def reset_acquisition(self): pass
@@ -71,32 +75,19 @@ class Oscillo(Base):
 
     @command('OSCILLO', '?')
     def set_averaging(self, avg_status):
-        """ Enable/disable averaging
-
-        Args:
-            avg_status: Status ON or OFF
-        """
         pass
-
 
     @command('OSCILLO')
     def get_num_average(self):
-        n_avg = self.client.recv_int(4)
-
-        if math.isnan(n_avg):
-            print("Can't read laser power")
-            self.failed = True
-
+        n_avg = self.client.recv_uint32()
         return n_avg
 
     @command('OSCILLO')
     def read_all_channels(self):
-        """ Read all the acquired channels """
         return self.client.recv_buffer(2 * self.wfm_size, data_type='float32')
 
     @command('OSCILLO', 'II')
     def speed_test(self, n_outer_loop, n_inner_loop):
-        """ Read all the acquired channels """
         return self.client.recv_buffer(n_outer_loop)
 
     def get_adc(self):
