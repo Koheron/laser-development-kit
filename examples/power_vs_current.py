@@ -7,16 +7,14 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
-from ldk.core import KClient, ZynqSSH
+from ldk.core import HTTPInterface
 from ldk.drivers import Oscillo
+from koheron_tcp_client import KClient
 
+# Load the oscillo instrument
 host = os.getenv('HOST','192.168.1.100')
-password = os.getenv('PASSWORD','changeme')
-ssh = ZynqSSH(host, password)
-ssh.unzip_app()
-ssh.install_instrument('oscillo')
-
-# Connect to the board and initialize the driver
+http = HTTPInterface(host)
+http.install_instrument('oscillo')
 client = KClient(host)
 driver = Oscillo(client)
 

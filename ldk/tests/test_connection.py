@@ -3,7 +3,7 @@
 import os
 import pytest
 from koheron_tcp_client import KClient
-from ..core import ZynqSSH
+from ..core import HTTPInterface
 from ..drivers import Oscillo
 
 @pytest.mark.real
@@ -11,13 +11,12 @@ class TestConnection:
       
     def test(self):
         current_path = os.getcwd()
-        bitstreams_path = os.path.join(current_path,'bitstreams')
         host = os.getenv('HOST','192.168.1.100')
-        client = KClient(host)        
+        http = HTTPInterface(host)
+        http.install_instrument('oscillo')
+        client = KClient(host)  
         assert client.is_connected
-        ssh = ZynqSSH(host, 'koheron')
-        ssh.load_pl(os.path.join(bitstreams_path, 'oscillo.bit'))
-        driver = Oscillo(client, current_mode='pwm')
+        driver = Oscillo(client)
         current = 30 #mA
         driver.set_laser_current(current)
         driver.start_laser()

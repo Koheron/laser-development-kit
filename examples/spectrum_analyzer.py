@@ -9,17 +9,17 @@ import matplotlib
 matplotlib.use('GTKAgg')
 from matplotlib import pyplot as plt
 
-from ldk.core import KClient, ZynqSSH
+from ldk.core import HTTPInterface
 from ldk.drivers import Spectrum
+from koheron_tcp_client import KClient
 
 # Load the spectrum instrument
 host = os.getenv('HOST','192.168.1.100')
-password = os.getenv('PASSWORD','changeme')
-ssh = ZynqSSH(host, password)
-ssh.install_instrument('spectrum')
-
+http = HTTPInterface(host)
+http.install_instrument('spectrum')
 client = KClient(host)
 driver = Spectrum(client)
+
 
 # Enable laser
 driver.start_laser()
