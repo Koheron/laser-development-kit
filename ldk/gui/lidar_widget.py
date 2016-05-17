@@ -7,6 +7,7 @@ from .plot_widget import RollingPlot
 from .slider_widget import SliderWidget
 from PyQt4.QtCore import SIGNAL, pyqtSignal
 import numpy as np
+import collections
 
 class LidarWidget(QtGui.QWidget):
     def __init__(self, spectrum_widget):
@@ -16,11 +17,18 @@ class LidarWidget(QtGui.QWidget):
 
         self.layout = QtGui.QVBoxLayout()
         self.lidar_layout = QtGui.QVBoxLayout()
+        self.slider_layout = QtGui.QGridLayout()
 
-        self.slider_fmin = SliderWidget(name='Minimum frequency (MHz) : ',
-                                   max_slider=self.driver.sampling.fs/2*1e-6)
-        self.slider_fmax = SliderWidget(name='Maximum frequency (MHz) : ',
-                                   max_slider=self.driver.sampling.fs/2*1e-6)
+        self.slider_dict = collections.OrderedDict()
+        self.slider_dict['f_min'] = SliderWidget(name='Min frequency (MHz) : ',
+                                                 max_slider=self.driver.sampling.fs/2*1e-6)
+        self.slider_dict['f_max'] = SliderWidget(name='Max frequency (MHz) : ',
+                                                 max_slider=self.driver.sampling.fs/2*1e-6)
+
+        for i, (name, slider) in enumerate(self.slider_dict.items()):
+            self.slider_layout.addWidget(slider.label, i, 0)
+            self.slider_layout.addWidget(slider.spin, i, 1)
+            self.slider_layout.addWidget(slider.slider, i, 2)
 
         self.velocity_label = QtGui.QLabel()
         self.velocity_label.setText('Velocity (m/s) : '+"{:.2f}".format(0))
@@ -29,8 +37,7 @@ class LidarWidget(QtGui.QWidget):
         self.velocity_plot_button.setStyleSheet('QPushButton {color: blue;}')
         self.velocity_plot_button.setCheckable(True)
 
-        self.lidar_layout.addWidget(self.slider_fmin)
-        self.lidar_layout.addWidget(self.slider_fmax)
+        self.lidar_layout.addLayout(self.slider_layout)
         self.lidar_layout.addWidget(self.velocity_label)
         self.lidar_layout.addWidget(self.velocity_plot_button)
 
@@ -50,14 +57,12 @@ class LidarWidget(QtGui.QWidget):
 
         self.velocity = 0
 
-        self.connect(self.slider_fmin, SIGNAL("value(float)"), self.change_fmin)
-        self.connect(self.slider_fmax, SIGNAL("value(float)"), self.change_fmax)
+        self.connect(self.slider_dict['f_min'], SIGNAL("value(float)"), self.change_fmin)
+        self.connect(self.slider_dict['f_max'], SIGNAL("value(float)"), self.change_fmax)
 
     def update(self, spectrum):
         self.velocity = self.driver.get_peak_values() * self.driver.sampling.df * 1e-6 * 1.29
-        self.velocity_label.setText('Velocity (m/s) : '+"{:.2f}".
-                                    format(np.mean(self.velocity))
-                                   )
+        self.velocity_label.setText('Velocity (m/s) : '+"{:.2f}".format(np.mean(self.velocity))                                  )
         self.rolling_plot.update(self.velocity)
 
     def swap_plots(self):
