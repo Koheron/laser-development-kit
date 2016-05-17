@@ -81,8 +81,8 @@ class LidarWidget(QtGui.QWidget):
 
     def change_fmin(self, value):
         self.driver.set_address_range(np.uint32(value*1e6/self.driver.sampling.df), 
-                                      np.uint32(self.slider_fmax.value*1e6/self.driver.sampling.df))
+                                      np.uint32(self.slider_dict['f_max'].value*1e6/self.driver.sampling.df))
         
     def change_fmax(self, value):
-        self.driver.set_address_range(np.uint32(self.slider_fmin.value*1e6/self.driver.sampling.df), 
+        self.driver.set_address_range(np.uint32(self.slider_dict['f_min'].value*1e6/self.driver.sampling.df), 
                                       np.uint32(value*1e6/self.driver.sampling.df)) 
