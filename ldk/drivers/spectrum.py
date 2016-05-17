@@ -54,19 +54,40 @@ class Spectrum(Base):
         self.i = 0
 
     @command('SPECTRUM')
+    def reset_acquisition(self): pass
+
+    @write_buffer('SPECTRUM')
+    def set_dac_buffer(self, data): pass
+
+    def reset_dac(self):
+        @command('SPECTRUM')
+        def reset(self): pass
+        reset(self)
+
+    def set_dac(self, warning=False, reset=False):
+        if warning:
+            if np.max(np.abs(self.dac)) >= 1:
+                print('WARNING : dac out of bounds')
+        self.set_dac_buffer(self.twoint14_to_uint32(self.dac))
+
+        if reset:
+            self.reset_acquisition()
+
+    @command('SPECTRUM')
     def open(self):
-        return self.client.recv_int(4)
+        return self.client.recv_int32()
 
     def reset(self):
         super(Spectrum, self).reset()
+        self.reset_dac()
         self.avg_on = True
         self.set_averaging(self.avg_on)
 
-    @command('SPECTRUM')
+    @command('SPECTRUM', 'I')
     def set_scale_sch(self, scale_sch):
         pass
 
-    @command('SPECTRUM')
+    @command('SPECTRUM', 'II')
     def set_offset(self, offset_real, offset_imag):
         pass
 
@@ -92,7 +113,6 @@ class Spectrum(Base):
     def get_spectrum(self):
         self.spectrum = self.client.recv_buffer(self.wfm_size,
                                                 data_type='float32')
-        #print self.get_peak_values()
 
         if self.fit_linewidth:
             idx = np.arange(2,200)
@@ -106,38 +126,29 @@ class Spectrum(Base):
 
     @command('SPECTRUM')
     def get_num_average(self):
-        return self.client.recv_int(4)
+        return self.client.recv_uint32()
 
     @command('SPECTRUM')
     def get_peak_address(self):
-        return self.client.recv_int(4)
+        return self.client.recv_uint32()
 
     @command('SPECTRUM')
     def get_peak_maximum(self):
         return self.client.recv_int(4, fmt='f')
 
-    @command('SPECTRUM')
+    @command('SPECTRUM', 'II')
     def set_address_range(self, address_low, address_high):
         pass
 
-    def set_averaging(self, avg_status):
-        if avg_status:
-            status = 1;
-        else:
-            status = 0;
-
-        @command('SPECTRUM')
-        def set_averaging(self, status):
-            pass
-
-        set_averaging(self, status)
+    @command('SPECTRUM', '?')
+    def set_averaging(self, avg_status): pass
 
     # === Peak data stream
 
     def get_peak_values(self):
         @command('SPECTRUM')
         def store_peak_fifo_data(self):
-            return self.client.recv_int(4)
+            return self.client.recv_uint32()
 
         self.peak_stream_length = store_peak_fifo_data(self)
 
@@ -149,14 +160,11 @@ class Spectrum(Base):
 
     @command('SPECTRUM')
     def get_peak_fifo_length(self):
-        return self.client.recv_int(4)
+        return self.client.recv_uint32()
 
 
-    @command('SPECTRUM')
+    @command('SPECTRUM', 'I')
     def fifo_start_acquisition(self, acq_period): pass
 
     @command('SPECTRUM')
     def fifo_stop_acquisition(self): pass
-
-    #def __del__(self):
-    #    self.fifo_stop_acquisition()

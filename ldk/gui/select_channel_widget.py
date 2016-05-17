@@ -11,7 +11,7 @@ class SelectChannelWidget(QtGui.QWidget):
         self.layout = QtGui.QGridLayout()        
         
         self.adc_checkbox = []
-        self.add_checkbox(self.adc_checkbox, 0, 'ADC')
+        self.add_checkbox(self.adc_checkbox, 0, 'ADC', check_state=QtCore.Qt.Checked)
 
         self.dac_checkbox = []
         self.add_checkbox(self.dac_checkbox, 1, 'DAC')
@@ -21,10 +21,10 @@ class SelectChannelWidget(QtGui.QWidget):
         self.dac_checkbox[0].stateChanged.connect(lambda: self.show_dac(0))
         self.dac_checkbox[1].stateChanged.connect(lambda: self.show_dac(1))
 
-    def add_checkbox(self, checkbox, y_pos, text):
+    def add_checkbox(self, checkbox, y_pos, text, check_state=QtCore.Qt.Unchecked):
         for i in range(2):
             checkbox.append(QtGui.QCheckBox(text +' '+str(i+1), self))
-            checkbox[i].setCheckState(QtCore.Qt.Checked)
+            checkbox[i].setCheckState(check_state)
             self.layout.addWidget(checkbox[i], y_pos, i, QtCore.Qt.AlignCenter)
 
     def show_adc(self, index):

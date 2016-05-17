@@ -9,17 +9,12 @@ import matplotlib.pyplot as plt
 import csv
 import time
 from scipy import signal
-from ldk.core import KClient, ZynqSSH
+
+from utilities import load_instrument
 from ldk.drivers import Oscillo
 
-# Load the oscillo instrument
 host = os.getenv('HOST','192.168.1.100')
-password = os.getenv('PASSWORD','changeme')
-ssh = ZynqSSH(host, password)
-ssh.install_instrument('oscillo')
-
-# Connect to the board
-client = KClient(host)
+client = load_instrument(host, instrument='oscillo')
 driver = Oscillo(client)
 
 current = 30 #mA

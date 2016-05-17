@@ -4,7 +4,6 @@ from pyqtgraph.Qt import QtGui
 import numpy as np
 import time
 
-
 class MonitorWidget(QtGui.QWidget):
 
     def __init__(self, driver, laser_widget):
@@ -16,8 +15,7 @@ class MonitorWidget(QtGui.QWidget):
         self.laser_power = self.driver.get_laser_power()
 
         # Layout
-        self.layout = QtGui.QHBoxLayout()
-        self.frame_layout = QtGui.QHBoxLayout()
+        self.layout = QtGui.QGridLayout()
 
         # Close button
         self.close_button = QtGui.QPushButton('Home')
@@ -37,23 +35,15 @@ class MonitorWidget(QtGui.QWidget):
         self.laser_current_label.setText('Measured current (mA) : '+
             "{:.2f}".format(0.01 * self.driver.get_laser_current()))
 
-        self.layout.addWidget(self.close_button, 2)
-        self.layout.addStretch(1)
-        self.frame_layout.addWidget(self.frame_rate_label)
-        self.layout.addLayout(self.frame_layout, 1)
-        self.layout.addStretch(1)
-        self.layout.addWidget(self.laser_current_label, 1)
-        self.layout.addStretch(1)
-        self.layout.addWidget(self.laser_power_label, 1)
+        self.layout.addWidget(self.close_button, 0, 0)
+        self.layout.addWidget(self.frame_rate_label, 0, 1)
+        self.layout.addWidget(self.laser_current_label, 0, 2)
+        self.layout.addWidget(self.laser_power_label, 0, 3)
 
         # Connections
         self.close_button.clicked.connect(self.close_session)
 
     def update(self, frame_rate = 0):
-        # monitoring_data = self.driver.get_monitoring()
-        # self.laser_current_label.setText('Measured current (mA) : '+"{:.2f}".format(0.01 * monitoring_data[0]))
-        # self.laser_power_label.setText('Laser power (u.a.) : '+"{:.2f}".format(monitoring_data[1]))
-
         self.laser_current = 0.95 * self.laser_current + 0.05 * self.driver.get_laser_current()
         self.laser_power = 0.95 * self.laser_power + 0.05 * self.driver.get_laser_power()
 

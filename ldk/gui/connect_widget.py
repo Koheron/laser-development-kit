@@ -7,9 +7,8 @@ from PyQt4.QtGui import QApplication, QCursor
 import json
 import os
 import time
-from ..core import HTTPInterface, ZynqSSH
+from ..core import HTTPInterface
 from koheron_tcp_client import KClient
-
 
 class ConnectWidget(QtGui.QWidget):
     def __init__(self, parent, ip_path=None):
@@ -54,7 +53,6 @@ class ConnectWidget(QtGui.QWidget):
 
         self.set_host_from_text()
         self.http = HTTPInterface(self.host)
-        self.connect_type = None
 
         for i in range(4):
             def make_callback(idx):
@@ -141,13 +139,7 @@ class ConnectWidget(QtGui.QWidget):
         self.parent.update_buttons()
         
     def install_instrument(self, instrument_name):
-        if self.connect_type == 'HTTP':
-            self.http.install_instrument(instrument_name)
-        elif self.connect_type == 'SSH':
-            self.ssh.install_instrument(instrument_name)
-        else:
-            print('No connection available. Cannot install instrument.')
-            return
+        self.http.install_instrument(instrument_name)
         return self.connect_to_tcp_server()
         
     def connect_onclick(self):
@@ -160,25 +152,9 @@ class ConnectWidget(QtGui.QWidget):
             self.http.set_ip(self.host)
             self.local_instruments = self.http.get_local_instruments()
 			
-            if self.local_instruments: # HTTP connection available
-                self.connect_type = 'HTTP'
-            else: # Fallback to SSH
-                print('HTTP not available. Fallback to SSH.')
-                try:
-                    self.ssh = ZynqSSH(self.host, 'changeme')
-                except:
-                    self.connection_info.setText('Cannot open SSH connection\nCheck IP address')
-                    QApplication.restoreOverrideCursor()
-                    return
-				
-                self.connect_type = 'SSH'
-                self.ssh.unzip_app()
-                self.local_instruments = self.ssh.get_local_instruments()
-
-                if not self.local_instruments:			
-                    self.connection_info.setText('Cannot retrieve instruments')
-                    QApplication.restoreOverrideCursor()
-                    return
+            if not self.local_instruments:
+                print('HTTP not available')
+                return
 
             for i, app in enumerate(self.app_list):
                 try:

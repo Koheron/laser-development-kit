@@ -7,20 +7,15 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
-from ldk.core import KClient, ZynqSSH
+from utilities import load_instrument
 from ldk.drivers import Oscillo
 
-# Load the oscillo instrument
-
-
-def speed_test(host, n_pts=200):
+def speed_test(host, n_pts=1000):
     time_array = np.zeros(n_pts)
     host = os.getenv('HOST','192.168.1.100')
-    password = os.getenv('PASSWORD','changeme')
-    ssh = ZynqSSH(host, password)
-    ssh.install_instrument('oscillo')
-    client = KClient(host)
+    client = load_instrument(host, instrument='oscillo')
     driver = Oscillo(client)
+
     t0 = time.time()
     t_prev = t0
 
