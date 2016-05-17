@@ -22,3 +22,4 @@ if not hasattr(sys, 'frozen'):
             # If the example is already in an importable location, promote that location
                 sys.path.remove(p)
                 sys.path.insert(0, p)
+
