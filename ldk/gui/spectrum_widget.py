@@ -2,12 +2,14 @@
 
 import numpy as np
 from pyqtgraph.Qt import QtGui
+from PyQt4.QtCore import SIGNAL, pyqtSignal
 
 from .plot_widget import PlotWidget
 from .lase_widget import LaseWidget
 from .cursor_widget import CursorWidget
 from .noise_floor_widget import NoiseFloorWidget
 from .lidar_widget import LidarWidget
+from .slider_widget import SliderWidget
 
 from PyQt4.QtCore import pyqtSignal
 
@@ -31,6 +33,8 @@ class SpectrumWidget(LaseWidget):
         self.calibration_widget = NoiseFloorWidget(self.driver)
         self.lidar_widget = LidarWidget(self)
 
+        self.n_avg_min_slider = SliderWidget(name='Min. # of averages : ', max_slider=10000)
+
         # Average on 
         self.avg_on_button = QtGui.QPushButton()
         self.avg_on_button.setStyleSheet('QPushButton {color: red;}')
@@ -39,11 +43,13 @@ class SpectrumWidget(LaseWidget):
 
         self.control_layout.addWidget(self.cursor_widget)
         self.control_layout.addWidget(self.calibration_widget)
+        self.control_layout.addWidget(self.n_avg_min_slider)
         self.control_layout.addWidget(self.avg_on_button)
         self.control_layout.addWidget(self.lidar_widget)
         self.control_layout.addStretch(1)
 
         self.avg_on_button.clicked.connect(self.change_averaging)
+        self.connect(self.n_avg_min_slider, SIGNAL("value(float)"), self.change_n_avg_min)
 
         self.right_panel_widget.setLayout(self.control_layout)
         
@@ -84,4 +90,7 @@ class SpectrumWidget(LaseWidget):
             self.avg_on_button.setStyleSheet('QPushButton {color: green;}')
             self.avg_on_button.setText('Start averaging')
         self.driver.set_averaging(self.driver.avg_on)
+
+    def change_n_avg_min(self, value):
+        self.driver.set_n_avg_min(int(value))
 

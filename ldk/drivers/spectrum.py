@@ -45,6 +45,7 @@ class Spectrum(Base):
 
         self.set_demod()
         self.set_scale_sch(0)
+        self.set_n_avg_min(1000)
 
         self.reset()
 
@@ -55,6 +56,9 @@ class Spectrum(Base):
 
     @command('SPECTRUM')
     def reset_acquisition(self): pass
+
+    @command('SPECTRUM','I')
+    def set_n_avg_min(self, n_avg_min): pass
 
     @write_buffer('SPECTRUM')
     def set_dac_buffer(self, data): pass
