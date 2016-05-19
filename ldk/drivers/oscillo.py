@@ -37,12 +37,16 @@ class Oscillo(Base):
         self.optical_power = np.ones(2)
         self.power = np.ones(2)
 
+        self.set_n_avg_min(0)
+
         self.reset()
 
     @command('OSCILLO')
     def open(self):
         return self.client.recv_int32()
 
+    @command('OSCILLO','I')
+    def set_n_avg_min(self, n_avg_min): pass
 
     @command('OSCILLO','I')
     def set_period(self, period): pass
