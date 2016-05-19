@@ -97,8 +97,6 @@ class Oscillo(Base):
     def get_adc(self):
         data = self.read_all_channels()
 
-        print self.get_num_average()
-
         self.adc[0, :] = data[0:self.wfm_size]
         self.adc[1, :] = data[self.wfm_size:]
 

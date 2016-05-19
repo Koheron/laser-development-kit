@@ -33,7 +33,8 @@ class SpectrumWidget(LaseWidget):
         self.calibration_widget = NoiseFloorWidget(self.driver)
         self.lidar_widget = LidarWidget(self)
 
-        self.n_avg_min_slider = SliderWidget(name='Min. # of averages : ', max_slider=10000)
+        self.n_avg_min_slider = SliderWidget(name='Min. # of averages : ',
+                                             max_slider=2000, step=1)
 
         # Average on 
         self.avg_on_button = QtGui.QPushButton()

@@ -38,7 +38,8 @@ class MathWidget(QtGui.QWidget):
         self.n_avg_min_spin.setMinimum(0)
         self.n_avg_min_spin.setValue(0)
 
-        self.n_avg_min_slider = SliderWidget(name='Min. # of averages : ', max_slider=2000)
+        self.n_avg_min_slider = SliderWidget(name='Min. # of averages : ',
+                                             max_slider=1000, step=1)
 
         # Select avg
         self.n_avg_label = QtGui.QLabel()
