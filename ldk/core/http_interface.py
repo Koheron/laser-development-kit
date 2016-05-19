@@ -59,7 +59,20 @@ class HTTPInterface:
             print("[error] " + str(e))
             return {}
 
+    def get_current_instrument(self):
+        try:
+            r = requests.get(self.url + '/api/get_current_instrument')
+            return r.json()
+        except Exception as e: 
+            print("[error] " + str(e))
+            return {}
+
     def install_instrument(self, instrument_name):
+        # Don't restart the instrument if already lauched
+        current_instrument = self.get_current_instrument()
+        if current_instrument['name'] == instrument_name:
+            return
+
         instruments = self.get_local_instruments()
         if instruments:
             for name, shas in instruments.items():

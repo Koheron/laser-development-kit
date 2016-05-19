@@ -15,16 +15,15 @@ The last number of the board IP address is displayed on binary format on the 8 R
 3) Make sure the following packages are installed:
 * Python (2.7+ or 3.5+) with Numpy and Scipy
 * PyQtGraph (`pip install pyqtgraph`)
-* paramiko (`pip install paramiko`)
 * koheron-tcp-client (`pip install --upgrade koheron-tcp-client`)
 
-4) Run demo:
+4) Launch GUI:
 
 ```sh
 python interface.py
 ```
 
-You will need to enter the board IP adress and the root password (`changeme` by default) to connect to the board.
+You will need to enter the board IP adress to connect to the board.
 
 ![Demo](https://cloud.githubusercontent.com/assets/1735094/9765362/317e8212-5714-11e5-8480-ab3e311260c9.gif)
 

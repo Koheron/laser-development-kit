@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from pyqtgraph.Qt import QtGui, QtCore
+from PyQt4.QtCore import SIGNAL, pyqtSignal
+from .slider_widget import SliderWidget
 import numpy as np
 
 class MathWidget(QtGui.QWidget):
@@ -17,6 +19,7 @@ class MathWidget(QtGui.QWidget):
 
         self.layout = QtGui.QVBoxLayout()
         self.checkbox_layout = QtGui.QHBoxLayout()
+        self.n_avg_min_layout = QtGui.QHBoxLayout()
         self.avg_layout = QtGui.QHBoxLayout()
 
         # Correction
@@ -27,11 +30,22 @@ class MathWidget(QtGui.QWidget):
         self.fourier_checkbox = QtGui.QCheckBox('Fourier Transform', self)
         self.fourier_checkbox.setCheckState(QtCore.Qt.Unchecked)
 
+        # Select minimum number of averages 
+        self.n_avg_min_label = QtGui.QLabel()
+        self.n_avg_min_label.setText('Min. # of averages')
+        self.n_avg_min_spin = QtGui.QSpinBox()
+        self.n_avg_min_spin.setMaximum(10000)
+        self.n_avg_min_spin.setMinimum(0)
+        self.n_avg_min_spin.setValue(0)
+
+        self.n_avg_min_slider = SliderWidget(name='Min. # of averages : ',
+                                             max_slider=1000, step=1)
+
         # Select avg
         self.n_avg_label = QtGui.QLabel()
         self.n_avg_label.setText('N avg')
         self.avg_spin = QtGui.QSpinBox()
-        self.avg_spin.setMaximum(50)
+        self.avg_spin.setMaximum(1000)
         self.avg_spin.setMinimum(1)
         self.avg_spin.setValue(1)
 
@@ -42,6 +56,8 @@ class MathWidget(QtGui.QWidget):
         self.avg_on_button.setCheckable(True)
 
         # Set layout
+        self.layout.addWidget(self.n_avg_min_slider)
+
         self.layout.addWidget(self.avg_on_button)
         self.checkbox_layout.addStretch(1)
         self.checkbox_layout.addWidget(self.fourier_checkbox)
@@ -61,7 +77,7 @@ class MathWidget(QtGui.QWidget):
         self.avg_on_button.clicked.connect(self.change_averaging)
         self.fourier_checkbox.stateChanged.connect(self.fourier_connect)
         self.avg_spin.valueChanged.connect(self.avg_connect)
-
+        self.connect(self.n_avg_min_slider, SIGNAL("value(float)"), self.change_n_avg_min)
 
     def change_averaging(self):
         self.driver.avg_on = not self.driver.avg_on
@@ -93,3 +109,6 @@ class MathWidget(QtGui.QWidget):
 
     def avg_connect(self, val):
         self.n_avg_spectrum = self.avg_spin.value()
+
+    def change_n_avg_min(self, value):
+        self.driver.set_n_avg_min(int(value))

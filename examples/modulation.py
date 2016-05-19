@@ -7,17 +7,11 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
-from ldk.core import KClient, ZynqSSH
+from utilities import load_instrument
 from ldk.drivers import Oscillo
 
-# Load the oscillo instrument
 host = os.getenv('HOST','192.168.1.100')
-password = os.getenv('PASSWORD','changeme')
-ssh = ZynqSSH(host, password)
-ssh.install_instrument('oscillo')
-
-# Connect to the instrument
-client = KClient(host)
+client = load_instrument(host, instrument='oscillo')
 driver = Oscillo(client)
 
 # Enable laser

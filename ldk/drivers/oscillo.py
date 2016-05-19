@@ -6,7 +6,7 @@ import math
 import numpy as np
 
 from .base import Base
-from koheron_tcp_client import command
+from koheron_tcp_client import command, write_buffer
 
 class Oscillo(Base):
     """ Driver for the oscillo bitstream
@@ -37,48 +37,62 @@ class Oscillo(Base):
         self.optical_power = np.ones(2)
         self.power = np.ones(2)
 
+        self.set_n_avg_min(0)
+
         self.reset()
 
     @command('OSCILLO')
     def open(self):
-        return self.client.recv_int(4)
+        return self.client.recv_int32()
+
+    @command('OSCILLO','I')
+    def set_n_avg_min(self, n_avg_min): pass
+
+    @command('OSCILLO','I')
+    def set_period(self, period): pass
+
+    @command('OSCILLO')
+    def reset_acquisition(self): pass
+
+    @write_buffer('OSCILLO')
+    def set_dac_buffer(self, data): pass
+
+    def reset_dac(self):
+        @command('OSCILLO')
+        def reset(self): pass
+        reset(self)
+
+    def set_dac(self, warning=False, reset=False):
+        if warning:
+            if np.max(np.abs(self.dac)) >= 1:
+                print('WARNING : dac out of bounds')
+        self.set_dac_buffer(self.twoint14_to_uint32(self.dac))
+
+        if reset:
+            self.reset_acquisition()
 
     def reset(self):
         super(Oscillo, self).reset()
+        self.reset_dac()
         self.avg_on = False
         self.set_averaging(self.avg_on)
 
+    @command('OSCILLO', '?')
     def set_averaging(self, avg_status):
-        """ Enable/disable averaging
-
-        Args:
-            avg_status: Status ON or OFF
-        """
-        if avg_status:
-            status = 1;
-        else:
-            status = 0;
-
-        @command('OSCILLO')
-        def set_averaging(self, status):
-            pass
-
-        set_averaging(self, status)
+        pass
 
     @command('OSCILLO')
     def get_num_average(self):
-        n_avg = self.client.recv_int(4)
-
-        if math.isnan(n_avg):
-            print("Can't read laser power")
-            self.failed = True
-
+        n_avg = self.client.recv_uint32()
         return n_avg
 
     @command('OSCILLO')
     def read_all_channels(self):
-        """ Read all the acquired channels """
         return self.client.recv_buffer(2 * self.wfm_size, data_type='float32')
+
+    @command('OSCILLO', 'II')
+    def speed_test(self, n_outer_loop, n_inner_loop):
+        return self.client.recv_buffer(n_outer_loop)
 
     def get_adc(self):
         data = self.read_all_channels()
