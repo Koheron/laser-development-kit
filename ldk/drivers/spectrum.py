@@ -45,7 +45,7 @@ class Spectrum(Base):
 
         self.set_demod()
         self.set_scale_sch(0)
-        self.set_n_avg_min(1000)
+        self.set_n_avg_min(0)
 
         self.reset()
 

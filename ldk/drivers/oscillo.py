@@ -37,7 +37,7 @@ class Oscillo(Base):
         self.optical_power = np.ones(2)
         self.power = np.ones(2)
 
-        self.set_n_avg_min(200)
+        self.set_n_avg_min(0)
 
         self.reset()
 
