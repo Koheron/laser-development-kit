@@ -20,7 +20,11 @@ class SliderWidget(QtGui.QWidget):
         self.slider.setMaximum(self.max_slider/self.step)
         self.slider.setOrientation(QtCore.Qt.Horizontal)
         
-        self.spin = QtGui.QDoubleSpinBox()
+        if int(step) == step:
+            self.spin = QtGui.QSpinBox()
+        else:
+            self.spin = QtGui.QDoubleSpinBox()
+
         self.spin.setRange(self.min_slider,self.max_slider)
         self.spin.setSingleStep(self.step)
         self.spin.setFixedSize(QtCore.QSize(59, 26))
