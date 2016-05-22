@@ -118,5 +118,6 @@ methods = ('read_zeros',
 
 lineObjects = plt.plot(read(driver, methods, n_pts=1000))
 plt.legend(iter(lineObjects), methods)
+plt.ylabel('Time (s)')
 plt.show()
 
