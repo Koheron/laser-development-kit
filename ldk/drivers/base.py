@@ -32,7 +32,6 @@ class Base(object):
         @command('LASER')
         def open(self):
             return self.client.recv_int32()
-
         open(self)
 
     def update(self):
