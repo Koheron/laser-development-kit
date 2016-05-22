@@ -12,7 +12,6 @@ from ldk.drivers import Oscillo
 
 def speed_test(host, n_pts=1000):
     time_array = np.zeros(n_pts)
-    host = os.getenv('HOST','192.168.1.100')
     client = load_instrument(host, instrument='oscillo')
     driver = Oscillo(client)
 
@@ -20,16 +19,10 @@ def speed_test(host, n_pts=1000):
     t_prev = t0
 
     for i in range(n_pts):
-        for j in range(1):
-            #a = driver.get_laser_current()
-            driver.get_adc()
-            for k in range(10):
-               pass
-               #a = driver.get_laser_current()
-               #c = driver.get_laser_power()
+        driver.get_adc()
         t = time.time()
         time_array[i] = t - t_prev
-        #print host, i, time_array[i]
+        print host, i, time_array[i]
         t_prev = t
         
     print np.median(time_array)
@@ -37,10 +30,10 @@ def speed_test(host, n_pts=1000):
     plt.plot(time_array)
     driver.close()
 
-hosts = ['192.168.1.{0}'.format(i) for i in [2]]
+hosts = ['192.168.1.{0}'.format(i) for i in [12]]
 
 for host in hosts:
-    speed_test(host,n_pts=1000)
+    speed_test(host,n_pts=10000)
 
 plt.ylabel('Time (s)')
 plt.show()

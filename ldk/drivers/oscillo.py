@@ -16,7 +16,7 @@ class Oscillo(Base):
         self.wfm_size = 8192
         super(Oscillo, self).__init__(self.wfm_size, client)
 
-        if self.open() < 0:
+        if self.open_oscillo() < 0:
             print('Cannot open device OSCILLO')
     
         self.avg_on = False
@@ -40,6 +40,12 @@ class Oscillo(Base):
         self.set_n_avg_min(0)
 
         self.reset()
+
+    def open_oscillo(self):
+        @command('OSCILLO')
+        def open(self):
+            return self.client.recv_int32()
+        return open(self)
 
     @command('OSCILLO')
     def open(self):
@@ -89,10 +95,6 @@ class Oscillo(Base):
     @command('OSCILLO')
     def read_all_channels(self):
         return self.client.recv_buffer(2 * self.wfm_size, data_type='float32')
-
-    @command('OSCILLO', 'II')
-    def speed_test(self, n_outer_loop, n_inner_loop):
-        return self.client.recv_buffer(n_outer_loop)
 
     def get_adc(self):
         data = self.read_all_channels()

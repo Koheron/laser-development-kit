@@ -24,7 +24,7 @@ class Spectrum(Base):
         self.wfm_size = 4096
         super(Spectrum, self).__init__(self.wfm_size, client)
         
-        if self.open() < 0:
+        if self.open_spectrum() < 0:
             print('Cannot open device SPECTRUM')
 
         self.fifo_start_acquisition(1000)
@@ -76,10 +76,12 @@ class Spectrum(Base):
 
         if reset:
             self.reset_acquisition()
-
-    @command('SPECTRUM')
-    def open(self):
-        return self.client.recv_int32()
+    
+    def open_spectrum(self):
+        @command('SPECTRUM')
+        def open(self):
+            return self.client.recv_int32()
+        return open(self)
 
     def reset(self):
         super(Spectrum, self).reset()
