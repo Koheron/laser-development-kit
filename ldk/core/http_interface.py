@@ -19,13 +19,8 @@ class HTTPInterface:
         r = requests.get(self.url + '/api/board/ping')
         
     def deploy_local_instrument(self, name, version):
-        """ Deploy an instrument locally available
-
-            Args:
-                - name: Instrument name
-                - version: Instrument version
-
-            Return the deployement status: 0 on success, -1 else
+        """ Deploy a locally available instrument
+            Return 0 on success, -1 else
         """
         print('Deploying instrument {} with version {}'.format(name, version))
         try:
@@ -55,11 +50,12 @@ class HTTPInterface:
             print("[error] " + str(e))
             return {}
 
-    def install_instrument(self, instrument_name):
-        # Don't restart the instrument if already lauched
-        current_instrument = self.get_current_instrument()
-        if current_instrument['name'] == instrument_name:
-            return
+    def install_instrument(self, instrument_name, always_restart=False):
+        if not always_restart:
+            # Don't restart the instrument if already launched
+            current_instrument = self.get_current_instrument()
+            if current_instrument['name'] == instrument_name:
+                return
 
         instruments = self.get_local_instruments()
         if instruments:
