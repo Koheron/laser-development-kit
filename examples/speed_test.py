@@ -24,21 +24,22 @@ def speed_test(host, n_pts=1000):
 
     for i in range(n_pts):
         if cmd == 'get_adc':
-            driver.get_adc()
-            time.sleep(0.00001) # used to fix garbage collection pb
+        	driver.get_adc()
+        	time.sleep(0.00001) # used to fix garbage collection pb
         elif cmd == 'get_num_average':
-            driver.get_num_average()
+           driver.get_num_average()
         t = time.time()
         time_array[i] = t - t_prev
         print host, i, time_array[i]
         t_prev = t
         
-    print np.median(time_array)
+    print '{} us'.format(1E6 * np.median(time_array))
 
-    plt.plot(time_array)
+    plt.plot(1E6 * time_array)
     driver.close()
 
 speed_test(host,n_pts=10000)
 
-plt.ylabel('Time (s)')
+plt.xlabel('Trial #')
+plt.ylabel('Time (us)')
 plt.show()

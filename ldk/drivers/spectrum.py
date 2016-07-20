@@ -9,6 +9,7 @@ from koheron_tcp_client import command, write_buffer
 
 # Lorentzian fit
 from scipy.optimize import leastsq
+import matplotlib.pyplot as plt
 
 def lorentzian(f, p):
     return p[0]/(1+f**2/p[1])
@@ -53,6 +54,8 @@ class Spectrum(Base):
         self.fit_linewidth = False
         self.fit = np.zeros((2,100))
         self.i = 0
+
+        self.cnt = 0
 
     @command('SPECTRUM')
     def reset_acquisition(self): pass
@@ -117,11 +120,12 @@ class Spectrum(Base):
 
     @command('SPECTRUM')
     def get_spectrum(self):
+        self.cnt += 1
         self.spectrum = self.client.recv_buffer(self.wfm_size,
                                                 data_type='float32')
 
         if self.fit_linewidth:
-            idx = np.arange(2,200)
+            idx = np.arange(1000,4000)
             f = self.sampling.f_fft[idx]
             y = self.spectrum[idx]
             params_init = [2e17, 3e6**2]
@@ -129,6 +133,14 @@ class Spectrum(Base):
             self.fit[:, self.i % 100] = best_params[0]
             self.i += 1
             print("Linewidth = {0:2f} kHz".format(1e-3 * np.sqrt(np.mean(self.fit[1,:]))))
+
+            if self.cnt == 50:
+                spectrum_fit = lorentzian(self.sampling.f_fft, best_params[0])
+                freq = 1e-6 * np.fft.fftshift(self.sampling.f_fft)
+                psd = np.fft.fftshift(self.spectrum)
+                psd_fit = np.fft.fftshift(spectrum_fit)
+                plt.semilogy(freq, psd, freq, psd_fit)
+                plt.show()
 
     @command('SPECTRUM')
     def get_num_average(self):
