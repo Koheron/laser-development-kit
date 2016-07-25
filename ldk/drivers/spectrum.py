@@ -54,9 +54,6 @@ class Spectrum(Base):
         self.fit = np.zeros((2,100))
         self.i = 0
 
-    @command('SPECTRUM')
-    def reset_acquisition(self): pass
-
     @command('SPECTRUM','I')
     def set_n_avg_min(self, n_avg_min): 
         """ Set the minimum of averages that will be computed on the FPGA

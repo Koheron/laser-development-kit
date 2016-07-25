@@ -39,7 +39,6 @@ class Oscillo(Base):
         pass
 
     @command('OSCILLO','I')
-    # TODO set_adc_period()
     def set_avg_period(self, avg_period):
         """ Set the period of the averaging module and reset the module.
         """
