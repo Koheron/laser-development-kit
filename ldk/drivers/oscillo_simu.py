@@ -17,14 +17,6 @@ class OscilloSimu(BaseSimu):
         self.adc = np.zeros((2, self.sampling.n))
         self.spectrum = np.zeros((2, self.sampling.n / 2))
         self.avg_spectrum = np.zeros((2, self.sampling.n / 2))
-        self.ideal_amplitude_waveform = np.zeros(self.sampling.n)
-        sigma_freq = 5e6  # Hz
-        self.gaussian_filter = 1.0 * np.exp(-1.0 *
-                                            self.sampling.f_fft ** 2
-                                            / (2*sigma_freq**2))
-
-        self.amplitude_transfer_function = np.ones(self.sampling.n,
-                                                   dtype=np.dtype('complex128'))
 
         # Calibration
         self.adc_offset = np.zeros(2)
@@ -61,18 +53,6 @@ class OscilloSimu(BaseSimu):
         self.adc[1, :] -= self.adc_offset[1]
         self.adc[0, :] *= self.optical_power[0] / self.power[0]
         self.adc[1, :] *= self.optical_power[1] / self.power[1]
-
-    def get_correction(self):
-        tmp = np.fft.fft(self.amplitude_error) /\
-              self.amplitude_transfer_function
-        tmp[0] = 0
-        tmp = self.gaussian_filter * tmp
-        return np.real(np.fft.ifft(tmp))
-
-    def optimize_amplitude(self, alpha=1, channel=0):
-        self.amplitude_error = (self.adc[0, :] - np.mean(self.adc[0, :])) -\
-                               self.ideal_amplitude_waveform
-        self.dac[channel, :] -= alpha*self.get_correction()
 
     def get_spectrum(self):
         fft_adc = np.fft.fft(self.adc, axis=1)
