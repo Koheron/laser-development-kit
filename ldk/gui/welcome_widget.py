@@ -14,8 +14,8 @@ else:
     import urllib
 # http://stackoverflow.com/questions/17960942/attributeerror-module-object-has-no-attribute-urlretrieve
 
+
 from ..drivers import Oscillo, Spectrum
-from ..drivers import OscilloSimu, SpectrumSimu
 from .oscillo_widget import OscilloWidget
 from .spectrum_widget import SpectrumWidget
 from .connect_widget import ConnectWidget
@@ -48,12 +48,13 @@ class WelcomeWidget(QtGui.QWidget):
         self.drivers_layout = QtGui.QVBoxLayout()
 
         self.app_buttons = []
-        for i, app in enumerate(self.app_list):
-            self.app_buttons.append(self.set_button(app.capitalize() +' (Simu)'))
+        for i, app in enumerate(self.instrument_list):
+            self.app_buttons.append(self.set_button(''))
             self.drivers_layout.addWidget(self.app_buttons[i], 1, QtCore.Qt.AlignCenter)
             def make_callback(i):
                 return lambda : self.app_onclick(i)
             self.app_buttons[i].clicked.connect(make_callback(i))
+        self.update_buttons()
 
         # Left Layout
         self.view = QWebView()
@@ -86,18 +87,16 @@ class WelcomeWidget(QtGui.QWidget):
     def update_buttons(self):
         for i, button in enumerate(self.app_buttons):
             button.setText(self.parent.app_list[i].capitalize() + 
-                           (' (Simu)' if (self.instrument_list[i] == '') else ''))
+                           (' not available ' if (self.instrument_list[i] == '') else ''))
 
     def app_onclick(self, app_idx):
         app = self.app_list[app_idx]
         instrument = self.instrument_list[app_idx]
         if instrument != '':
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-            self.connect_widget.install_instrument(instrument)
+            self.connect_widget.load_instrument(instrument)
             driver = globals()[app.capitalize()](self.connect_widget.client)
             driver.init()
             QApplication.restoreOverrideCursor()
-        else:
-            driver = globals()[app.capitalize()+'Simu']()
-        index = self.parent.stacked_widget.addWidget(globals()[app.capitalize()+'Widget'](driver, self.parent))
-        self.parent.stacked_widget.setCurrentIndex(index)
+            index = self.parent.stacked_widget.addWidget(globals()[app.capitalize()+'Widget'](driver, self.parent))
+            self.parent.stacked_widget.setCurrentIndex(index)
