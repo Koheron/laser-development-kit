@@ -6,9 +6,9 @@ from PyQt4.QtGui import QApplication, QCursor
 
 import json
 import os
-import time
-from ..core import HTTPInterface
+import requests
 from koheron_tcp_client import KClient
+from ..utilities import load_instrument
 
 class ConnectWidget(QtGui.QWidget):
     def __init__(self, parent, ip_path=None):
@@ -38,97 +38,70 @@ class ConnectWidget(QtGui.QWidget):
         self.lay.addLayout(self.lay_connection)
         self.setLayout(self.lay)
 
+        self.retrieve_ip_address()
+
+        for i, line in enumerate(self.lines):
+            def make_callback(idx):
+                return lambda : self.ip_changed(idx)
+            line.textChanged.connect(make_callback(i))
+
+        self.connect_button.clicked.connect(self.connect_onclick)
+
+    def retrieve_ip_address(self):
         if not os.path.exists(self.ip_path):
             os.makedirs(self.ip_path)
 
         if os.path.exists(self.ip_path):
             try:
-                with open(os.path.join(self.ip_path, 'ip_address' + '.json')) as fp:
-                    json_data = fp.read()
-                    parameters = json.loads(json_data)
-                    IP = parameters['TCP_IP']
+                fp = open(os.path.join(self.ip_path, 'ip_address' + '.json'))
+                parameters = json.loads(fp.read())
+                ip = parameters['ip_address']
             except:
-                IP = ['192', '168', '1', '1']
-            self.set_text_from_ip(IP)
+                ip = '192.168.1.100'
+            self.set_text_from_ip(ip)
 
-        self.set_host_from_text()
-        self.http = HTTPInterface(self.host)
+        self.host = self.get_host_from_text()      
 
-        for i in range(4):
-            def make_callback(idx):
-                return lambda : self.ip_changed(idx)
-            self.line[i].textChanged.connect(make_callback(i))
 
-        self.connect_button.clicked.connect(self.connect_onclick)
-        
     def create_ip_layout(self):
         self.lay_ip = QtGui.QHBoxLayout()
-        self.line = []
-        for i in range(4):
-            self.line.append(QtGui.QLineEdit())
-            self.line[i].setFixedWidth(40)
-            self.line[i].setAlignment(QtCore.Qt.AlignCenter)
 
-        self.point = []
+        self.lines = []
+        for i in range(4):
+            self.lines.append(QtGui.QLineEdit())
+            self.lines[i].setFixedWidth(40)
+            self.lines[i].setAlignment(QtCore.Qt.AlignCenter)
+
+        self.points = []
         for i in range(3):
-            self.point.append(QtGui.QLabel('.'))
+            self.points.append(QtGui.QLabel('.'))
 
         self.lay_ip.addWidget(QtGui.QLabel('IP address: '))
-
         for i in range(3):
-            self.lay_ip.addWidget(self.line[i])
-            self.lay_ip.addWidget(self.point[i])
-        self.lay_ip.addWidget(self.line[3])
+            self.lay_ip.addWidget(self.lines[i])
+            self.lay_ip.addWidget(self.points[i])
+        self.lay_ip.addWidget(self.lines[3])
 
     def set_text_from_ip(self, ip):
-        for i in range(4):
-            self.line[i].setText(str(ip[i]))
+        map(lambda line, num: line.setText(num), self.lines, ip.split('.'))
 
-    def set_host_from_text(self):
-        self.host = ''
-        for i in range(3):
-            self.host += self.line[i].text() + '.'
-        self.host += self.line[3].text()
-        self.host = str(self.host)
-
-    def get_ip_from_text(self):
-        ip = []
-        for i in range(4):
-            ip.append(str(self.line[i].text()))
-        return ip
+    def get_host_from_text(self):
+        return '.'.join(map(lambda x:str(x.text()), self.lines))
 
     def ip_changed(self, index):
-        self.set_host_from_text()
+        self.host = self.get_host_from_text()
         parameters = {}
-        parameters['TCP_IP'] = self.get_ip_from_text()
+        parameters['ip_address'] = self.host
         if not os.path.exists(self.ip_path):
             os.makedirs(self.ip_path)
         with open(os.path.join(self.ip_path, 'ip_address' + '.json'), 'w') as fp:
             json.dump(parameters, fp)
-        if self.line[index].cursorPosition() == 3 and index < 3:
-            self.line[index+1].setFocus()
-            self.line[index+1].selectAll()
+        if self.lines[index].cursorPosition() == 3 and index < 3:
+            self.lines[index+1].setFocus()
+            self.lines[index+1].selectAll()
 
-    def connect_to_tcp_server(self):
-        if hasattr(self, 'client'):
-            self.client.__del__()
-
-        self.client = KClient(self.host, verbose=False)
-        n_steps_timeout = 50
-        cnt_timeout = 0
-
-        while not self.client.is_connected:
-            time.sleep(0.015)
-            cnt_timeout += 1
-
-            if cnt_timeout > n_steps_timeout:
-                self.connection_info.setText(
-                    'Failed to connect to host\nCheck IP address')
-                self.disconnect()
-                QApplication.restoreOverrideCursor()
-                return False
-        QApplication.restoreOverrideCursor()
-        return True
+    def load_instrument(self, instrument_name):
+        self.client = load_instrument(self.host, instrument_name)
 
     def disconnect(self):
         self.is_connected = False
@@ -137,45 +110,32 @@ class ConnectWidget(QtGui.QWidget):
         self.local_instruments = {}
         self.parent.instrument_list = [''] * len(self.app_list)
         self.parent.update_buttons()
-        
-    def install_instrument(self, instrument_name):
-        self.http.install_instrument(instrument_name)
-        return self.connect_to_tcp_server()
-        
+        self.connection_info.setText('Disconnected')
+
+    def connect(self):
+        QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+        self.connection_info.setText('Connecting to ' + self.host + ' ...')
+        self.local_instruments = requests.get('http://{}/api/instruments/local'.format(self.host)).json()
+        for i, app in enumerate(self.app_list):
+            try:
+               instrument = next(instr for instr in self.local_instruments if app in instr)
+               self.parent.instrument_list[i] = instrument
+            except StopIteration:
+               self.parent.instrument_list[i] = ''
+
+        # Load the first instrument available by default 
+        instrument_name = (next(instr for instr in self.parent.instrument_list if instr))
+        self.load_instrument(instrument_name)
+
+        self.connection_info.setText('Connected to ' + self.host)
+        self.is_connected = True
+        self.connect_button.setStyleSheet('QPushButton {color: red;}')
+        self.connect_button.setText('Disconnect')
+        self.parent.update_buttons()
+        QApplication.restoreOverrideCursor()
+
     def connect_onclick(self):
-        if not self.is_connected: # Connect
-            QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-            self.connection_info.setText('Disconnected')
+        if self.is_connected:
             self.disconnect()
-            self.connection_info.setText('Connecting to ' + self.host + ' ...')
-        
-            self.http.set_ip(self.host)
-            self.local_instruments = self.http.get_local_instruments()
-			
-            if not self.local_instruments:
-                print('HTTP not available')
-                return
-
-            for i, app in enumerate(self.app_list):
-                try:
-                   instrument = next(instr for instr in self.local_instruments if app in instr)
-                   self.parent.instrument_list[i] = instrument
-                except StopIteration:
-                   self.parent.instrument_list[i] = ''
-
-            # We load by default the first instrument available
-            # and connect with tcp-server to check the connection
-            if not self.install_instrument(next(instr for instr in self.parent.instrument_list if instr)):
-                return
-            
-            self.connection_info.setText('Connected to ' + self.host)
-            self.is_connected = True
-            self.connect_button.setStyleSheet('QPushButton {color: red;}')
-            self.connect_button.setText('Disconnect')
-            self.parent.update_buttons()
-            QApplication.restoreOverrideCursor()
-        else: # Disconnect
-            if hasattr(self, 'client'):
-                self.client.__del__()
-            self.connection_info.setText('Disconnected')
-            self.disconnect()
+        else:
+            self.connect()

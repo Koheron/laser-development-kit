@@ -19,7 +19,6 @@ class OscilloWidget(BaseWidget):
 
         self.driver = oscillo
         self.avg_on = False
-        self.counter = 0
         self.data_path = parent.data_path
 
         # Layouts
@@ -52,7 +51,7 @@ class OscilloWidget(BaseWidget):
         self.math_box.setLayout(self.math_widget.layout)
 
         # Save
-        self.save_widget = SaveWidget(self)
+        self.save_widget = SaveWidget('oscillo', self)
         self.save_box = QtGui.QGroupBox("Save")
         self.save_box.setLayout(self.save_widget.layout)
 
@@ -98,22 +97,10 @@ class OscilloWidget(BaseWidget):
         super(OscilloWidget, self).update()
         self.driver.get_adc()
         self.stats_widget.update()
-
-        if (self.counter == 20):
-            if self.math_widget.correction is True:
-                self.driver.optimize_amplitude(channel=1)
-                self.driver.set_dac(warning=True)
-                self.refresh_dac()
-            self.counter = 0
-        self.counter += 1
-
         if self.math_widget.fourier:
             self.update_fourier()
         else:
             self.refresh_adc()
-        if self.driver.failed:
-            print("An error occured during update\nLeave Oscillo")
-            self.monitor_widget.close_session()
 
     def update_fourier(self):
         self.driver.get_avg_spectrum(self.math_widget.n_avg_spectrum)
@@ -121,18 +108,6 @@ class OscilloWidget(BaseWidget):
             self.plot_widget.dataItem[i].setData(
                     1e-6 * self.driver.sampling.f_fft[1: self.driver.sampling.n / 2],
                     10 * np.log10((self.driver.avg_spectrum[i, 1:]) ** 2))
-
-    def update_dac(self, index):
-        if self.dac_wid[index].dac_on_off_button.text() == 'OFF':
-            if not self.math_widget.correction:
-                self.driver.dac[index, :] = self.dac_wid[index].data
-            else:
-                self.driver.ideal_amplitude_waveform \
-                    = 1167 * self.driver.optical_power[0] / self.driver.power[0] * self.dac_wid[1].data
-                self.driver.amplitude_error = self.driver.ideal_amplitude_waveform
-                self.driver.dac[1, :] = self.driver.get_correction()
-            self.driver.set_dac()
-            self.refresh_dac()
 
     def refresh_adc(self):
         for i in range(2):

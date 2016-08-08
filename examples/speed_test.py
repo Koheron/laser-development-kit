@@ -7,7 +7,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
-from utilities import load_instrument
+from ldk.utilities import load_instrument
 from ldk.drivers import Oscillo
 
 host = os.getenv('HOST','192.168.1.100')
@@ -27,7 +27,7 @@ def speed_test(host, n_pts=1000):
         	driver.get_adc()
         	time.sleep(0.00001) # used to fix garbage collection pb
         elif cmd == 'get_num_average':
-           driver.get_num_average()
+            driver.get_num_average(0)
         t = time.time()
         time_array[i] = t - t_prev
         print host, i, time_array[i]

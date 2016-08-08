@@ -25,9 +25,6 @@ class Spectrum(Base):
         self.wfm_size = 4096
         super(Spectrum, self).__init__(self.wfm_size, client)
         
-        if self.open_spectrum() < 0:
-            print('Cannot open device SPECTRUM')
-
         self.fifo_start_acquisition(1000)
 
         self.avg_on = True
@@ -55,37 +52,26 @@ class Spectrum(Base):
         self.fit = np.zeros((2,100))
         self.i = 0
 
-        self.cnt = 0
-
-    @command('SPECTRUM')
-    def reset_acquisition(self): pass
-
     @command('SPECTRUM','I')
-    def set_n_avg_min(self, n_avg_min): pass
-
-    @write_buffer('SPECTRUM')
-    def set_dac_buffer(self, data): pass
+    def set_n_avg_min(self, n_avg_min): 
+        """ Set the minimum of averages that will be computed on the FPGA
+        The effective number of averages is >= n_avg_min.
+        """
+        pass
 
     def reset_dac(self):
         @command('SPECTRUM')
         def reset(self): pass
         reset(self)
 
-    def set_dac(self, warning=False, reset=False):
-        if warning:
-            if np.max(np.abs(self.dac)) >= 1:
-                print('WARNING : dac out of bounds')
-        self.set_dac_buffer(self.twoint14_to_uint32(self.dac))
-
-        if reset:
-            self.reset_acquisition()
+    def set_dac(self, channels=[0,1]):
+        @command('SPECTRUM','IA')
+        def set_dac_buffer(self, channel, data):
+            pass
+        for channel in channels:
+            data = np.mod(np.floor(8192 * self.dac[channel,:]) + 8192, 16384) + 8192
+            set_dac_buffer(self, channel, data[::2] + data[1::2] * 65536)
     
-    def open_spectrum(self):
-        @command('SPECTRUM')
-        def open(self):
-            return self.client.recv_int32()
-        return open(self)
-
     def reset(self):
         super(Spectrum, self).reset()
         self.reset_dac()
@@ -120,9 +106,7 @@ class Spectrum(Base):
 
     @command('SPECTRUM')
     def get_spectrum(self):
-        self.cnt += 1
-        self.spectrum = self.client.recv_buffer(self.wfm_size,
-                                                data_type='float32')
+        self.spectrum = self.client.recv_buffer(self.wfm_size, data_type='float32')
 
         if self.fit_linewidth:
             idx = np.arange(1000,4000)
