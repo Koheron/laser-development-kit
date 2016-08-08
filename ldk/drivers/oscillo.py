@@ -62,8 +62,8 @@ class Oscillo(Base):
         """ self.set_averaging(True) enables averaging. """
         pass
 
-    @command('OSCILLO')
-    def get_num_average(self):
+    @command('OSCILLO', 'I')
+    def get_num_average(self, channel):
         """ Get the number of averages corresponding to the last acquisition. """
         n_avg = self.client.recv_uint32()
         return n_avg
