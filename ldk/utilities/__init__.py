@@ -8,7 +8,7 @@ from koheron_tcp_client import KClient
 def install_instrument(host, instrument_name, always_restart=False):
     if not always_restart:
         # Don't restart the instrument if already launched
-        current_instrument = requests.get('http://{}/api/instruments/current'.format(host)).json()
+        current_instrument = requests.get('http://{}/api/instruments/live'.format(host)).json()
         if current_instrument['name'] == instrument_name:
             return
 
