@@ -24,9 +24,6 @@ class Spectrum(Base):
         self.wfm_size = 4096
         super(Spectrum, self).__init__(self.wfm_size, client)
         
-        if self.open_spectrum() < 0:
-            print('Cannot open device SPECTRUM')
-
         self.fifo_start_acquisition(1000)
 
         self.avg_on = True
@@ -67,19 +64,13 @@ class Spectrum(Base):
         reset(self)
 
     def set_dac(self, channels=[0,1]):
-        @write_buffer('SPECTRUM','I')
-        def set_dac_buffer(self, data, channel):
+        @command('SPECTRUM','IA')
+        def set_dac_buffer(self, channel, data):
             pass
         for channel in channels:
             data = np.mod(np.floor(8192 * self.dac[channel,:]) + 8192, 16384) + 8192
-            set_dac_buffer(self, data[::2] + data[1::2] * 65536, channel)
+            set_dac_buffer(self, channel, data[::2] + data[1::2] * 65536)
     
-    def open_spectrum(self):
-        @command('SPECTRUM')
-        def open(self):
-            return self.client.recv_int32()
-        return open(self)
-
     def reset(self):
         super(Spectrum, self).reset()
         self.reset_dac()

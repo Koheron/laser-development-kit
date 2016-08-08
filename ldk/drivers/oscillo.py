@@ -50,12 +50,12 @@ class Oscillo(Base):
         (dac0 or dac1) with the array stored in self.dac[channel,:].
         ex: self.set_dac(channel=[0])
         """
-        @write_buffer('OSCILLO','I')
-        def set_dac_buffer(self, data, channel):
+        @command('OSCILLO','IA')
+        def set_dac_buffer(self, channel, arr):
             pass
         for channel in channels:
             data = np.uint32(np.mod(np.floor(8192 * self.dac[channel,:]) + 8192, 16384) + 8192)
-            set_dac_buffer(self, data[::2] + data[1::2] * 65536, channel)
+            set_dac_buffer(self, channel, data[::2] + data[1::2] * 65536)
 
     @command('OSCILLO', '?')
     def set_averaging(self, avg_status):
