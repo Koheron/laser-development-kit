@@ -69,9 +69,9 @@ class Spectrum(Base):
         def set_dac_buffer(self, channel, data):
             pass
         for channel in channels:
-            data = np.mod(np.floor(8192 * self.dac[channel,:]) + 8192, 16384) + 8192
+            data = np.uint32(np.mod(np.floor(8192 * self.dac[channel,:]) + 8192, 16384) + 8192)
             set_dac_buffer(self, channel, data[::2] + data[1::2] * 65536)
-    
+
     def reset(self):
         super(Spectrum, self).reset()
         self.reset_dac()
@@ -99,7 +99,7 @@ class Spectrum(Base):
             if np.max(np.abs(self.demod)) >= 1:
                 print('WARNING : demod out of bounds')
         self.set_demod_buffer(self.twoint14_to_uint32(self.demod))
-        
+
     def calibrate(self, noise_floor):
         self.noise_floor = noise_floor
         self.set_noise_floor_buffer(self.noise_floor)
@@ -163,7 +163,6 @@ class Spectrum(Base):
     @command('SPECTRUM')
     def get_peak_fifo_length(self):
         return self.client.recv_uint32()
-
 
     @command('SPECTRUM', 'I')
     def fifo_start_acquisition(self, acq_period): pass
