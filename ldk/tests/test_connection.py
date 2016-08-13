@@ -3,7 +3,7 @@
 import os
 import pytest
 from koheron_tcp_client import KClient
-from ..core import HTTPInterface
+from ..utilities import HTTPInterface
 from ..drivers import Oscillo
 
 @pytest.mark.real
