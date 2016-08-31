@@ -5,14 +5,14 @@ import numpy as np
 import math
 
 from ..signal import Sampling
-from koheron_tcp_client import command, write_buffer
+from koheron import command, write_buffer
 
 class Base(object):
     """ This class is used as a base class for `Oscillo` and `Spectrum`
 
     args:
         wfm_size: number of points in the waveform.
-        client : instance of KClient class, used to connect to the board.
+        client : instance of KoheronClient class, used to connect to the board.
     """
 
     def __init__(self, wfm_size, client):
@@ -35,41 +35,41 @@ class Base(object):
         self.reset_laser()
 
     def reset_laser(self):
-        @command('LASER')
+        @command('Laser')
         def reset(self): pass
 
         reset(self)
 
-    @command('LASER')
+    @command('Laser')
     def start_laser(self): pass
 
-    @command('LASER')
+    @command('Laser')
     def stop_laser(self): pass
 
-    @command('LASER')
+    @command('Laser')
     def get_laser_current(self):
         return (0.0001/21.) * self.client.recv_uint32()
 
-    @command('LASER')
+    @command('Laser')
     def get_laser_power(self):
         return self.client.recv_uint32()
 
-    @command('LASER')
+    @command('Laser')
     def get_monitoring(self):
         return self.client.recv_tuple()
 
-    @command('LASER', 'f')
+    @command('Laser', 'f')
     def set_laser_current(self, current):
         """ current: The bias in mA """
         pass
 
-    @command('COMMON')
+    @command('Common')
     def get_bitstream_id(self): pass
 
-    @command('COMMON', 'I')
+    @command('Common', 'I')
     def set_led(self, value): pass
 
-    @command('COMMON')
+    @command('Common')
     def init(self): pass
 
     def twoint14_to_uint32(self, data):
