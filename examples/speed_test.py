@@ -13,7 +13,7 @@ from ldk.drivers import Oscillo
 host = os.getenv('HOST','192.168.1.100')
 cmd = os.getenv('CMD','get_adc')
 
-def speed_test(host, n_pts=100):
+def speed_test(host, n_pts=1000):
     time_array = np.zeros(n_pts)
     client = load_instrument(host, instrument='oscillo')
     driver = Oscillo(client)
@@ -25,7 +25,6 @@ def speed_test(host, n_pts=100):
     for i in range(n_pts):
         if cmd == 'get_adc':
         	driver.get_adc()
-        	time.sleep(0.00001) # used to fix garbage collection pb
         elif cmd == 'get_num_average':
             driver.get_num_average(0)
         t = time.time()
@@ -34,7 +33,7 @@ def speed_test(host, n_pts=100):
         t_prev = t
     
     print '{} us'.format(1E6 * np.median(time_array))
-    assert(np.median(time_array) < 0.0025)
+    assert(np.median(time_array) < 0.003)
     return time_array
 
 plt.plot(1E6 * speed_test(host))

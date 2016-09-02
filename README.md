@@ -1,9 +1,5 @@
 # laser-development-kit
 
-[![Circle CI](https://circleci.com/gh/Koheron/laser-development-kit.svg?style=shield)](https://circleci.com/gh/Koheron/laser-development-kit) [![Code Climate](https://codeclimate.com/github/Koheron/laser-development-kit/badges/gpa.svg)](https://codeclimate.com/github/Koheron/laser-development-kit)
-
-#### `Python API for Koheron Laser Development Kit`
-
 ## [Get started](https://www.koheron.com/products/laser-development-kit/getting-started/) 
 
 1) Get [latest release](https://github.com/Koheron/zynq-sdk/releases/) of SD card image.
@@ -14,10 +10,8 @@ The last number of the board IP address is displayed on binary format on the 8 R
 
 3) Make sure the following packages are installed:
 * Python (2.7+ or 3.5+) with Numpy and Scipy
-* Qt (`apt-get install python-qt4`)
 * PyQtGraph (`pip install pyqtgraph`)
-* requests (`pip install requests`)
-* koheron-tcp-client (`pip install koheron`)
+* koheron-python (`pip install koheron`)
 
 4) Launch GUI:
 

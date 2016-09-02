@@ -5,7 +5,7 @@ import time
 import numpy as np
 
 from .base import Base
-from koheron import command, write_buffer
+from koheron import command
 
 # Lorentzian fit
 from scipy.optimize import leastsq

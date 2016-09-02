@@ -6,7 +6,7 @@ import math
 import numpy as np
 
 from .base import Base
-from koheron import command, write_buffer
+from koheron import command
 
 class Oscillo(Base):
     """ Driver for the oscillo bitstream
@@ -28,7 +28,6 @@ class Oscillo(Base):
         """ Select the periods played on each address generator
         ex: self.set_dac_periods(8192, 4096)
         """
-        # TODO
         pass
 
     @command()
@@ -100,7 +99,6 @@ class Oscillo(Base):
         pass
 
     @command()
-    # TODO always_update(bool)
     def always_update(self): 
         """ When this function is called, the FPGA variables do not
         wait for the trigger to be updated.
