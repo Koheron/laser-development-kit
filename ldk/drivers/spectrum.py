@@ -35,7 +35,7 @@ class Spectrum(Base):
         self.demod[0, :] = 0.49 * (1 - np.cos(2 * np.pi * np.arange(self.wfm_size) / self.wfm_size))
         self.demod[1, :] = 0
 
-        self.noise_floor = np.zeros(self.wfm_size)
+        self.noise_floor = np.zeros(self.wfm_size, dtype=np.float32)
 
         # self.set_offset(0, 0)
  
@@ -99,8 +99,12 @@ class Spectrum(Base):
                 print('WARNING : demod out of bounds')
         self.set_demod_buffer(self.twoint14_to_uint32(self.demod))
 
-    def calibrate(self, noise_floor):
-        self.noise_floor = noise_floor
+    def calibrate(self):
+        tmp = np.zeros(self.sampling.n, dtype=np.float32)
+        for i in range(100):
+            self.get_spectrum()
+            tmp += self.spectrum
+        self.noise_floor = tmp / 100
         self.set_noise_floor_buffer(self.noise_floor)
 
     @command()
