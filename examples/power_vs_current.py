@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import initExample
+import init_example
 import os
 import time
 import numpy as np
@@ -37,7 +37,7 @@ plt.plot(currents, laser_powers)
 plt.xlabel('Control current (mA)')
 plt.ylabel('Laser power (arb. units)')
 
-np.savetxt('power_vs_current.csv', 
+np.savetxt('power_vs_current.csv',
            np.transpose([currents, laser_powers]),
            delimiter=',',
            fmt='%1.4e')

@@ -1,9 +1,8 @@
 """
-Program for making the RedPitaya / Koheron laser development work as a morsecode emitter. 
+Program for making the RedPitaya / Koheron laser development work as a morsecode emitter.
 Code is scanned from the command line by the program, and transmitted as short and long laser-pulses.
 """
-import initExample # Necessary module, must be in the same
-# program as the main file.
+import init_example
 import os
 import time
 import numpy as np
@@ -34,7 +33,7 @@ if current > 40:
 amp_mod = float(raw_input("Please enter modulation amplitude (0 - 1):"))
 
 if amp_mod > 1:
-	print('Modulation amplitude to high! Only range 0 - 1 is allowed.')	
+	print('Modulation amplitude to high! Only range 0 - 1 is allowed.')
 	os._exit(0)
 
 # Set modulaton frequency
@@ -57,7 +56,7 @@ def dot():
 	# Signal on ADC
 	driver.get_adc()
 	signal = driver.adc[0, :]
-	
+
 	time.sleep(.2)
 
 	driver.stop_laser()
@@ -65,7 +64,7 @@ def dot():
 
 	time.sleep(.25)
 
-# Function for making a long signal - the dash.	
+# Function for making a long signal - the dash.
 def dash():
 	print('-')
 	# Enable laser
@@ -117,7 +116,7 @@ for letter in phrase:
 	if letter == ' ':	# prints a space, if a space is found in the text.
 		print(' ')
 		time.sleep(.5)
-		
+
 	if letter == '.':	# Prints "stop" when a punctuachion is found.
 		print ' '
 		eval(letters['s']), eval(letters['t'])
@@ -137,7 +136,7 @@ driver.close()
 
 """
 Written by Einar KNUDSEN. einarknudsen@yahoo.com
-The code has been ported from a Raspberry PI project to work with the Koheron laser developement board. 
+The code has been ported from a Raspberry PI project to work with the Koheron laser developement board.
 Awesome laser board, guys!
 """
 

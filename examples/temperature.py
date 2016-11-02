@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import initExample
+import init_example
 import os
 import time
 import numpy as np
