@@ -1,7 +1,3 @@
-# Make this version of lase importable before any others
-# we do this to make sure that, when running examples, the correct library
-# version is imported (if there are multiple versions present).
-
 import sys
 import os
 
@@ -13,7 +9,7 @@ if not hasattr(sys, 'frozen'):
     path.rstrip(os.path.sep)
     if 'ldk' in os.listdir(path):
         sys.path.insert(0, path)
-        # Examples adjacent to lase (as in source tree)
+        # Examples adjacent to ldk (as in source tree)
     else:
         for p in sys.path:
             if len(p) < 3:
