@@ -54,9 +54,6 @@ class WelcomeWidget(QtGui.QWidget):
             self.app_buttons[i].clicked.connect(make_callback(i))
         self.update_buttons()
 
-        # Left Layout
-
-
         # Right layout
         self.right_layout.addLayout(self.connect_layout)
         self.right_layout.addLayout(self.drivers_layout)

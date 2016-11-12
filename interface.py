@@ -8,12 +8,10 @@ import time
 from pyqtgraph.Qt import QtGui, QtCore
 from ldk.gui import WelcomeWidget
 import pyqtgraph as pg
-#from PyQt4.QtCore import SIGNAL
 import os
 import ctypes
 import platform
 import traceback
-#from PyQt4.QtCore import QT_VERSION_STR
 
 class KWindow(QtGui.QMainWindow):
     """
@@ -26,7 +24,6 @@ class KWindow(QtGui.QMainWindow):
         self.setStyleSheet("""background-color: white; font-family: lato""")
 
         self.current_path = os.getcwd()
-        self.bitstreams_path = os.path.join(self.current_path,'bitstreams')
         self.img_path = os.path.join(self.current_path, 'static', 'img')
         self.static_path = os.path.join(self.current_path, 'static')
         self.tmp_path = os.path.join(self.current_path,'tmp')

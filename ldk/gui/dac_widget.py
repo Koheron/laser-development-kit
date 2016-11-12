@@ -2,7 +2,6 @@
 
 from pyqtgraph.Qt import QtGui, QtCore
 from .slider_widget import SliderWidget
-#from PyQt4.QtCore import SIGNAL, pyqtSignal
 import numpy as np
 from scipy import signal
 import collections
