@@ -48,11 +48,11 @@ class SliderWidget(QtGui.QWidget):
         if self.flag == True:
             self.value = self.slider.value()*self.step
             self.spin.setValue(self.value)
-            self.valueChanged.emit()
+            self.valueChanged.emit(self.value)
 
     def spinChanged(self):
         self.flag = False
         self.value = self.spin.value()
         self.slider.setValue(int(self.value/self.step))
-        self.valueChanged.emit()
+        self.valueChanged.emit(self.value)
         self.flag = True
