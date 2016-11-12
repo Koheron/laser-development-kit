@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from pyqtgraph.Qt import QtGui
+from pyqtgraph.Qt import QtGui, QtCore
 from .slider_widget import SliderWidget
-from PyQt4.QtCore import SIGNAL, pyqtSignal
+#from PyQt4.QtCore import SIGNAL, pyqtSignal
 import numpy as np
 from scipy import signal
 import collections
@@ -26,7 +26,7 @@ class DacWidget(QtGui.QWidget):
     This widget is used to control the DACs of a driver.
     """
 
-    data_updated_signal = pyqtSignal(int)
+    data_updated_signal = QtCore.pyqtSignal(int)
 
     def __init__(self, driver, index=0):
         super(DacWidget, self).__init__()
@@ -73,9 +73,9 @@ class DacWidget(QtGui.QWidget):
         self.setLayout(self.layout)
 
         self.dac_on_off_button.clicked.connect(self.dac_on_off_button_clicked)
-        self.connect(self.slider_dict['mod_amp'], SIGNAL("value(float)"), self.change_mod_amp)
-        self.connect(self.slider_dict['freq'], SIGNAL("value(float)"), self.change_freq)
-        self.connect(self.slider_dict['offset'], SIGNAL("value(float)"), self.change_offset)
+        self.slider_dict['mod_amp'].valueChanged.connect(self.change_mod_amp)
+        self.slider_dict['freq'].valueChanged.connect(self.change_freq)
+        self.slider_dict['offset'].valueChanged.connect(self.change_offset)
 
         for i in range(len(self.waveform_list.list)):
             self.waveform_list.list[i].toggled.connect(self.update_data)

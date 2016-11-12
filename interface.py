@@ -1,15 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
+sys.path.append('pyqtgraph')
+
 import time
-from pyqtgraph.Qt import QtGui
+from pyqtgraph.Qt import QtGui, QtCore
 from ldk.gui import WelcomeWidget
 import pyqtgraph as pg
-from PyQt4.QtCore import SIGNAL
+#from PyQt4.QtCore import SIGNAL
 import os
 import ctypes
 import platform
 import traceback
+#from PyQt4.QtCore import QT_VERSION_STR
 
 class KWindow(QtGui.QMainWindow):
     """
@@ -57,7 +61,7 @@ class KWindow(QtGui.QMainWindow):
         self.show()
 
         self.stacked_widget.currentWidget().setFocus()
-        self.connect(self, SIGNAL('triggered()'), self.closeEvent)
+        #self.connect(self, SIGNAL('triggered()'), self.closeEvent)
 
         self.start_time = time.time()
         self.prev_time = 0
@@ -124,4 +128,5 @@ def main():
         prev_time = time_
 
 if __name__ == '__main__':
+    print("Qt version:", QtCore.QT_VERSION_STR)
     main()
