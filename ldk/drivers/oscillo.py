@@ -109,7 +109,7 @@ class Oscillo(object):
         def set_dac_buffer(self, channel, arr):
             pass
         for channel in channels:
-            data = np.uint32(np.mod(np.floor(8192 * self.dac[channel,:]) + 8192, 16384) + 8192)
+            data = np.uint32(16384 * (self.dac[channel,:]))
             set_dac_buffer(self, channel, data[::2] + data[1::2] * 65536)
 
     @command()
