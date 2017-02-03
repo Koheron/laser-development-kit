@@ -110,7 +110,7 @@ class Oscillo(object):
             pass
         for channel in channels:
             data = np.int16(16384 * (self.dac[channel,:]))
-            set_dac_buffer(self, channel, np.uint32(data[::2] + data[1::2] * 65536))
+            set_dac_buffer(self, channel, np.uint32(data[1::2] + data[::2] * 65536))
 
     @command()
     def set_averaging(self, avg_status):
