@@ -8,7 +8,7 @@
 * koheron-python (`pip install koheron`)
 * PyQtGraph (`pip install pyqtgraph`) - only for the Graphical User Interface
 
-[How to set up a network connection for the Red Pitaya and find its IP address.](https://www.koheron.com/support/redpitaya-ip-address)
+[How to set up a network connection for the Red Pitaya and find its IP address.](https://www.koheron.com/support)
 
 ## Script examples
 
