@@ -4,7 +4,7 @@
 *.yml~
 *.yaml~
 *.tex~
-*.qrc~ 
+*.qrc~
 .gitignore~
 *.py~
 *.html~
@@ -45,3 +45,5 @@ tmp
 packages.txt
 
 *.csv
+
+venv/
