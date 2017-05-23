@@ -11,7 +11,11 @@ from koheron import connect
 from ldk.drivers import Oscillo
 
 host = os.getenv('HOST','192.168.1.100')
-cmd = os.getenv('CMD','get_adc')
+cmd = os.getenv('CMD','get_decimated_data')
+
+decimation_factor = 1
+index_low = 0
+index_high = 8191
 
 def speed_test(host, n_pts=1000):
     time_array = np.zeros(n_pts)
@@ -23,8 +27,8 @@ def speed_test(host, n_pts=1000):
     t_prev = t0
 
     for i in range(n_pts):
-        if cmd == 'get_adc':
-        	driver.get_adc()
+        if cmd == 'get_decimated_data':
+        	driver.get_decimated_data(decimation_factor, index_low, index_high)
         elif cmd == 'get_num_average':
             driver.get_num_average(0)
         t = time.time()
