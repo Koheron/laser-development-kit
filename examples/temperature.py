@@ -26,6 +26,10 @@ n = driver.wfm_size
 driver.dac[1,:] = mod_amp * signal.sawtooth(2 * np.pi * freq / n * np.arange(n), width=0.5)
 driver.set_dac()
 
+decimation_factor = 1
+index_low = 0
+index_high = 8191
+
 driver.start_laser()
 driver.set_averaging(True)
 driver.set_laser_current(current)
@@ -44,12 +48,13 @@ data = np.zeros((1000,2)) + temperature
 window = 0.5 * (1-np.cos(2 * np.pi * np.arange(4095) / 4095))
 
 with open('temperature.csv','w') as f:
-    for i in range(5000):
-        driver.get_adc()
+    for i in range(5):
+
+        adc = driver.get_decimated_data(decimation_factor, index_low, index_high)
 
         # Separate positive and negative slopes in the triangle waveform
-        adc_pos = driver.adc[0,0:4095]
-        adc_neg = driver.adc[0,4096:8191]
+        adc_pos = adc[:4095]
+        adc_neg = adc[-4095:]
 
         fft_pos = np.fft.fft(adc_pos * window)
         fft_neg = np.fft.fft(adc_neg * window)
@@ -80,9 +85,7 @@ with open('temperature.csv','w') as f:
 f.close()
 
 driver.stop_laser()
-driver.close()
 plt.show()
-
 
 # Plot temperature
 
