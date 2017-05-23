@@ -43,5 +43,4 @@ np.savetxt('power_vs_current.csv',
            fmt='%1.4e')
 
 driver.stop_laser()
-driver.close()
 plt.show()

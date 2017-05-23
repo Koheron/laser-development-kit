@@ -112,7 +112,7 @@ class Spectrum(object):
         pass
 
     def set_dac(self, channels=[0,1]):
-        @command(classname='Spectrum')
+        @command(classname='Modulation')
         def set_dac_buffer(self, channel, data):
             pass
         for channel in channels:
