@@ -16,7 +16,6 @@ client = connect(host, name='oscillo')
 driver = Oscillo(client)
 laser = Laser(client)
 
-
 decimation_factor = 1
 index_low = 0
 index_high = 8191

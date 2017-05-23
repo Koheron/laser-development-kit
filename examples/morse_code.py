@@ -10,11 +10,17 @@ import matplotlib.pyplot as plt
 
 from koheron import connect
 from ldk.drivers import Oscillo
+from ldk.drivers import Laser
 
 # Enter board IP
 host = os.getenv('HOST','10.42.0.53')
 client = connect(host, name='oscillo')
 driver = Oscillo(client)
+laser = Laser(client)
+
+decimation_factor = 1
+index_low = 0
+index_high = 8191
 
 # Making a method for text input. Only small letters, commas, and punctuation marks allowed.
 phrase = str(raw_input("Please type text to be translated, using only UTF-8 characters:"))
@@ -48,19 +54,17 @@ def dot():
 	print('.')
 	#morsecode.append('.')
 	# Enable laser
-	driver.start_laser()
-	driver.set_laser_current(current)
+	laser.start_laser()
+	laser.set_laser_current(current)
 	driver.dac[1, :] = amp_mod*np.sin(2 * np.pi * freq_mod * driver.sampling.t)
 	driver.set_dac()
 
 	# Signal on ADC
-	driver.get_adc()
 	signal = driver.adc[0, :]
 
 	time.sleep(.2)
 
-	driver.stop_laser()
-	driver.close()
+	laser.stop_laser()
 
 	time.sleep(.25)
 
@@ -68,19 +72,18 @@ def dot():
 def dash():
 	print('-')
 	# Enable laser
-	driver.start_laser()
-	driver.set_laser_current(current)
+	laser.start_laser()
+	laser.set_laser_current(current)
 
 	driver.dac[1, :] = amp_mod * np.sin(2 * np.pi * freq_mod * driver.sampling.t)
 	driver.set_dac()
 
 	# Signal on ADC
-	driver.get_adc()
-	signal = driver.adc[0, :]
+	signal = driver.get_decimated_data(decimation_factor, index_low, index_high)
+	signal = signal[:8192]
 
 	time.sleep(.4)
-	driver.stop_laser()
-	driver.close()
+	laser.stop_laser()
 	time.sleep(.25)
 
 # The letters arranged in a python dictionary. Each letter has assigned its
@@ -130,8 +133,7 @@ for letter in phrase:
 
 
 # Disable laser
-driver.stop_laser()
-driver.close()
+laser.stop_laser()
 
 
 """
