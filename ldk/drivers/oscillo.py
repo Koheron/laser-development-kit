@@ -28,45 +28,28 @@ class Oscillo(object):
         self.opened = True
         self.dac = np.zeros((2, self.sampling.n))
 
-
-    def close(self):
-        self.stop_laser()
-        self.reset()
-
-    def reset(self):
-        self.reset_laser()
-
-    def reset_laser(self):
-        @command('Laser')
-        def reset(self):
-            pass
-        reset(self)
-
-    @command(classname='Laser')
+    @command(classname='Laser', funcname='start')
     def start_laser(self): pass
 
-    @command(classname='Laser')
+    @command(classname='Laser', funcname='stop')
     def stop_laser(self): pass
 
-    @command(classname='Laser')
+    @command(classname='Laser', funcname='get_measured_current')
     def get_laser_current(self):
-        return (0.0001/21.) * self.client.recv_uint32()
+        return (0.0001/21.) * self.client.recv_float()
 
-    @command(classname='Laser')
+    @command(classname='Laser', funcname='get_measured_power')
     def get_laser_power(self):
-        return self.client.recv_uint32()
+        return self.client.recv_float()
 
     @command(classname='Laser')
-    def get_monitoring(self):
+    def get_status(self):
         return self.client.recv_tuple()
 
-    @command(classname='Laser')
+    @command(classname='Laser', funcname='set_current')
     def set_laser_current(self, current):
         """ current: The bias in mA """
         pass
-
-    @command(classname='Common')
-    def get_bitstream_id(self): pass
 
     @command(classname='Common')
     def set_led(self, value): pass
@@ -87,14 +70,14 @@ class Oscillo(object):
         pass
 
     @command()
-    def set_n_avg_min(self, n_avg_min):
+    def set_num_average_min(self, n_avg_min):
         """ Set the minimum of averages that will be computed on the FPGA
         The effective number of averages is >= n_avg_min.
         """
         pass
 
     @command()
-    def set_avg_period(self, avg_period):
+    def set_average_period(self, avg_period):
         """ Set the period of the averaging module and reset the module.
         """
         self.period = avg_period
@@ -105,7 +88,7 @@ class Oscillo(object):
         (dac0 or dac1) with the array stored in self.dac[channel,:].
         ex: self.set_dac(channel=[0])
         """
-        @command()
+        @command(classname='Modulation')
         def set_dac_buffer(self, channel, arr):
             pass
         for channel in channels:
@@ -113,7 +96,7 @@ class Oscillo(object):
             set_dac_buffer(self, channel, np.uint32(data[1::2] + data[::2] * 65536))
 
     @command()
-    def set_averaging(self, avg_status):
+    def set_average(self, avg_status):
         """ self.set_averaging(True) enables averaging. """
         pass
 
@@ -124,13 +107,9 @@ class Oscillo(object):
         return n_avg
 
     @command()
-    def read_all_channels(self):
-        return self.client.recv_array(2 * self.wfm_size, dtype='float32')
-
-    def get_adc(self):
-        """ Read adc data and store it in self.adc. """
-        data = self.read_all_channels()
-        self.adc = np.reshape(data, (2, self.wfm_size))
+    def get_decimated_data(self, decim_factor, index_low, index_high):
+        decimated_data = self.client.recv_vector(dtype='float32')
+        return decimated_data
 
     def get_spectrum(self):
         fft_adc = np.fft.fft(self.adc, axis=1)
