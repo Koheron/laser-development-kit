@@ -12,10 +12,12 @@ from scipy import signal
 
 from koheron import connect
 from ldk.drivers import Oscillo
+from ldk.drivers import Laser
 
 host = os.getenv('HOST','192.168.1.100')
 client = connect(host, name='oscillo')
 driver = Oscillo(client)
+laser = Laser(client)
 
 current = 30 #mA
 
@@ -30,9 +32,9 @@ decimation_factor = 1
 index_low = 0
 index_high = 8191
 
-driver.start_laser()
+laser.start_laser()
 driver.set_averaging(True)
-driver.set_laser_current(current)
+laser.set_laser_current(current)
 time.sleep(0.1)
 
 plt.ylim([-2*np.pi, 2*np.pi])
@@ -84,7 +86,7 @@ with open('temperature.csv','w') as f:
 
 f.close()
 
-driver.stop_laser()
+laser.stop_laser()
 plt.show()
 
 # Plot temperature

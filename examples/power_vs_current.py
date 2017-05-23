@@ -9,13 +9,16 @@ import matplotlib.pyplot as plt
 
 from koheron import connect
 from ldk.drivers import Oscillo
+from ldk.drivers import Laser
 
 host = os.getenv('HOST','192.168.1.100')
 client = connect(host, name='oscillo')
-driver = Oscillo(client)
 
-driver.start_laser()
-driver.set_laser_current(0)
+driver = Oscillo(client)
+laser = Laser(client)
+
+laser.start_laser()
+laser.set_laser_current(0)
 time.sleep(0.1)
 
 current_max = 40
@@ -25,10 +28,10 @@ laser_powers = 0 * currents
 measured_currents = 0 * currents
 
 for i, current in enumerate(currents):
-    driver.set_laser_current(current)
+    laser.set_laser_current(current)
     time.sleep(0.02)
-    laser_powers[i] = driver.get_laser_power()
-    measured_currents[i] = driver.get_laser_current()
+    laser_powers[i] = laser.get_laser_power()
+    measured_currents[i] = laser.get_laser_current()
     print('laser power = ' + str(laser_powers[i]) + ' arb. units')
 
 # Plot
@@ -42,5 +45,5 @@ np.savetxt('power_vs_current.csv',
            delimiter=',',
            fmt='%1.4e')
 
-driver.stop_laser()
+laser.stop_laser()
 plt.show()

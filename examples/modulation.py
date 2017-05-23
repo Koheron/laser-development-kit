@@ -9,21 +9,24 @@ import matplotlib.pyplot as plt
 
 from koheron import connect
 from ldk.drivers import Oscillo
+from ldk.drivers import Laser
 
 host = os.getenv('HOST','192.168.1.100')
 client = connect(host, name='oscillo')
 driver = Oscillo(client)
+laser = Laser(client)
+
 
 decimation_factor = 1
 index_low = 0
 index_high = 8191
 
 # Enable laser
-driver.start_laser()
+laser.start_laser()
 
 # Set laser current
 current = 30  # mA
-driver.set_laser_current(current)
+laser.set_laser_current(current)
 
 # Modulation on DAC
 amp_mod = 0.2
@@ -45,4 +48,4 @@ plt.xlabel('Frequency (MHz)')
 plt.show()
 
 # Disable laser
-driver.stop_laser()
+laser.stop_laser()
