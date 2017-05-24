@@ -100,31 +100,6 @@ class Oscillo(object):
             self.avg_spectrum += fft_adc[:, 0:int(self.wfm_size / 2)]
         self.avg_spectrum /= n_avg
 
-    # -------------------------------
-    # Trigger related functions
-
-    @command()
-    def update_now(self):
-        """ This function sends a trigger to update immediately all
-        the variables in the FPGA.
-        """
-        pass
-
-    @command()
-    def always_update(self):
-        """ When this function is called, the FPGA variables do not
-        wait for the trigger to be updated.
-        """
-        pass
-
-    @command()
-    def get_counter(self):
-        """ Return a 64 bits integer that counts the number of clock
-        cycles (8 ns) between the startup of the FPGA and the last trigger
-        (beginning of the last acquisition).
-        """
-        return self.client.recv_int(8, fmt='Q')
-
     @command()
     def reset_acquisition(self):
         """ This function has the same effect as get_adc()
@@ -138,8 +113,3 @@ class Oscillo(object):
 
     def reset(self):
         self.reset_dac()
-
-    @command()
-    def get_first_empty_bram_index(self):
-        return self.client.recv_uint32()
-
