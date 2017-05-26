@@ -2,15 +2,15 @@
 Program for making the RedPitaya / Koheron laser development work as a morsecode emitter.
 Code is scanned from the command line by the program, and transmitted as short and long laser-pulses.
 """
-import init_example
+
 import os
 import time
 import numpy as np
 import matplotlib.pyplot as plt
 
 from koheron import connect
-from ldk.drivers import Oscillo
-from ldk.drivers import Laser
+from drivers import Oscillo
+from drivers import Laser
 
 # Enter board IP
 host = os.getenv('HOST','10.42.0.53')

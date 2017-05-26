@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import init_example
 import os
 import time
 import numpy as np
 import matplotlib.pyplot as plt
 
 from koheron import connect
-from ldk.drivers import Oscillo
-from ldk.drivers import Laser
+from drivers import Oscillo
+from drivers import Laser
 
 host = os.getenv('HOST','192.168.1.100')
 client = connect(host, name='oscillo')
