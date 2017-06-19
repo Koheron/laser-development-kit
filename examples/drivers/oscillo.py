@@ -72,6 +72,10 @@ class Oscillo(object):
             data = np.int16(16384 * (self.dac[channel,:]))
             set_dac_buffer(self, channel, np.uint32(data[1::2] + data[::2] * 65536))
 
+    @command(classname='Modulation')
+    def get_modulation_status(self):
+        return self.client.recv_tuple('IIffffff')
+
     @command(funcname='set_average')
     def set_averaging(self, avg_status):
         """ self.set_averaging(True) enables averaging. """
