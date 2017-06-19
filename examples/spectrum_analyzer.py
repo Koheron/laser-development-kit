@@ -9,8 +9,8 @@ matplotlib.use('GTKAgg')
 from matplotlib import pyplot as plt
 
 from koheron import connect
-from ldk.drivers import Spectrum
-from ldk.drivers import Laser
+from drivers import Spectrum
+from drivers import Laser
 
 host = os.getenv('HOST','192.168.1.100')
 client = connect(host, name='spectrum')
