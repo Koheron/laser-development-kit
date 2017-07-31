@@ -8,10 +8,7 @@ import numpy as np
 from koheron import command
 
 class Oscillo(object):
-    """ Driver for the oscillo bitstream
-    """
-
-    def __init__(self, client, verbose=False):
+    def __init__(self, client):
         self.client = client
         self.wfm_size = 8192
         self.sampling_rate = 125e6
@@ -22,48 +19,44 @@ class Oscillo(object):
         self.spectrum = np.zeros((2, int(self.wfm_size / 2)))
         self.avg_spectrum = np.zeros((2, int(self.wfm_size / 2)))
 
-    @command(classname='Common')
-    def set_led(self, value): pass
-
-    @command(classname='Common')
-    def init(self): pass
-
     @command()
     def set_dac_periods(self, period0, period1):
-        """ Select the periods played on each address generator
+        ''' Select the periods played on each address generator
         ex: self.set_dac_periods(8192, 4096)
-        """
+        '''
         pass
 
     @command()
-    def set_num_average_min(self, n_avg_min):
-        """ Set the minimum of averages that will be computed on the FPGA
-        The effective number of averages is >= n_avg_min.
-        """
+    def set_num_average_min(self, num_average_min):
+        ''' Set the minimum of averages that will be computed on the FPGA
+        The effective number of averages is >= num_average_min.
+        '''
         pass
 
     @command()
-    def set_average_period(self, avg_period):
-        """ Set the period of the averaging module and reset the module.
-        """
-        self.period = avg_period
-        pass
+    def set_average_period(self, average_period):
+        ''' Set the period of the averaging module and reset the module.
+        '''
+        self.period = average_period
 
-    @command(funcname='set_average')
-    def set_averaging(self, avg_status):
-        """ self.set_averaging(True) enables averaging. """
+    @command()
+    def set_average(self, is_average):
+        ''' is_average = True enables averaging. '''
         pass
 
     @command()
     def get_num_average(self, channel):
-        """ Get the number of averages corresponding to the last acquisition. """
-        n_avg = self.client.recv_uint32()
-        return n_avg
+        ''' Get the number of averages corresponding to the last acquisition. '''
+        num_average = self.client.recv_uint32()
+        return num_average
 
     @command()
     def get_decimated_data(self, decim_factor, index_low, index_high):
         decimated_data = self.client.recv_vector(dtype='float32')
         return decimated_data
+
+    def get_adc(self):
+        self.adc = np.reshape(self.get_decimated_data(1, 0, self.wfm_size), (2, self.wfm_size))
 
     def get_spectrum(self):
         fft_adc = np.fft.fft(self.adc, axis=1)
@@ -79,9 +72,6 @@ class Oscillo(object):
 
     @command()
     def reset_acquisition(self):
-        """ This function has the same effect as get_adc()
-        except it does not return any data
-        """
         pass
 
     @command(funcname='reset')
@@ -124,5 +114,4 @@ class Oscillo(object):
     @command(classname='Modulation')
     def set_dac_offset(self, channel, frequency_value):
         pass
-
 
