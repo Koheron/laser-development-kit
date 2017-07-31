@@ -56,7 +56,7 @@ def dot():
 	# Enable laser
 	laser.start_laser()
 	laser.set_laser_current(current)
-	driver.dac[1, :] = amp_mod*np.sin(2 * np.pi * freq_mod * driver.sampling.t)
+	driver.dac[1, :] = amp_mod*np.sin(2 * np.pi * freq_mod * driver.t)
 	driver.set_dac()
 
 	# Signal on ADC
@@ -75,7 +75,7 @@ def dash():
 	laser.start_laser()
 	laser.set_laser_current(current)
 
-	driver.dac[1, :] = amp_mod * np.sin(2 * np.pi * freq_mod * driver.sampling.t)
+	driver.dac[1, :] = amp_mod * np.sin(2 * np.pi * freq_mod * driver.t)
 	driver.set_dac()
 
 	# Signal on ADC

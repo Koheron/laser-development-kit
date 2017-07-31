@@ -17,7 +17,7 @@ laser = Laser(client)
 
 decimation_factor = 1
 index_low = 0
-index_high = 8191
+index_high = 8192
 
 # Enable laser
 laser.start_laser()
@@ -28,20 +28,23 @@ laser.set_laser_current(current)
 
 # Modulation on DAC
 amp_mod = 0.2
-freq_mod = 1e6
-driver.dac[1, :] = amp_mod*np.sin(2 * np.pi * freq_mod * driver.sampling.t)
+freq_mod = driver.sampling_rate / driver.wfm_size * 10
+driver.dac[1, :] = amp_mod*np.sin(2 * np.pi * freq_mod * driver.t)
 driver.set_dac()
+
+time.sleep(0.001)
 
 # Signal on ADC
 signal = driver.get_decimated_data(decimation_factor, index_low, index_high)
-signal = signal[:8192]
+signal = np.reshape(signal, (2, np.size(signal)/2))
 
-plt.plot(driver.sampling.t, signal)
+plt.plot(driver.t, signal[0,:])
 plt.show()
 
-psd_signal = np.abs(np.fft.fft(signal)) ** 2
+psd_signal = np.abs(np.fft.fft(signal[0,:])) ** 2
 
-plt.semilogy(1e-6 * np.fft.fftshift(driver.sampling.f_fft), np.fft.fftshift(psd_signal))
+freqs = np.fft.fftfreq(driver.wfm_size, d=1/driver.sampling_rate)
+plt.semilogy(1e-6 * np.fft.fftshift(freqs), np.fft.fftshift(psd_signal))
 plt.xlabel('Frequency (MHz)')
 plt.show()
 

@@ -5,7 +5,6 @@ import time
 import math
 import numpy as np
 
-from .sampling import Sampling
 from koheron import command
 
 class Oscillo(object):
@@ -15,29 +14,19 @@ class Oscillo(object):
     def __init__(self, client, verbose=False):
         self.client = client
         self.wfm_size = 8192
-        self.max_current = 40  # mA
-        self.sampling = Sampling(self.wfm_size, 125e6)
+        self.sampling_rate = 125e6
+        self.t = np.arange(self.wfm_size)/self.sampling_rate
+        self.dac = np.zeros((2, self.wfm_size))
 
-        self.avg_on = False
-
-        self.period = self.wfm_size
         self.adc = np.zeros((2, self.wfm_size))
         self.spectrum = np.zeros((2, int(self.wfm_size / 2)))
         self.avg_spectrum = np.zeros((2, int(self.wfm_size / 2)))
-
-        self.opened = True
-        self.dac = np.zeros((2, self.sampling.n))
 
     @command(classname='Common')
     def set_led(self, value): pass
 
     @command(classname='Common')
     def init(self): pass
-
-    def twoint14_to_uint32(self, data):
-        data1 = np.mod(np.floor(8192 * data[0, :]) + 8192,16384) + 8192
-        data2 = np.mod(np.floor(8192 * data[1, :]) + 8192,16384) + 8192
-        return np.uint32(data1 + 65536 * data2)
 
     @command()
     def set_dac_periods(self, period0, period1):
@@ -59,22 +48,6 @@ class Oscillo(object):
         """
         self.period = avg_period
         pass
-
-    def set_dac(self, channels=[0,1]):
-        """ Write the BRAM corresponding on the selected channels
-        (dac0 or dac1) with the array stored in self.dac[channel,:].
-        ex: self.set_dac(channel=[0])
-        """
-        @command(classname='Modulation')
-        def set_dac_buffer(self, channel, arr):
-            pass
-        for channel in channels:
-            data = np.int16(16384 * (self.dac[channel,:]))
-            set_dac_buffer(self, channel, np.uint32(data[1::2] + data[::2] * 65536))
-
-    @command(classname='Modulation')
-    def get_modulation_status(self):
-        return self.client.recv_tuple('IIffffff')
 
     @command(funcname='set_average')
     def set_averaging(self, avg_status):
@@ -117,3 +90,39 @@ class Oscillo(object):
 
     def reset(self):
         self.reset_dac()
+
+    # Modulation
+
+    def set_dac(self, channels=[0,1]):
+        """ Write the BRAM corresponding on the selected channels
+        (dac0 or dac1) with the array stored in self.dac[channel,:].
+        ex: self.set_dac(channel=[0])
+        """
+        @command(classname='Modulation')
+        def set_dac_buffer(self, channel, arr):
+            pass
+        for channel in channels:
+            data = np.int16(16384 * (self.dac[channel,:]))
+            set_dac_buffer(self, channel, np.uint32(data[1::2] + data[::2] * 65536))
+
+    @command(classname='Modulation')
+    def get_modulation_status(self):
+        return self.client.recv_tuple('IIffffff')
+
+    @command(classname='Modulation')
+    def set_waveform_type(self, channel, wfm_type):
+        pass
+
+    @command(classname='Modulation')
+    def set_dac_amplitude(self, channel, amplitude_value):
+        pass
+
+    @command(classname='Modulation')
+    def set_dac_frequency(self, channel, frequency_value):
+        pass
+
+    @command(classname='Modulation')
+    def set_dac_offset(self, channel, frequency_value):
+        pass
+
+
