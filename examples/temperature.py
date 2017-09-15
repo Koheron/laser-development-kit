@@ -32,7 +32,7 @@ index_low = 0
 index_high = 8191
 
 laser.start_laser()
-driver.set_averaging(True)
+driver.set_average(True)
 laser.set_laser_current(current)
 time.sleep(0.1)
 
