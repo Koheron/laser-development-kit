@@ -4,14 +4,12 @@
 import time
 import numpy as np
 from koheron import command
-from .sampling import Sampling
 
 class Spectrum(object):
 
     def __init__(self, client):
         self.client = client
         self.wfm_size = 4096
-        self.sampling = Sampling(self.wfm_size, 125e6)
 
     @command()
     def reset(self):

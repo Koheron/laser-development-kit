@@ -20,7 +20,7 @@ def speed_test(host, n_pts=1000):
     time_array = np.zeros(n_pts)
     client = connect(host, name='oscillo')
     driver = Oscillo(client)
-    driver.set_averaging(False)
+    driver.set_average(False)
 
     t0 = time.time()
     t_prev = t0
