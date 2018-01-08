@@ -16,8 +16,8 @@ client = connect(host, name='oscillo')
 driver = Oscillo(client)
 laser = Laser(client)
 
-laser.start_laser()
-laser.set_laser_current(0)
+laser.start()
+laser.set_current(0)
 time.sleep(0.1)
 
 current_max = 40
@@ -27,10 +27,10 @@ laser_powers = 0 * currents
 measured_currents = 0 * currents
 
 for i, current in enumerate(currents):
-    laser.set_laser_current(current)
+    laser.set_current(current)
     time.sleep(0.02)
-    laser_powers[i] = laser.get_laser_power()
-    measured_currents[i] = laser.get_laser_current()
+    laser_powers[i] = laser.get_measured_power()
+    measured_currents[i] = (0.0001/21)*(laser.get_measured_current())
     print('laser power = ' + str(laser_powers[i]) + ' arb. units')
 
 # Plot
@@ -44,5 +44,5 @@ np.savetxt('power_vs_current.csv',
            delimiter=',',
            fmt='%1.4e')
 
-laser.stop_laser()
+laser.stop()
 plt.show()

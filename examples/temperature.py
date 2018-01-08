@@ -31,9 +31,9 @@ decimation_factor = 1
 index_low = 0
 index_high = 8191
 
-laser.start_laser()
+laser.start()
 driver.set_average(True)
-laser.set_laser_current(current)
+laser.set_current(current)
 time.sleep(0.1)
 
 plt.ylim([-2*np.pi, 2*np.pi])
@@ -85,7 +85,7 @@ with open('temperature.csv','w') as f:
 
 f.close()
 
-laser.stop_laser()
+laser.stop()
 plt.show()
 
 # Plot temperature

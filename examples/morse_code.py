@@ -54,8 +54,8 @@ def dot():
 	print('.')
 	#morsecode.append('.')
 	# Enable laser
-	laser.start_laser()
-	laser.set_laser_current(current)
+	laser.start()
+	laser.set_current(current)
 	driver.dac[1, :] = amp_mod*np.sin(2 * np.pi * freq_mod * driver.t)
 	driver.set_dac()
 
@@ -64,7 +64,7 @@ def dot():
 
 	time.sleep(.2)
 
-	laser.stop_laser()
+	laser.stop()
 
 	time.sleep(.25)
 
@@ -72,8 +72,8 @@ def dot():
 def dash():
 	print('-')
 	# Enable laser
-	laser.start_laser()
-	laser.set_laser_current(current)
+	laser.start()
+	laser.set_current(current)
 
 	driver.dac[1, :] = amp_mod * np.sin(2 * np.pi * freq_mod * driver.t)
 	driver.set_dac()
@@ -83,7 +83,7 @@ def dash():
 	signal = signal[:8192]
 
 	time.sleep(.4)
-	laser.stop_laser()
+	laser.stop()
 	time.sleep(.25)
 
 # The letters arranged in a python dictionary. Each letter has assigned its
@@ -133,7 +133,7 @@ for letter in phrase:
 
 
 # Disable laser
-laser.stop_laser()
+laser.stop()
 
 
 """

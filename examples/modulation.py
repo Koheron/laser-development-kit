@@ -20,11 +20,11 @@ index_low = 0
 index_high = 8192
 
 # Enable laser
-laser.start_laser()
+laser.start()
 
 # Set laser current
 current = 30  # mA
-laser.set_laser_current(current)
+laser.set_current(current)
 
 # Modulation on DAC
 amp_mod = 0.2
@@ -49,4 +49,4 @@ plt.xlabel('Frequency (MHz)')
 plt.show()
 
 # Disable laser
-laser.stop_laser()
+laser.stop()

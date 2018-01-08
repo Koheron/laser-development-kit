@@ -16,4 +16,4 @@ python examples/power_vs_current.py
 
 ## Copyright
 
-Copyright 2015-2017 Koheron SAS. The code is released under [the MIT licence](https://github.com/Koheron/laser-development-kit/blob/master/LICENSE).
+Copyright 2015-2018 Koheron SAS. The code is released under [the MIT licence](https://github.com/Koheron/laser-development-kit/blob/master/LICENSE).

@@ -17,10 +17,10 @@ client = connect(host, name='spectrum')
 driver = Spectrum(client)
 laser = Laser(client)
 
-laser.start_laser()
+laser.start()
 
 current = 30 # mA
-laser.set_laser_current(current)
+laser.set_current(current)
 
 # driver.reset_acquisition()
 
@@ -67,6 +67,6 @@ while True:
     except KeyboardInterrupt:
         # Save last spectrum in a csv file
         np.savetxt("psd.csv", signal, delimiter=",")
-        laser.stop_laser()
+        laser.stop()
         driver.close()
         break
