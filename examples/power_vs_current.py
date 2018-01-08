@@ -7,13 +7,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from koheron import connect
-from drivers import Oscillo
 from drivers import Laser
 
 host = os.getenv('HOST','192.168.1.100')
 client = connect(host, name='oscillo')
 
-driver = Oscillo(client)
 laser = Laser(client)
 
 laser.start()
