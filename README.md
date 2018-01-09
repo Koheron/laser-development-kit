@@ -1,6 +1,6 @@
 # laser-development-kit
 
-Python scripts examples for the [Koheron LBRP](https://www.koheron.com/photonics/lbrp-laser-board-red-pitaya).
+Python scripts examples for the [Koheron LBRP Laser Board for the Red Pitaya](https://www.koheron.com/photonics/lbrp-laser-board-red-pitaya).
 
 ## Requirements
 
